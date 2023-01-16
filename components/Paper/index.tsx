@@ -1,34 +1,54 @@
-import { useRef, useState } from "react";
+import { CodeHighlightNode, CodeNode } from "@lexical/code";
+import { AutoLinkNode, LinkNode } from "@lexical/link";
+import { ListItemNode, ListNode } from "@lexical/list";
+import { TRANSFORMERS } from "@lexical/markdown";
+import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import {
+  InitialConfigType,
+  LexicalComposer,
+} from "@lexical/react/LexicalComposer";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import ErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
+import theme from "./theme";
 
-type Vector = {
-  x: number;
-  y: number;
+const editorConfig: InitialConfigType = {
+  namespace: "My Editor",
+  theme,
+  onError(error, editor) {
+    console.log(error);
+  },
+  nodes: [
+    HeadingNode,
+    ListNode,
+    ListItemNode,
+    QuoteNode,
+    CodeNode,
+    CodeHighlightNode,
+    TableNode,
+    TableCellNode,
+    TableRowNode,
+    AutoLinkNode,
+    LinkNode,
+  ],
 };
 
 function Paper() {
-  const caretRef = useRef<HTMLTextAreaElement>(null);
-  const [caretPosition, setCaretPosition] = useState<Vector>({ x: 0, y: 0 });
-
-  const caretStyles = {
-    top: caretPosition.y + "px",
-    left: caretPosition.x + "px",
-  };
-
-  // FIXME: This was just an experiment on how to move the textarea.
   return (
-    <div className="flex justify-center  py-6">
-      <div
-        className="min-h-[1056px] w-[816px] bg-white py-12 px-10 shadow-xl"
-        onMouseDown={({ clientX, clientY }) => {
-          setCaretPosition({ x: clientX, y: clientY });
-        }}
-      >
-        <h1 className="text-6xl">My Page Title</h1>
-
-        <textarea
-          className="absolute bg-indigo-400 opacity-25"
-          style={caretStyles}
-        />
+    <div className="flex justify-center bg-slate-100 py-6">
+      <div className="min-h-[1056px] w-[816px] bg-white py-12 px-10 shadow-xl">
+        <LexicalComposer initialConfig={editorConfig}>
+          <RichTextPlugin
+            contentEditable={<ContentEditable className="focus:outline-none" />}
+            placeholder={<></>}
+            ErrorBoundary={ErrorBoundary}
+          />
+          <AutoFocusPlugin />
+          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        </LexicalComposer>
       </div>
     </div>
   );
