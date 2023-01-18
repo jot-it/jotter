@@ -30,7 +30,7 @@ const theme: EditorThemeClasses = {
   text: {
     bold: "font-semibold",
     code: "",
-    italic: "",
+    italic: "italic",
     strikethrough: "",
     subscript: "",
     superscript: "",
