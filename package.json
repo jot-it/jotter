@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ws-server": "y-websocket"
   },
   "dependencies": {
     "@lexical/react": "^0.7.6",
@@ -22,7 +23,9 @@
     "next": "13.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "4.9.4"
+    "typescript": "4.9.4",
+    "y-websocket": "^1.4.5",
+    "yjs": "^13.5.44"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
