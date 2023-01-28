@@ -1,5 +1,5 @@
+import clsx from "clsx";
 import { forwardRef } from "react";
-import cn from "../../utils/classNames";
 import { AsProp, RefForwardingComponent } from "../helpers";
 
 const Variants = {
@@ -29,7 +29,7 @@ const Text: RefForwardingComponent<"p", TextProps> = forwardRef<
   } = props;
 
   return (
-    <Component className={cn(className)} {...others} ref={ref}>
+    <Component className={clsx(className)} {...others} ref={ref}>
       {children}
     </Component>
   );
