@@ -24,3 +24,6 @@ export interface RefForwardingComponent<
     displayName?: string;
 }
 
+/** Adds "as" prop and the passed HTML attributes */
+export type PolymorphicProps<TAttributes = React.HTMLAttributes<HTMLElement>>
+    = AsProp & TAttributes;

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { forwardRef } from "react";
-import { AsProp, RefForwardingComponent } from "../helpers";
+import { PolymorphicProps, RefForwardingComponent } from "../helpers";
 
 const Variants = {
   h1: "",
@@ -12,7 +12,7 @@ const Variants = {
   body: "",
 } as const;
 
-interface TextProps extends React.HTMLAttributes<HTMLElement>, AsProp {
+interface TextProps extends PolymorphicProps {
   variant?: keyof typeof Variants;
 }
 
