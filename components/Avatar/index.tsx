@@ -5,18 +5,6 @@ interface AvatarProps extends Omit<ImageProps, "height" | "width"> {
   /** @default sm */
   variant?: "sm" | "md" | "lg" | "xl";
 
-  /**
-   * className: ```ring-${color}```
-   *
-   * @default white */
-  ringColor?: string;
-
-  /**
-   * className: ```ring-${number}```
-   *
-   * @default 2 */
-  ringSize?: number;
-
   /** defaults to variant size */
   height?: ImageProps["height"];
 
@@ -32,23 +20,14 @@ const VariantMap = {
 } as const;
 
 function Avatar(props: AvatarProps) {
-  const {
-    className,
-    children,
-    variant: size,
-    ringColor = "white",
-    ringSize = 2,
-    width,
-    height,
-    ...rest
-  } = props;
+  const { className, children, variant: size, width, height, ...rest } = props;
 
   return (
     <Image
       className={clsx(
         className,
         "inline-block rounded-full",
-        `ring-${ringColor} ring-${ringSize}`
+        `ring-2 ring-white`
       )}
       width={width ?? VariantMap[size!]}
       height={height ?? VariantMap[size!]}
