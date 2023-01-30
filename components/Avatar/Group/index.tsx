@@ -1,25 +1,30 @@
 import clsx from "clsx";
 import { ComponentPropsWithoutRef, forwardRef } from "react";
 
+const Spacing = [
+  "-space-x-0",
+  "-space-x-1",
+  "-space-x-2",
+  "-space-x-3",
+  "-space-x-4",
+  "-space-x-5",
+  "-space-x-6",
+] as const;
+
 interface AvatarGroupProps extends ComponentPropsWithoutRef<"div"> {
-  /** Defines how much avatars stack on top of each other
-   * corresponds to tailwind:
-   *
-   * ```-space-x-${number}```
-   */
-  space?: number;
+  spacing?: number;
 }
 
 const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
-  ({ className, children, space = 0, ...props }, ref) => {
+  ({ className, children, spacing, ...props }, ref) => {
     return (
       <div
         ref={ref}
         className={clsx(
           className,
           "flex",
-          `-space-x-${space}`,
-          "overflow-hidden"
+          "overflow-hidden",
+          spacing && Spacing[spacing]
         )}
         {...props}
       >

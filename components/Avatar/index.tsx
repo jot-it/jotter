@@ -1,36 +1,35 @@
 import clsx from "clsx";
 import Image, { ImageProps } from "next/image";
 
-interface AvatarProps extends Omit<ImageProps, "height" | "width"> {
-  /** @default sm */
-  variant?: "sm" | "md" | "lg" | "xl";
-
-  /** defaults to variant size */
-  height?: ImageProps["height"];
-
-  /** defaults to variant size */
-  width?: ImageProps["width"];
-}
-
-const VariantMap = {
-  sm: 16,
-  md: 24,
-  lg: 32,
-  xl: 40,
+const SizeVariants = {
+  sm: 24,
+  md: 32,
+  lg: 40,
+  xl: 48,
 } as const;
 
+const RingColorVariants = {
+  white: "ring-white",
+  blue: "ring-blue-600",
+};
+
+interface AvatarProps extends Omit<ImageProps, "height" | "width"> {
+  size?: keyof typeof SizeVariants;
+  ringColor?: keyof typeof RingColorVariants;
+}
+
 function Avatar(props: AvatarProps) {
-  const { className, children, variant: size, width, height, ...rest } = props;
+  const { className, children, size = "sm", ringColor, ...rest } = props;
 
   return (
     <Image
       className={clsx(
         className,
-        "inline-block rounded-full",
-        `ring-2 ring-white`
+        "inline-block rounded-full ring",
+        ringColor && RingColorVariants[ringColor]
       )}
-      width={width ?? VariantMap[size!]}
-      height={height ?? VariantMap[size!]}
+      width={SizeVariants[size]}
+      height={SizeVariants[size]}
       {...rest}
     >
       {children}
