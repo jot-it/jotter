@@ -24,7 +24,7 @@ const Text: RefForwardingComponent<"p", TextProps> = forwardRef<
     as: Component = "p",
     className,
     children,
-    variant,
+    variant = "body",
     ...others
   } = props;
 
