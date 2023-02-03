@@ -1,11 +1,6 @@
-import dynamic from "next/dynamic";
 import Head from "next/head";
-import Container from "../components/Container";
-
-const Paper = dynamic(() => import("../components/Paper"), {
-  // Disable server side rendering, because of WebSocket API
-  ssr: false,
-});
+import Paper from "../components/Paper";
+import Sidebar from "../components/Sidebar";
 
 export default function Home() {
   return (
@@ -16,11 +11,12 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="bg-slate-100">
-        <Container>
+      <div className="grid min-h-screen grid-cols-[1fr_3fr]">
+        <Sidebar className="sticky top-0 left-0 bg-blue-300" />
+        <main className="p-4">
           <Paper />
-        </Container>
-      </main>
+        </main>
+      </div>
     </>
   );
 }
