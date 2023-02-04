@@ -29,7 +29,11 @@ const Text: RefForwardingComponent<"p", TextProps> = forwardRef<
   } = props;
 
   return (
-    <Component className={clsx(className)} {...others} ref={ref}>
+    <Component
+      className={clsx(className, Variants[variant])}
+      {...others}
+      ref={ref}
+    >
       {children}
     </Component>
   );
