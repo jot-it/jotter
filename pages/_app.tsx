@@ -1,6 +1,17 @@
 import type { AppProps } from "next/app";
 import "../styles/globals.css";
+import { Barlow } from "@next/font/google";
 
+const barlow = Barlow({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-barlow",
+});
+1;
 export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+  return (
+    <main className={`${barlow.variable} font-sans`}>
+      <Component {...pageProps} />;
+    </main>
+  );
 }
