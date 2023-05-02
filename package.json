@@ -24,6 +24,7 @@
     "next": "13.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.8.0",
     "typescript": "4.9.4",
     "y-websocket": "^1.4.5",
     "yjs": "^13.5.44"

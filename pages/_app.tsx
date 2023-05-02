@@ -10,8 +10,8 @@ const barlow = Barlow({
 1;
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <main className={`${barlow.variable} font-sans`}>
-      <Component {...pageProps} />;
-    </main>
+    <div className={`${barlow.variable} font-sans`}>
+      <Component {...pageProps} />
+    </div>
   );
 }
