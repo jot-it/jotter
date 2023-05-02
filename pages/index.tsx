@@ -1,6 +1,10 @@
 import Head from "next/head";
+import { AiOutlineFileText as FileIcon } from "react-icons/ai";
+import { MdNavigateNext as NextIcon } from "react-icons/md";
+import Avatar from "../components/Avatar";
 import Paper from "../components/Paper";
 import Sidebar from "../components/Sidebar";
+import Typography from "../components/Typography";
 
 export default function Home() {
   return (
@@ -12,8 +16,58 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="grid min-h-screen grid-cols-[1fr_3fr]">
-        <Sidebar className="sticky top-0 left-0 bg-blue-300" />
-        <main className="p-4">
+        <Sidebar className="sticky top-0 left-0 bg-gray-300" />
+        <main>
+          <header>
+            <nav className="flex border-b border-gray-200 p-4 shadow-sm">
+              {/* Breadcrumbs */}
+              <ol className="flex items-center gap-2" aria-label="Breadcrumb">
+                <li>
+                  <a className="text-gray-500 hover:underline" href="#">
+                    <Typography as="span" variant="body1">
+                      <FileIcon className="mr-1 inline-block text-lg" />
+                      Chapter 1
+                    </Typography>
+                  </a>
+                </li>
+                <li aria-hidden>
+                  <NextIcon className="text-gray-400" />
+                </li>
+                <li className="text-gray-500 hover:underline">
+                  <a href="#">Section a</a>
+                </li>
+                <li aria-hidden>
+                  <NextIcon className="text-gray-400" />
+                </li>
+                <li className="rounded-md bg-gray-300 px-4 py-1 hover:underline">
+                  <a href="#" aria-current="page">
+                    Topic 1
+                  </a>
+                </li>
+              </ol>
+              {/* Current users in this notebook */}
+              <div className="ml-auto mr-4 flex -space-x-1 text-white">
+                <Avatar className="bg-gray-200 text-gray-700" size="lg">
+                  +5
+                </Avatar>
+                <Avatar className="bg-orange-500 ring ring-white" size="lg">
+                  JD
+                </Avatar>
+                <Avatar className="bg-red-500 ring ring-white" size="lg">
+                  KS
+                </Avatar>
+                <Avatar className="bg-indigo-500 ring ring-white" size="lg">
+                  MG
+                </Avatar>
+              </div>
+
+              <button className="rounded-md bg-gray-700 py-2 px-4 text-white shadow-sm hover:bg-gray-600">
+                <Typography variant="button" as="span">
+                  Share
+                </Typography>
+              </button>
+            </nav>
+          </header>
           <Paper />
         </main>
       </div>

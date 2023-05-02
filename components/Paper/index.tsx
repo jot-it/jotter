@@ -74,7 +74,7 @@ function Paper() {
         />
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-        <CollaborationPlugin
+        {/* <CollaborationPlugin
           id="yjs-plugin"
           providerFactory={(id, yjsDocMap) => {
             const doc = new Y.Doc();
@@ -93,7 +93,7 @@ function Paper() {
           // prop (json string, state object, or a function)
           initialEditorState={initialEditorState}
           shouldBootstrap={true}
-        />
+        /> */}
       </LexicalComposer>
     </div>
   );
