@@ -1,4 +1,5 @@
 import SidebarItem, { ItemProps } from "../Item";
+import * as Accordion from "@radix-ui/react-accordion";
 
 type SidebarItemListProps = {
   items: ItemProps[];
@@ -6,14 +7,12 @@ type SidebarItemListProps = {
 
 function SidebarItemList({ items }: SidebarItemListProps) {
   return (
-    <>
+    <Accordion.Root type="single" collapsible>
       {items.map((props, index) => (
         // TODO: generate a unique key for each item
-        <ul key={index}>
-          <SidebarItem {...props} />
-        </ul>
+        <SidebarItem key={index} {...props} />
       ))}
-    </>
+    </Accordion.Root>
   );
 }
 
