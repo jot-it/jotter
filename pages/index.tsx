@@ -1,9 +1,14 @@
 import Head from "next/head";
-import { AiOutlineFileText as FileIcon } from "react-icons/ai";
-import { MdNavigateNext as NextIcon } from "react-icons/md";
+import { RxFileText, RxCaretDown } from "react-icons/rx";
+import {
+  IoChevronForwardOutline as NextIcon,
+  IoDocumentTextOutline as FileIcon,
+} from "react-icons/io5";
 import Avatar from "../components/Avatar";
 import Paper from "../components/Paper";
 import Sidebar from "../components/Sidebar";
+import SidebarItemList from "../components/Sidebar/ItemList";
+import sidebarConfig from "../components/Sidebar/sidebarConfig";
 import Typography from "../components/Typography";
 
 export default function Home() {
@@ -16,16 +21,21 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="grid min-h-screen grid-cols-[1fr_3fr]">
-        <Sidebar className="sticky top-0 left-0 bg-gray-300" />
+        <Sidebar>
+          <SidebarItemList items={sidebarConfig} />
+        </Sidebar>
         <main>
           <header>
             <nav className="flex border-b border-gray-200 p-4 shadow-sm">
               {/* Breadcrumbs */}
               <ol className="flex items-center gap-2" aria-label="Breadcrumb">
                 <li>
-                  <a className="text-gray-500 hover:underline" href="#">
+                  <a
+                    className="rounded-md px-2 py-1 text-gray-500 hover:bg-gray-100"
+                    href="#"
+                  >
                     <Typography as="span" variant="body1">
-                      <FileIcon className="mr-1 inline-block text-lg" />
+                      <RxFileText className="mr-1 inline-block text-lg" />
                       Chapter 1
                     </Typography>
                   </a>
@@ -33,13 +43,13 @@ export default function Home() {
                 <li aria-hidden>
                   <NextIcon className="text-gray-400" />
                 </li>
-                <li className="text-gray-500 hover:underline">
+                <li className="rounded-md px-2 py-1 text-gray-500 hover:bg-gray-100">
                   <a href="#">Section a</a>
                 </li>
                 <li aria-hidden>
                   <NextIcon className="text-gray-400" />
                 </li>
-                <li className="rounded-md bg-gray-300 px-4 py-1 hover:underline">
+                <li className="rounded-md px-2 py-1 hover:bg-gray-100">
                   <a href="#" aria-current="page">
                     Topic 1
                   </a>
