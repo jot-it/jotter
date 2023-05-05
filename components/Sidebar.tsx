@@ -1,9 +1,10 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import NextLink from "next/link";
 import {
-  IoFolderOpenOutline as BookIcon,
-  IoChevronDownOutline as Chevron,
-} from "react-icons/io5";
+  RiAddLine as AddIcon,
+  RiBook2Line as BookIcon,
+  RiArrowDownSLine as Chevron,
+} from "react-icons/ri";
 import Typography from "./Typography";
 
 //#region  Typings
@@ -25,6 +26,8 @@ export type CategoryProps = {
   items: ItemProps[];
 };
 
+type ButtonProps = React.ComponentPropsWithoutRef<"button">;
+
 export type ItemProps = CategoryProps | LinkProps;
 //#endregion
 function Sidebar({ children, ...rest }: SidebarProps) {
@@ -40,7 +43,7 @@ function Sidebar({ children, ...rest }: SidebarProps) {
 
 function SidebarItemList({ items }: SidebarItemListProps) {
   return (
-    <Accordion.Root type="single" collapsible>
+    <Accordion.Root type="single" collapsible aria-multiselectable="false">
       {items.map((props, index) => (
         // TODO: generate a unique key for each item
         <Sidebar.Item key={index} {...props} />
@@ -74,6 +77,24 @@ function Link(props: LinkProps) {
   );
 }
 
+//NOTE: Maybe convert the Button in component with Variant = ADD | EXPORT | CONFIG
+function AddButton(props: ButtonProps) {
+  return (
+    <button
+      {...props}
+      type="button"
+      className="flex w-full items-center justify-between rounded-lg p-3 text-gray-800 hover:bg-gray-300"
+    >
+      <Typography>ADD NEW PAGE</Typography>
+      <AddIcon />
+    </button>
+  );
+}
+
+function Divider() {
+  return <hr className="divider h-0.5 w-full rounded-full bg-gray-300"></hr>;
+}
+
 function Category({ items, label }: CategoryProps) {
   return (
     <Accordion.Item value={label}>
@@ -95,5 +116,7 @@ function Category({ items, label }: CategoryProps) {
 
 Sidebar.Item = SidebarItem;
 Sidebar.ItemList = SidebarItemList;
+Sidebar.AddButton = AddButton;
+Sidebar.Divider = Divider;
 
 export default Sidebar;
