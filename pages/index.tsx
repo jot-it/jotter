@@ -1,17 +1,18 @@
 import Head from "next/head";
-import { RxFileText, RxCaretDown } from "react-icons/rx";
+import { useState } from "react";
 import {
-  IoChevronForwardOutline as NextIcon,
-  IoDocumentTextOutline as FileIcon,
-} from "react-icons/io5";
+  RiBook2Line as BookIcon,
+  RiArrowRightSLine as NextIcon,
+} from "react-icons/ri";
 import Avatar from "../components/Avatar";
 import Paper from "../components/Paper";
 import Sidebar from "../components/Sidebar";
-import SidebarItemList from "../components/Sidebar/ItemList";
-import sidebarConfig from "../components/Sidebar/sidebarConfig";
 import Typography from "../components/Typography";
+import sidebarConfig from "../components/sidebarConfig";
 
 export default function Home() {
+  const [sidebar, setSidebar] = useState(sidebarConfig);
+
   return (
     <>
       <Head>
@@ -22,7 +23,23 @@ export default function Home() {
       </Head>
       <div className="grid min-h-screen grid-cols-[1fr_3fr]">
         <Sidebar>
-          <SidebarItemList items={sidebarConfig} />
+          {/* Add new page */}
+          <Sidebar.ItemList items={sidebar} />
+          <div className="space-y-1">
+            <Sidebar.Divider />
+            <Sidebar.AddButton
+              onClick={() =>
+                setSidebar([
+                  ...sidebar,
+                  {
+                    type: "link",
+                    label: "New page",
+                    href: "#new-page",
+                  },
+                ])
+              }
+            />
+          </div>
         </Sidebar>
         <main>
           <header>
@@ -35,7 +52,7 @@ export default function Home() {
                     href="#"
                   >
                     <Typography as="span" variant="body1">
-                      <RxFileText className="mr-1 inline-block text-lg" />
+                      <BookIcon className="mr-1 inline-block text-lg" />
                       Chapter 1
                     </Typography>
                   </a>
