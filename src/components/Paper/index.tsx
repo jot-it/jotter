@@ -1,3 +1,4 @@
+"use client";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -20,18 +21,10 @@ import {
   LexicalEditor,
 } from "lexical";
 import theme from "./theme";
-
-import dynamic from "next/dynamic";
+import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
-
-const CollaborationPlugin = dynamic(
-  () =>
-    import("@lexical/react/LexicalCollaborationPlugin").then(
-      (module) => module.CollaborationPlugin
-    ),
-  { ssr: false }
-);
+import NoSSR from "../NoSSR";
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -74,26 +67,28 @@ function Paper() {
         />
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-        {/* <CollaborationPlugin
-          id="yjs-plugin"
-          providerFactory={(id, yjsDocMap) => {
-            const doc = new Y.Doc();
-            yjsDocMap.set(id, doc);
+        <NoSSR>
+          <CollaborationPlugin
+            id="yjs-plugin"
+            providerFactory={(id, yjsDocMap) => {
+              const doc = new Y.Doc();
+              yjsDocMap.set(id, doc);
 
-            const provider = new WebsocketProvider(
-              "ws://localhost:1234",
-              id,
-              doc
-            );
-            return provider;
-          }}
-          // Optional initial editor state in case collaborative Y.Doc won't
-          // have any existing data on server. Then it'll user this value to populate editor.
-          // It accepts same type of values as LexicalComposer editorState
-          // prop (json string, state object, or a function)
-          initialEditorState={initialEditorState}
-          shouldBootstrap={true}
-        /> */}
+              const provider = new WebsocketProvider(
+                "ws://localhost:1234",
+                id,
+                doc
+              );
+              return provider;
+            }}
+            // Optional initial editor state in case collaborative Y.Doc won't
+            // have any existing data on server. Then it'll user this value to populate editor.
+            // It accepts same type of values as LexicalComposer editorState
+            // prop (json string, state object, or a function)
+            initialEditorState={initialEditorState}
+            shouldBootstrap={true}
+          />
+        </NoSSR>
       </LexicalComposer>
     </div>
   );
