@@ -43,28 +43,14 @@ export default function Home() {
         <main>
           <header className="flex items-center border-b border-gray-200 p-4 shadow-sm">
             <Breadcrumbs aria-label="Breadcrumb">
-              <Link
-                className="rounded-md p-2 text-gray-500 hover:bg-gray-100"
-                href="#"
-              >
+              <Link href="#">
                 <Typography as="span" variant="body1">
                   <BookIcon className="mr-1 inline-block text-lg" />
                   Chapter 1
                 </Typography>
               </Link>
-              <Link
-                className="rounded-md p-2 text-gray-500 hover:bg-gray-100"
-                href="#"
-              >
-                Section a
-              </Link>
-              <Link
-                className="rounded-md p-2 text-gray-800 hover:bg-gray-100"
-                href="#"
-                aria-current="page"
-              >
-                Topic 1
-              </Link>
+              <Link href="#">Section a</Link>
+              <Link href="#">Topic 1</Link>
             </Breadcrumbs>
 
             {/* Current users in this notebook */}
