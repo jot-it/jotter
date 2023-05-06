@@ -7,7 +7,7 @@ const barlow = Barlow({
   weight: ["300", "400", "500", "700"],
   variable: "--font-barlow",
 });
-1;
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className={`${barlow.variable} font-sans`}>

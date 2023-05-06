@@ -35,12 +35,12 @@ interface TypographyProps extends PolymorphicProps {
   gutterBottom?: boolean;
 }
 
-const Typography: RefForwardingComponent<"p", TypographyProps> = forwardRef<
+const Typography: RefForwardingComponent<"span", TypographyProps> = forwardRef<
   HTMLElement,
   TypographyProps
 >(function Typography(props, ref) {
   const {
-    as: Component = "p",
+    as: Component = "span",
     className,
     children,
     gutterBottom,
