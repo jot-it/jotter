@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@lexical/react": "^0.7.6",
-    "@next/font": "13.1.1",
     "@radix-ui/react-accordion": "^1.1.1",
     "@types/markdown-it": "^12.2.3",
     "@types/node": "18.11.18",
