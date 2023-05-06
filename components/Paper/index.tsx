@@ -65,39 +65,36 @@ const editorConfig: InitialConfigType = {
 
 function Paper() {
   return (
-    <div className="flex justify-center py-6">
-      <div className="min-h-[1056px] w-[816px] bg-white py-12 px-10 shadow-xl">
-        <LexicalComposer initialConfig={editorConfig}>
-          <RichTextPlugin
-            contentEditable={<ContentEditable className="focus:outline-none" />}
-            placeholder={<></>}
-            ErrorBoundary={ErrorBoundary}
-          />
-          <AutoFocusPlugin />
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-          <CollaborationPlugin
-            id="yjs-plugin"
-            providerFactory={(id, yjsDocMap) => {
-              const doc = new Y.Doc();
-              yjsDocMap.set(id, doc);
+    <div className="mx-auto my-12 max-w-3xl bg-white px-4">
+      <LexicalComposer initialConfig={editorConfig}>
+        <RichTextPlugin
+          contentEditable={<ContentEditable className="focus:outline-none" />}
+          placeholder={<></>}
+          ErrorBoundary={ErrorBoundary}
+        />
+        <AutoFocusPlugin />
+        <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        {/* <CollaborationPlugin
+          id="yjs-plugin"
+          providerFactory={(id, yjsDocMap) => {
+            const doc = new Y.Doc();
+            yjsDocMap.set(id, doc);
 
-              const provider = new WebsocketProvider(
-                "ws://localhost:1234",
-                id,
-                doc
-              );
-
-              return provider;
-            }}
-            // Optional initial editor state in case collaborative Y.Doc won't
-            // have any existing data on server. Then it'll user this value to populate editor.
-            // It accepts same type of values as LexicalComposer editorState
-            // prop (json string, state object, or a function)
-            initialEditorState={initialEditorState}
-            shouldBootstrap={true}
-          />
-        </LexicalComposer>
-      </div>
+            const provider = new WebsocketProvider(
+              "ws://localhost:1234",
+              id,
+              doc
+            );
+            return provider;
+          }}
+          // Optional initial editor state in case collaborative Y.Doc won't
+          // have any existing data on server. Then it'll user this value to populate editor.
+          // It accepts same type of values as LexicalComposer editorState
+          // prop (json string, state object, or a function)
+          initialEditorState={initialEditorState}
+          shouldBootstrap={true}
+        /> */}
+      </LexicalComposer>
     </div>
   );
 }
