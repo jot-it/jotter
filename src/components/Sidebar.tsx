@@ -67,11 +67,7 @@ function Link(props: LinkProps) {
   return (
     <NextLink href={href}>
       <Typography
-<<<<<<< HEAD:src/components/Sidebar.tsx
         className="block rounded-lg px-2 py-3 text-gray-800 hover:bg-gray-300 aria-[selected=true]:bg-gray-100"
-=======
-        className="rounded-lg px-2 py-3 text-gray-800 hover:bg-gray-300 aria-[selected=true]:bg-gray-100"
->>>>>>> main:components/Sidebar.tsx
         variant="body1"
         aria-selected="false"
       >
@@ -102,16 +98,11 @@ function Divider() {
 function Category({ items, label }: CategoryProps) {
   return (
     <Accordion.Item value={label}>
-<<<<<<< HEAD:src/components/Sidebar.tsx
       <Accordion.Header className="p-[2px]">
         <Accordion.Trigger
           className="group flex w-full items-center justify-between rounded-lg p-3 
         text-left text-gray-800 hover:bg-gray-300"
         >
-=======
-      <Accordion.Header>
-        <Accordion.Trigger className="group flex w-full items-center justify-between rounded-lg p-3 text-left text-gray-800 hover:bg-gray-300">
->>>>>>> main:components/Sidebar.tsx
           <div>
             <BookIcon className="mr-2 inline-block" />
             {label}
