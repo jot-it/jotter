@@ -12,6 +12,8 @@
   "dependencies": {
     "@lexical/react": "^0.7.6",
     "@radix-ui/react-accordion": "^1.1.1",
+    "@radix-ui/react-select": "^1.2.1",
+    "@radix-ui/react-toolbar": "^1.0.3",
     "@types/markdown-it": "^12.2.3",
     "@types/node": "18.11.18",
     "@types/react": "^18.2.6",

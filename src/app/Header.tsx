@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import Avatar from "../components/Avatar";
 import Breadcrumbs from "../components/Breadcrumbs";
