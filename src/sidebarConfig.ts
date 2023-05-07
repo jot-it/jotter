@@ -1,4 +1,4 @@
-import { ItemProps } from "./Sidebar";
+import { ItemProps } from "./components/Sidebar";
 
 const sidebarConfig: ItemProps[] = [
   {
