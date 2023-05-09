@@ -37,7 +37,7 @@ function Header() {
       <Typography
         as="button"
         variant="button"
-        className="rounded-md bg-gray-700 px-4 py-2 text-white shadow-sm hover:bg-gray-600"
+        className="rounded-md bg-indigo-200 px-4 py-2 text-indigo-950 shadow-sm hover:bg-indigo-300"
       >
         Share
       </Typography>
