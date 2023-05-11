@@ -5,7 +5,12 @@ import {
   RiBook2Line as BookIcon,
   RiArrowDownSLine as Chevron,
 } from "react-icons/ri";
-import Typography from "./Typography";
+import {
+  CgRename as RenameIcon,
+  CgTrashEmpty as DeleteIcon,
+  CgFile as FileIcon,
+} from "react-icons/cg";
+import ContextMenu from "./ContextMenu";
 
 //#region  Typings
 type SidebarItemListProps = {
@@ -43,7 +48,7 @@ function Sidebar({ children, ...rest }: SidebarProps) {
 
 function SidebarItemList({ items }: SidebarItemListProps) {
   return (
-    <Accordion.Root type="single" collapsible aria-multiselectable="false">
+    <Accordion.Root type="single" collapsible>
       {items.map((props, index) => (
         // TODO: generate a unique key for each item
         <Sidebar.Item key={index} {...props} />
@@ -55,9 +60,46 @@ function SidebarItemList({ items }: SidebarItemListProps) {
 function SidebarItem(props: ItemProps) {
   switch (props.type) {
     case "category":
-      return <Category {...props} />;
+      return (
+        <ContextMenu>
+          <Category {...props} />
+          <ContextMenu.Body>
+            <ContextMenu.Option>
+              <FileIcon className="mr-3 text-lg  " />
+              Add new page
+            </ContextMenu.Option>
+            <ContextMenu.Divider />
+            <ContextMenu.Option>
+              <RenameIcon className="mr-3 text-lg" />
+              Rename
+            </ContextMenu.Option>
+            <ContextMenu.Option className="text-rose-600 data-[highlighted]:bg-rose-100">
+              <DeleteIcon className="mr-3 text-lg" />
+              Delete
+            </ContextMenu.Option>
+          </ContextMenu.Body>
+        </ContextMenu>
+      );
     case "link":
-      return <Link {...props} />;
+      return (
+        <ContextMenu>
+          <Link {...props} />
+          <ContextMenu.Body>
+            <ContextMenu.Option>
+              <RenameIcon className="mr-3 text-lg" />
+              <span>Rename</span>
+            </ContextMenu.Option>
+            <ContextMenu.Option>
+              <BookIcon className="mr-3 text-lg" />
+              <span>Group</span>
+            </ContextMenu.Option>
+            <ContextMenu.Option className="text-rose-800 data-[highlighted]:bg-rose-100">
+              <DeleteIcon className="mr-3 text-lg " />
+              <span>Delete</span>
+            </ContextMenu.Option>
+          </ContextMenu.Body>
+        </ContextMenu>
+      );
   }
 }
 
@@ -65,13 +107,18 @@ function Link(props: LinkProps) {
   const { href, label } = props;
   return (
     <NextLink href={href}>
+<<<<<<< HEAD
       <Typography
         className="block rounded-lg px-2 py-3 hover:bg-gray-300 dark:hover:bg-gray-700"
         variant="body1"
         aria-selected="false"
       >
+=======
+      {/* Trigger of ContextMenu */}
+      <span className="block rounded-lg px-2 py-3 text-gray-800 hover:bg-gray-300">
+>>>>>>> 7adc9c3... WIP add Context-menu in the sidebar
         {label}
-      </Typography>
+      </span>
     </NextLink>
   );
 }
@@ -84,7 +131,7 @@ function AddButton(props: ButtonProps) {
       type="button"
       className="flex w-full items-center justify-between rounded-lg p-3 hover:bg-gray-300 dark:hover:bg-gray-700"
     >
-      <Typography>ADD NEW PAGE</Typography>
+      <span>ADD NEW PAGE</span>
       <AddIcon />
     </button>
   );
