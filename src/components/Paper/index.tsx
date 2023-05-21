@@ -20,12 +20,10 @@ import {
   $getRoot,
   LexicalEditor,
 } from "lexical";
-import theme from "./theme";
-import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
-import { WebsocketProvider } from "y-websocket";
-import * as Y from "yjs";
+import { useCallback, useState } from "react";
+import ToolbarPlugin from "../../plugins/ToolbarPlugin";
 import NoSSR from "../NoSSR";
-import EditorToolbar from "../Toolbar";
+import theme from "./theme";
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -58,17 +56,30 @@ const editorConfig: InitialConfigType = {
 };
 
 function Paper() {
+  const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
+
+  const onRef = useCallback((node: HTMLDivElement | null) => {
+    if (node !== null) {
+      setEditorContainer(node);
+    }
+  }, []);
+
+  console.log("re render");
+
   return (
-    <div className="mx-auto my-12 max-w-3xl bg-white px-4">
-      <EditorToolbar />
+    <div className="relative mx-auto my-12 max-w-3xl bg-white px-4" ref={onRef}>
       <LexicalComposer initialConfig={editorConfig}>
         <RichTextPlugin
-          contentEditable={<ContentEditable className="focus:outline-none" />}
+          contentEditable={
+            <ContentEditable className="empty:before:content-['Begin_your_story...'] focus:outline-none" />
+          }
           placeholder={<></>}
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+
+        {editorContainer && <ToolbarPlugin container={editorContainer} />}
         <NoSSR>
           {/* <CollaborationPlugin
             id="yjs-plugin"
