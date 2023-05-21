@@ -11,7 +11,11 @@ const barlow = Barlow({
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
-      <body className={`${barlow.variable} font-sans`}>{children}</body>
+      <body
+        className={`${barlow.variable} font-sans dark:bg-gray-900 dark:text-gray-200`}
+      >
+        {children}
+      </body>
     </html>
   );
 }
