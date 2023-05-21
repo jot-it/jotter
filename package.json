@@ -10,7 +10,7 @@
     "ws-server": "y-websocket"
   },
   "dependencies": {
-    "@lexical/react": "^0.7.6",
+    "@lexical/react": "^0.10.0",
     "@radix-ui/react-accordion": "^1.1.1",
     "@radix-ui/react-select": "^1.2.1",
     "@radix-ui/react-toolbar": "^1.0.3",
@@ -19,9 +19,9 @@
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
     "clsx": "^1.2.1",
-    "eslint": "8.31.0",
+    "eslint": "^8.40.0",
     "eslint-config-next": "^13.4.1",
-    "lexical": "^0.7.6",
+    "lexical": "^0.10.0",
     "markdown-it": "^13.0.1",
     "next": "^13.4.1",
     "react": "18.2.0",
@@ -32,6 +32,7 @@
     "yjs": "^13.5.44"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.20",
     "prettier": "^2.8.1",
