@@ -58,7 +58,7 @@ const editorConfig: InitialConfigType = {
 
 function Paper() {
   return (
-    <div className="mx-auto my-12 max-w-3xl bg-white px-4">
+    <div className="mx-auto my-12 max-w-3xl px-4">
       <LexicalComposer initialConfig={editorConfig}>
         <RichTextPlugin
           contentEditable={<ContentEditable className="focus:outline-none" />}

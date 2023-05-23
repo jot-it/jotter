@@ -8,14 +8,20 @@ function Breadcrumbs({ children, className, ...rest }: BreadcrumbsProps) {
   const lastIndex = React.Children.count(children) - 1;
   return (
     <nav>
-      <ol className={clsx(className, "flex items-center gap-1")} {...rest}>
+      <ol
+        className={clsx(
+          className,
+          "flex items-center gap-1 text-gray-500 dark:text-gray-200"
+        )}
+        {...rest}
+      >
         {React.Children.map(children, (child, index) => (
           <Fragment key={index}>
             <li>
               {cloneElement(child as React.ReactElement, {
                 className: clsx(
-                  "p-2 rounded-md hover:bg-gray-200",
-                  index === lastIndex ? "text-gray-800" : "text-gray-500"
+                  "p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700",
+                  index === lastIndex && "text-gray-800 dark:text-gray-100"
                 ),
                 "aria-current": index === lastIndex ? "page" : undefined,
               })}
