@@ -67,7 +67,7 @@ function Paper() {
   console.log("re render");
 
   return (
-    <div className="relative mx-auto my-12 max-w-3xl bg-white px-4" ref={onRef}>
+    <div className="relative mx-auto my-12 max-w-3xl px-4" ref={onRef}>
       <LexicalComposer initialConfig={editorConfig}>
         <RichTextPlugin
           contentEditable={

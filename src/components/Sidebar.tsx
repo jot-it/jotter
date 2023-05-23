@@ -33,7 +33,7 @@ export type ItemProps = CategoryProps | LinkProps;
 function Sidebar({ children, ...rest }: SidebarProps) {
   return (
     <nav
-      className="flex flex-col justify-between space-y-1 bg-gray-200 px-4 py-12"
+      className="flex flex-col justify-between space-y-1 bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-gray-800 dark:text-inherit"
       {...rest}
     >
       {children}
@@ -63,11 +63,10 @@ function SidebarItem(props: ItemProps) {
 
 function Link(props: LinkProps) {
   const { href, label } = props;
-
   return (
     <NextLink href={href}>
       <Typography
-        className="block rounded-lg px-2 py-3 text-gray-800 hover:bg-gray-300 aria-[selected=true]:bg-gray-100"
+        className="block rounded-lg px-2 py-3 hover:bg-gray-300 dark:hover:bg-gray-700"
         variant="body1"
         aria-selected="false"
       >
@@ -83,7 +82,7 @@ function AddButton(props: ButtonProps) {
     <button
       {...props}
       type="button"
-      className="flex w-full items-center justify-between rounded-lg p-3 text-gray-800 hover:bg-gray-300"
+      className="flex w-full items-center justify-between rounded-lg p-3 hover:bg-gray-300 dark:hover:bg-gray-700"
     >
       <Typography>ADD NEW PAGE</Typography>
       <AddIcon />
@@ -92,7 +91,7 @@ function AddButton(props: ButtonProps) {
 }
 
 function Divider() {
-  return <hr className="divider h-0.5 w-full rounded-full bg-gray-300"></hr>;
+  return <hr className="h-0.5 w-full border-gray-300 dark:border-gray-700" />;
 }
 
 function Category({ items, label }: CategoryProps) {
@@ -100,8 +99,9 @@ function Category({ items, label }: CategoryProps) {
     <Accordion.Item value={label}>
       <Accordion.Header className="p-[2px]">
         <Accordion.Trigger
-          className="group flex w-full items-center justify-between rounded-lg p-3 
-        text-left text-gray-800 hover:bg-gray-300"
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left 
+         hover:bg-gray-300 data-[state=open]:bg-cyan-400/20 data-[state=open]:text-cyan-950
+         dark:hover:bg-gray-700 dark:data-[state=open]:bg-cyan-900 dark:data-[state=open]:text-cyan-200"
         >
           <div>
             <BookIcon className="mr-2 inline-block" />
