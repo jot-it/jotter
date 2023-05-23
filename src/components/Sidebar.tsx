@@ -23,12 +23,14 @@ export type LinkProps = {
   type: "link";
   href: string;
   label: string;
+  id: number;
 };
 
 export type CategoryProps = {
   type: "category";
   label: string;
   items: ItemProps[];
+  id: number;
 };
 
 type ButtonProps = React.ComponentPropsWithoutRef<"button">;
@@ -51,7 +53,7 @@ function SidebarItemList({ items }: SidebarItemListProps) {
     <Accordion.Root type="single" collapsible>
       {items.map((props, index) => (
         // TODO: generate a unique key for each item
-        <Sidebar.Item key={index} {...props} />
+        <Sidebar.Item key={props.id} {...props} />
       ))}
     </Accordion.Root>
   );
@@ -86,12 +88,13 @@ function SidebarItem(props: ItemProps) {
           <Link {...props} />
           <ContextMenu.Body>
             <ContextMenu.Option>
-              <RenameIcon className="mr-3 text-lg" />
-              <span>Rename</span>
-            </ContextMenu.Option>
-            <ContextMenu.Option>
               <BookIcon className="mr-3 text-lg" />
               <span>Group</span>
+            </ContextMenu.Option>
+            <ContextMenu.Divider />
+            <ContextMenu.Option>
+              <RenameIcon className="mr-3 text-lg" />
+              <span>Rename</span>
             </ContextMenu.Option>
             <ContextMenu.Option className="text-rose-800 data-[highlighted]:bg-rose-100">
               <DeleteIcon className="mr-3 text-lg " />
