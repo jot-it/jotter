@@ -33,7 +33,7 @@ export type ItemProps = CategoryProps | LinkProps;
 function Sidebar({ children, ...rest }: SidebarProps) {
   return (
     <nav
-      className="flex flex-col justify-between space-y-1 bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-gray-800 dark:text-inherit"
+      className="flex flex-col justify-between space-y-1 bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-slate-800 dark:text-inherit"
       {...rest}
     >
       {children}
