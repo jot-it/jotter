@@ -11,6 +11,7 @@ import {
   CgFile as FileIcon,
 } from "react-icons/cg";
 import ContextMenu from "./ContextMenu";
+import Typography from "./Typography";
 
 //#region  Typings
 type SidebarItemListProps = {
@@ -52,7 +53,6 @@ function SidebarItemList({ items }: SidebarItemListProps) {
   return (
     <Accordion.Root type="single" collapsible>
       {items.map((props, index) => (
-        // TODO: generate a unique key for each item
         <Sidebar.Item key={props.id} {...props} />
       ))}
     </Accordion.Root>
@@ -110,32 +110,25 @@ function Link(props: LinkProps) {
   const { href, label } = props;
   return (
     <NextLink href={href}>
-<<<<<<< HEAD
       <Typography
         className="block rounded-lg px-2 py-3 hover:bg-gray-300 dark:hover:bg-gray-700"
         variant="body1"
         aria-selected="false"
       >
-=======
-      {/* Trigger of ContextMenu */}
-      <span className="block rounded-lg px-2 py-3 text-gray-800 hover:bg-gray-300">
->>>>>>> 7adc9c3... WIP add Context-menu in the sidebar
         {label}
-      </span>
+      </Typography>
     </NextLink>
   );
 }
 
-//NOTE: Maybe convert the Button in component with Variant = ADD | EXPORT | CONFIG
-function AddButton(props: ButtonProps) {
+function Button({ children, ...props }: ButtonProps) {
   return (
     <button
-      {...props}
       type="button"
       className="flex w-full items-center justify-between rounded-lg p-3 hover:bg-gray-300 dark:hover:bg-gray-700"
+      {...props}
     >
-      <span>ADD NEW PAGE</span>
-      <AddIcon />
+      {children}
     </button>
   );
 }
@@ -169,7 +162,7 @@ function Category({ items, label }: CategoryProps) {
 
 Sidebar.Item = SidebarItem;
 Sidebar.ItemList = SidebarItemList;
-Sidebar.AddButton = AddButton;
+Sidebar.Button = Button;
 Sidebar.Divider = Divider;
 
 export default Sidebar;
