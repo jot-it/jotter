@@ -1,24 +1,23 @@
 import { ItemProps } from "../Sidebar";
 import { filterSidebar, mapSidebar } from "./utils";
 
-let nextId = 10; // last id of sidebarConfig
 export type Action =
   | {
       type: "rename";
-      id: number;
+      id: string;
       newLabel: string;
     }
   | {
       type: "delete";
-      id: number;
+      id: string;
     }
   | {
       type: "group";
-      id: number;
+      id: string;
     }
   | {
       type: "insert";
-      id: number;
+      id: string;
       itemType: ItemProps["type"];
     }
   | {
@@ -43,7 +42,7 @@ export function itemsReducer(items: ItemProps[], action: Action): ItemProps[] {
 //#region REDUCER ACTIONS
 function updateItem(
   items: ItemProps[],
-  id: number,
+  id: string,
   newItem: Partial<ItemProps>
 ) {
   return mapSidebar(items, (item) => {
@@ -54,13 +53,13 @@ function updateItem(
 
 function insertItem(
   items: ItemProps[],
-  id: number,
+  id: string,
   itemType: ItemProps["type"]
 ) {
   let newItem: ItemProps = {
     label: "New page",
     type: "link",
-    id: getNewId(),
+    id: crypto.randomUUID(),
     href: "#ni000",
   };
 
@@ -68,7 +67,7 @@ function insertItem(
     newItem = {
       label: "New Category",
       type: "category",
-      id: getNewId(),
+      id: crypto.randomUUID(),
       items: [],
     };
   }
@@ -81,7 +80,7 @@ function insertItem(
       return {
         ...item,
         items: [...item.items, newItem],
-        id: getNewId(),
+        id: crypto.randomUUID(),
       };
     }
 
@@ -94,18 +93,14 @@ function createItem(items: ItemProps[]) {
     label: "New item",
     type: "link",
     href: "#000",
-    id: getNewId(),
+    id: crypto.randomUUID(),
   };
 
   items = [...items, newItem];
   return items;
 }
 
-function deleteItem(items: ItemProps[], id: number) {
+function deleteItem(items: ItemProps[], id: string) {
   return filterSidebar(items, (item) => item.id !== id);
 }
 //#endregion
-
-function getNewId() {
-  return nextId++;
-}
