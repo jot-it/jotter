@@ -1,27 +1,22 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import NextLink from "next/link";
-import {
-  CgTrashEmpty as DeleteIcon,
-  CgFile as FileIcon,
-  CgInfo as InfoIcon,
-  CgRename as RenameIcon,
-} from "react-icons/cg";
+import { useReducer } from "react";
 import {
   RiBook2Line as BookIcon,
   RiArrowDownSLine as Chevron,
 } from "react-icons/ri";
 import ContextMenu from "../ContextMenu";
+import Typography from "../Typography";
 import {
   SidebarDispatchContext,
   SidebarItemsContext,
-  useSidebarDispatch,
   useSidebarItems,
 } from "./context";
-import { useReducer } from "react";
 import { itemsReducer } from "./state";
-import Typography from "../Typography";
+import { CategoryOptions, LinksOptions } from "./optionsContexMenu";
 
 //#region  Typings
+
 export type SidebarItemListProps = {
   items: ItemProps[];
 };
@@ -33,14 +28,14 @@ export type LinkProps = {
   type: "link";
   href: string;
   label: string;
-  id: number;
+  id: string;
 };
 
 export type CategoryProps = {
   type: "category";
   label: string;
   items: ItemProps[];
-  id: number;
+  id: string;
 };
 
 export type ButtonProps = React.ComponentPropsWithoutRef<"button">;
@@ -48,6 +43,7 @@ export type ButtonProps = React.ComponentPropsWithoutRef<"button">;
 export type ItemProps = CategoryProps | LinkProps;
 
 //#endregion
+
 function Sidebar({ children, items: initialItems, ...rest }: SidebarProps) {
   const [items, dispatch] = useReducer(itemsReducer, initialItems);
   return (
@@ -83,100 +79,46 @@ function SidebarItemList({ items }: SidebarItemListProps) {
 }
 
 function SidebarItem(props: ItemProps) {
-  const dispatch = useSidebarDispatch();
-
   switch (props.type) {
     case "category":
       return (
-        <ContextMenu>
-          <Category {...props} />
-          <ContextMenu.Body>
-            <ContextMenu.Option
-              onClick={() => {
-                dispatch({
-                  type: "insert",
-                  id: props.id,
-                  itemType: "link",
-                });
-              }}
-            >
-              <FileIcon className="mr-3 text-lg  " />
-              Add new page
-            </ContextMenu.Option>
-            <ContextMenu.Divider />
-
-            <ContextMenu.Option
-              onClick={() => {
-                dispatch({
-                  type: "rename",
-                  newLabel: "rename category",
-                  id: props.id,
-                });
-              }}
-            >
-              <RenameIcon className="mr-3 text-lg" />
-              Rename
-            </ContextMenu.Option>
-
-            <ContextMenu.Option
-              className="text-rose-800 data-[highlighted]:bg-rose-100"
-              onClick={() => {
-                dispatch({ type: "delete", id: props.id });
-              }}
-            >
-              <DeleteIcon className="mr-3 text-lg" />
-              Delete
-            </ContextMenu.Option>
-          </ContextMenu.Body>
+        <ContextMenu item={props}>
+          <CategoryOptions {...props} />
         </ContextMenu>
       );
     case "link":
       return (
-        <ContextMenu>
-          <Link {...props} />
-          <ContextMenu.Body>
-            {/* TODO: Create separete function to LinkOptions and CategoryOptions */}
-            <ContextMenu.Option
-              onClick={() => {
-                dispatch({ type: "group", id: props.id });
-              }}
-            >
-              <BookIcon className="mr-3 text-lg" />
-              <span>Group</span>
-            </ContextMenu.Option>
-            <ContextMenu.Divider />
-            <ContextMenu.Option
-              onClick={() => {
-                dispatch({
-                  type: "rename",
-                  newLabel: "rename item",
-                  id: props.id,
-                });
-              }}
-            >
-              <RenameIcon className="mr-3 text-lg" />
-              <span>Rename</span>
-            </ContextMenu.Option>
-            <ContextMenu.Option
-              className="text-rose-800 data-[highlighted]:bg-rose-100"
-              onClick={() => {
-                dispatch({ type: "delete", id: props.id });
-              }}
-            >
-              <DeleteIcon className="mr-3 text-lg " />
-              <span>Delete</span>
-            </ContextMenu.Option>
-            <ContextMenu.Option disabled={true}>
-              <InfoIcon className="mr-3 text-lg " />
-              {"Id: " + props.id}
-            </ContextMenu.Option>
-          </ContextMenu.Body>
+        <ContextMenu item={props}>
+          <LinksOptions {...props} />
         </ContextMenu>
       );
   }
 }
 
-function Link(props: LinkProps) {
+export function Category({ items, label }: CategoryProps) {
+  return (
+    <Accordion.Item value={label}>
+      <Accordion.Header className="p-[2px]">
+        <Accordion.Trigger
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left 
+         hover:bg-gray-300 data-[state=open]:bg-cyan-400/20 data-[state=open]:text-cyan-950
+         dark:hover:bg-gray-700 dark:data-[state=open]:bg-cyan-900 dark:data-[state=open]:text-cyan-200"
+        >
+          <div>
+            <BookIcon className="mr-2 inline-block" />
+            {label}
+          </div>
+          <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
+        </Accordion.Trigger>
+      </Accordion.Header>
+      <Accordion.Content className="ml-2">
+        <SidebarItemList items={items} />
+      </Accordion.Content>
+    </Accordion.Item>
+  );
+}
+
+export function Link(props: LinkProps) {
   const { href, label } = props;
   return (
     <NextLink href={href}>
@@ -204,30 +146,7 @@ function Button({ children, ...props }: ButtonProps) {
 }
 
 function Divider() {
-  return <hr className="h-0.5 w-full border-gray-300 dark:border-gray-700" />;
-}
-
-function Category({ items, label }: CategoryProps) {
-  return (
-    <Accordion.Item value={label}>
-      <Accordion.Header className="p-[2px]">
-        <Accordion.Trigger
-          className="group flex w-full items-center justify-between rounded-lg p-3 text-left 
-         hover:bg-gray-300 data-[state=open]:bg-cyan-400/20 data-[state=open]:text-cyan-950
-         dark:hover:bg-gray-700 dark:data-[state=open]:bg-cyan-900 dark:data-[state=open]:text-cyan-200"
-        >
-          <div>
-            <BookIcon className="mr-2 inline-block" />
-            {label}
-          </div>
-          <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
-        </Accordion.Trigger>
-      </Accordion.Header>
-      <Accordion.Content className="ml-2">
-        <SidebarItemList items={items} />
-      </Accordion.Content>
-    </Accordion.Item>
-  );
+  return <hr className="h-0.5 w-full border-gray-300 dark:border-slate-700" />;
 }
 
 Sidebar.Item = SidebarItem;

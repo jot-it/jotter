@@ -1,13 +1,11 @@
 import * as Contextmenu from "@radix-ui/react-context-menu";
-import { PropsWithChildren, forwardRef } from "react";
 import clsx from "clsx";
+import { forwardRef } from "react";
+import { Category, ItemProps, Link } from "./Sidebar";
 
-/* 
- * <ContextMenu>
-    <ContextMenu.Trigger> {children} </ContextMenu.Trigger>
-    <Context.Menu.Body> {children} </ContextMenu.Options>
-    </ContextMenu>
-*/
+type ContextMenuProps = {
+  item: ItemProps;
+};
 
 const Trigger = forwardRef<
   HTMLSpanElement,
@@ -20,10 +18,19 @@ const Trigger = forwardRef<
   );
 });
 
-function ContextMenu({ children }: PropsWithChildren) {
+function ContextMenu({
+  children,
+  item,
+}: React.PropsWithChildren<ContextMenuProps>) {
+  const sidebarItem =
+    item.type === "category" ? <Category {...item} /> : <Link {...item} />;
+
   return (
     <Contextmenu.Root>
-      <Contextmenu.Trigger>{children}</Contextmenu.Trigger>
+      <Trigger>
+        {sidebarItem}
+        <Body>{children}</Body>
+      </Trigger>
     </Contextmenu.Root>
   );
 }
@@ -36,7 +43,7 @@ const Option = forwardRef<HTMLDivElement, Contextmenu.MenuItemProps>(
         {...props}
         className={clsx(
           className,
-          " flex select-none items-center rounded-md px-2 py-1 hover:bg-gray-200/75"
+          " flex select-none items-center rounded-md px-2 py-1 data-[highlighted]:bg-gray-200/75 dark:data-[highlighted]:bg-slate-800 dark:data-[highlighted]:text-cyan-300"
         )}
       >
         {children}
@@ -46,14 +53,16 @@ const Option = forwardRef<HTMLDivElement, Contextmenu.MenuItemProps>(
 );
 
 function Divider() {
-  return <Contextmenu.Separator className="m-1 h-0.5 bg-gray-200" />;
+  return (
+    <Contextmenu.Separator className="m-1 h-0.5 bg-gray-200 dark:bg-slate-600" />
+  );
 }
 
 const Body = forwardRef<HTMLDivElement, Contextmenu.MenuContentProps>(
   function Body({ children, ...props }, ref) {
     return (
       <Contextmenu.Content
-        className="min-w-[220px] overflow-hidden rounded-lg bg-gray-50 p-2 drop-shadow-md  data-[disabled]:text-gray-500"
+        className="min-w-[220px] overflow-hidden rounded-lg bg-gray-50  p-2 drop-shadow-md data-[disabled]:text-gray-500 dark:bg-slate-700"
         ref={ref}
         {...props}
       >
@@ -65,7 +74,6 @@ const Body = forwardRef<HTMLDivElement, Contextmenu.MenuContentProps>(
 
 export default Object.assign(ContextMenu, {
   Trigger,
-  Body,
   Option,
   Divider,
 });
