@@ -36,7 +36,7 @@ const Option = forwardRef<HTMLDivElement, Contextmenu.MenuItemProps>(
         {...props}
         className={clsx(
           className,
-          " flex items-center rounded-md px-2 py-1 hover:bg-gray-200/75"
+          " flex select-none items-center rounded-md px-2 py-1 hover:bg-gray-200/75"
         )}
       >
         {children}
@@ -53,7 +53,7 @@ const Body = forwardRef<HTMLDivElement, Contextmenu.MenuContentProps>(
   function Body({ children, ...props }, ref) {
     return (
       <Contextmenu.Content
-        className="min-w-[220px] overflow-hidden rounded-lg bg-gray-50 p-2  drop-shadow-md"
+        className="min-w-[220px] overflow-hidden rounded-lg bg-gray-50 p-2 drop-shadow-md  data-[disabled]:text-gray-500"
         ref={ref}
         {...props}
       >
