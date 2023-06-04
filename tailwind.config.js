@@ -10,7 +10,13 @@ module.exports = {
     fontFamily: {
       sans: ["var(--font-barlow)", ...defaultTheme.fontFamily.sans],
     },
-    extend: {},
+    extend: {
+      colors: {
+        slate: {
+          850: "#191f2f",
+        },
+      },
+    },
   },
   plugins: [require("@tailwindcss/typography")],
 };
