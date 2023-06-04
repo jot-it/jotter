@@ -71,12 +71,13 @@ function TextFormatToolbar({ container, editor }: TextFormatToolbarProps) {
   return (
     <Toolbar.Root
       className="absolute left-0 top-0 z-10 flex flex-grow-0 rounded-lg
-        border bg-white p-3 text-gray-700 opacity-0 shadow-md transition-opacity"
+        border bg-white p-3 text-gray-700 opacity-0 shadow-md transition-opacity
+         dark:border-slate-900 dark:bg-slate-700 dark:text-inherit"
       ref={toolbarRef}
     >
       <HeadingSelect editor={editor} />
 
-      <Toolbar.Separator className="mx-2 w-[1px] bg-gray-300" />
+      <Toolbar.Separator className="mx-2 w-[1px] bg-gray-300 dark:bg-gray-600" />
 
       <Toolbar.ToggleGroup
         type="multiple"
@@ -131,7 +132,10 @@ const ToolbarToggleItem = forwardRef<
     <Toolbar.ToggleItem
       {...props}
       value={value}
-      className="rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-gray-300 data-[state=on]:bg-gray-200"
+      className="rounded-md p-2 focus:outline-none focus:ring-2 
+      focus:ring-gray-300 data-[state=on]:bg-gray-200
+      data-[state=on]:text-cyan-200 dark:data-[state=on]:bg-cyan-900
+      "
       ref={forwardedRef}
     >
       {children}

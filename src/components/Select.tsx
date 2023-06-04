@@ -6,7 +6,7 @@ import Typography from "./Typography";
 const Select = forwardRef<HTMLButtonElement, RadixSelect.SelectProps>(
   // Extract all the props that are meant to be passed to the <select> element,
   // and pass the rest down to the trigger, so that we can
-  // pass insert any additional accesibility props.
+  // insert any additional accesibility props to the trigger itself.
   function Select(
     {
       children,
@@ -38,7 +38,8 @@ const Select = forwardRef<HTMLButtonElement, RadixSelect.SelectProps>(
         required={required}
       >
         <RadixSelect.Trigger
-          className="inline-flex items-center rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-gray-300"
+          className="inline-flex items-center rounded-md px-3 py-1 
+          focus:outline-none focus:ring-2 focus:ring-gray-300"
           aria-label="Heading style"
           {...rest}
           ref={forwardedRef}
@@ -50,7 +51,8 @@ const Select = forwardRef<HTMLButtonElement, RadixSelect.SelectProps>(
         </RadixSelect.Trigger>
 
         <RadixSelect.Content
-          className="overflow-hidden rounded-md border bg-white shadow-lg"
+          className="overflow-hidden rounded-md border bg-white shadow-lg 
+          dark:border-slate-800 dark:bg-slate-700"
           position="popper"
         >
           <RadixSelect.ScrollUpButton className="py-1 shadow">
@@ -76,7 +78,8 @@ const SelectItem = forwardRef<HTMLDivElement, RadixSelect.SelectItemProps>(
       <RadixSelect.Item
         {...props}
         ref={forwardedRef}
-        className="select-none px-3 py-2 data-[highlighted]:bg-gray-200 data-[highlighted]:outline-none"
+        className="select-none px-3 py-2 data-[highlighted]:bg-gray-200 
+        data-[highlighted]:outline-none  dark:data-[highlighted]:bg-cyan-900 dark:data-[highlighted]:text-cyan-200"
       >
         <RadixSelect.ItemText asChild>
           <Typography variant="body1">{children}</Typography>
