@@ -1,10 +1,10 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import * as Toolbar from "@radix-ui/react-toolbar";
 import {
   $getSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_LOW,
   FORMAT_TEXT_COMMAND,
+  LexicalEditor,
   SELECTION_CHANGE_COMMAND,
   TextFormatType,
 } from "lexical";
@@ -15,14 +15,13 @@ import {
   RiStrikethrough as StrikeThrough,
   RiUnderline as Underline,
 } from "react-icons/ri";
-import Select from "../components/Select";
+import { moveToolbarToCurrentSelection } from "./utils";
 
-type EditorToolbarProps = {
-  isBold?: boolean;
-  isItalic?: boolean;
-  isUnderline?: boolean;
-  isStrikeThrough?: boolean;
+import HeadingSelect from "./HeadingSelect";
+
+type TextFormatToolbarProps = {
   container: HTMLDivElement;
+  editor: LexicalEditor;
 };
 
 const TEXT_FORMATS: TextFormatType[] = [
@@ -32,25 +31,16 @@ const TEXT_FORMATS: TextFormatType[] = [
   "strikethrough",
 ];
 
-const TOOLBAR_MARGIN_Y = 10;
-
-function ToolbarPlugin({
-  container,
-  isBold,
-  isItalic,
-  isUnderline,
-  isStrikeThrough,
-}: EditorToolbarProps) {
+function TextFormatToolbar({ container, editor }: TextFormatToolbarProps) {
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [activeTextFormats, setActiveTextFormats] = useState<TextFormatType[]>(
     []
   );
 
-  const [editor] = useLexicalComposerContext();
-
   const updateToolbarPosition = useCallback(() => {
     const toolbar = toolbarRef.current;
     if (!toolbar) return;
+
     moveToolbarToCurrentSelection(toolbar, container);
   }, [container]);
 
@@ -60,16 +50,13 @@ function ToolbarPlugin({
 
       if (!$isRangeSelection(selection)) return;
 
-      // Get all the text formats applied on the current selection
-      const selectionFormat = TEXT_FORMATS.filter((format) =>
-        selection.hasFormat(format)
+      setActiveTextFormats(
+        TEXT_FORMATS.filter((format) => selection.hasFormat(format))
       );
 
-      setActiveTextFormats(selectionFormat);
-
-      // Move toolbar to the position of the current selection
       updateToolbarPosition();
     });
+
     return false;
   }, [editor, updateToolbarPosition]);
 
@@ -79,24 +66,15 @@ function ToolbarPlugin({
       handleSelectionChanged,
       COMMAND_PRIORITY_LOW
     );
-  }, [editor, handleSelectionChanged]);
+  }, [editor, handleSelectionChanged, updateToolbarPosition]);
 
   return (
     <Toolbar.Root
-      className="absolute left-0 top-0 z-10 flex flex-grow-0 translate-x-[100vmax] rounded-lg
-      border bg-white p-3 text-gray-700 opacity-0 shadow-md transition-opacity"
+      className="absolute left-0 top-0 z-10 flex flex-grow-0 rounded-lg
+        border bg-white p-3 text-gray-700 opacity-0 shadow-md transition-opacity"
       ref={toolbarRef}
     >
-      <Toolbar.Button asChild>
-        <Select defaultValue="h1">
-          <Select.Item value="h1">Heading 1</Select.Item>
-          <Select.Item value="h2">Heading 2</Select.Item>
-          <Select.Item value="h3">Heading 3</Select.Item>
-          <Select.Item value="h4">Heading 4</Select.Item>
-          <Select.Item value="h5">Heading 5</Select.Item>
-          <Select.Item value="h6">Heading 6</Select.Item>
-        </Select>
-      </Toolbar.Button>
+      <HeadingSelect editor={editor} />
 
       <Toolbar.Separator className="mx-2 w-[1px] bg-gray-300" />
 
@@ -161,53 +139,4 @@ const ToolbarToggleItem = forwardRef<
   );
 });
 
-function moveToolbarToCurrentSelection(
-  toolbar: HTMLDivElement,
-  container: HTMLDivElement
-) {
-  const currentSelection = window.getSelection();
-  if (!shouldDisplayToolbar(currentSelection, container)) {
-    toolbar.style.transform = "translate(-100vmax, -100vmax)";
-    toolbar.style.opacity = "0";
-    return;
-  }
-
-  const selectionRect = currentSelection.getRangeAt(0).getBoundingClientRect();
-  const containerRect = container.getBoundingClientRect();
-  const toolbarRect = toolbar.getBoundingClientRect();
-
-  let top = selectionRect.top - toolbarRect.height - TOOLBAR_MARGIN_Y;
-  let left = selectionRect.left;
-
-  // If the toolbar is going to be rendered outside of the editor's container
-  // Render it below the selection instead
-  if (top < containerRect.top) {
-    top += toolbarRect.height + selectionRect.height + TOOLBAR_MARGIN_Y * 2;
-  }
-
-  // Translate position to be relative to the editor's container
-  left -= containerRect.left;
-  top -= containerRect.top;
-
-  toolbar.style.transform = `translate(${left}px, ${top}px)`;
-  toolbar.style.opacity = "1";
-}
-
-/**
- * @param selection Current selection
- * @param editorContainer container node of the editor
- * @returns true if the selection is not empty and is inside the editor's container
- */
-function shouldDisplayToolbar(
-  selection: Selection | null,
-  editorContainer: HTMLDivElement
-): selection is Selection {
-  if (!selection || selection.isCollapsed) return false;
-
-  const selectionNode = selection.anchorNode?.parentElement;
-  if (!selectionNode || !editorContainer.contains(selectionNode)) return false;
-
-  return true;
-}
-
-export default ToolbarPlugin;
+export default TextFormatToolbar;

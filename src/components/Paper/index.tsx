@@ -24,6 +24,7 @@ import { useCallback, useState } from "react";
 import ToolbarPlugin from "../../plugins/ToolbarPlugin";
 import NoSSR from "../NoSSR";
 import theme from "./theme";
+import Typography from "../Typography";
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -64,16 +65,20 @@ function Paper() {
     }
   }, []);
 
-  console.log("re render");
-
   return (
     <div className="relative mx-auto my-12 max-w-3xl px-4" ref={onRef}>
       <LexicalComposer initialConfig={editorConfig}>
         <RichTextPlugin
-          contentEditable={
-            <ContentEditable className="empty:before:content-['Begin_your_story...'] focus:outline-none" />
+          contentEditable={<ContentEditable className="focus:outline-none" />}
+          placeholder={
+            <Typography
+              className="absolute left-4 top-0 dark:text-gray-400"
+              variant="body1"
+              as="p"
+            >
+              Begin your story...
+            </Typography>
           }
-          placeholder={<></>}
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
