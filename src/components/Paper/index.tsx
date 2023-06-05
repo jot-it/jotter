@@ -20,11 +20,11 @@ import {
   $getRoot,
   LexicalEditor,
 } from "lexical";
-import theme from "./theme";
-import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
-import { WebsocketProvider } from "y-websocket";
-import * as Y from "yjs";
+import { useCallback, useState } from "react";
+import ToolbarPlugin from "../../plugins/ToolbarPlugin";
 import NoSSR from "../NoSSR";
+import theme from "./theme";
+import Typography from "../Typography";
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -57,18 +57,36 @@ const editorConfig: InitialConfigType = {
 };
 
 function Paper() {
+  const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
+
+  const onRef = useCallback((node: HTMLDivElement | null) => {
+    if (node !== null) {
+      setEditorContainer(node);
+    }
+  }, []);
+
   return (
-    <div className="mx-auto my-12 max-w-3xl px-4">
+    <div className="relative mx-auto my-12 max-w-3xl px-4" ref={onRef}>
       <LexicalComposer initialConfig={editorConfig}>
         <RichTextPlugin
           contentEditable={<ContentEditable className="focus:outline-none" />}
-          placeholder={<></>}
+          placeholder={
+            <Typography
+              className="absolute left-4 top-0 dark:text-gray-400"
+              variant="body1"
+              as="p"
+            >
+              Begin your story...
+            </Typography>
+          }
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+
+        {editorContainer && <ToolbarPlugin container={editorContainer} />}
         <NoSSR>
-          <CollaborationPlugin
+          {/* <CollaborationPlugin
             id="yjs-plugin"
             providerFactory={(id, yjsDocMap) => {
               const doc = new Y.Doc();
@@ -87,7 +105,7 @@ function Paper() {
             // prop (json string, state object, or a function)
             initialEditorState={initialEditorState}
             shouldBootstrap={true}
-          />
+          /> */}
         </NoSSR>
       </LexicalComposer>
     </div>

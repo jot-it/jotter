@@ -12,7 +12,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <body
-        className={`${barlow.variable} dark:bg-slate-850 font-sans dark:text-gray-200`}
+        className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
       >
         {children}
       </body>
