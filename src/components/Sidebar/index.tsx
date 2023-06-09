@@ -12,8 +12,8 @@ import {
   SidebarItemsContext,
   useSidebarItems,
 } from "./context";
-import { itemsReducer } from "./state";
 import { CategoryOptions, LinksOptions } from "./optionsContexMenu";
+import { itemsReducer } from "./state";
 
 //#region  Typings
 
@@ -50,7 +50,7 @@ function Sidebar({ children, items: initialItems, ...rest }: SidebarProps) {
     <SidebarItemsContext.Provider value={items}>
       <SidebarDispatchContext.Provider value={dispatch}>
         <nav
-          className="flex flex-col justify-between space-y-1 bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-slate-800 dark:text-inherit"
+          className="flex max-h-screen flex-col justify-between space-y-1 bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-slate-800 dark:text-inherit"
           {...rest}
         >
           {children}
@@ -82,13 +82,15 @@ function SidebarItem(props: ItemProps) {
   switch (props.type) {
     case "category":
       return (
-        <ContextMenu item={props}>
+        <ContextMenu>
+          <Category {...props} />
           <CategoryOptions {...props} />
         </ContextMenu>
       );
     case "link":
       return (
-        <ContextMenu item={props}>
+        <ContextMenu>
+          <Link {...props} />
           <LinksOptions {...props} />
         </ContextMenu>
       );

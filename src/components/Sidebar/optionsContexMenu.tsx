@@ -13,7 +13,7 @@ export function LinksOptions(props: LinkProps) {
   const dispatch = useSidebarDispatch();
 
   return (
-    <>
+    <ContextMenu.Content>
       <ContextMenu.Option
         onClick={() => {
           dispatch({ type: "group", id: props.id });
@@ -48,14 +48,14 @@ export function LinksOptions(props: LinkProps) {
         <InfoIcon className="mr-3 text-lg " />
         {"Id: " + props.id}
       </ContextMenu.Option>
-    </>
+    </ContextMenu.Content>
   );
 }
 
 export function CategoryOptions(props: CategoryProps) {
   const dispatch = useSidebarDispatch();
   return (
-    <>
+    <ContextMenu.Content>
       <ContextMenu.Option
         onClick={() => {
           dispatch({
@@ -65,7 +65,7 @@ export function CategoryOptions(props: CategoryProps) {
           });
         }}
       >
-        <FileIcon className="mr-3 text-lg  " />
+        <FileIcon className="mr-3 text-lg" />
         Add new page
       </ContextMenu.Option>
       <ContextMenu.Divider />
@@ -92,6 +92,30 @@ export function CategoryOptions(props: CategoryProps) {
         <DeleteIcon className="mr-3 text-lg" />
         Delete
       </ContextMenu.Option>
-    </>
+    </ContextMenu.Content>
+  );
+}
+
+export function SidebarOption() {
+  const dispatch = useSidebarDispatch();
+  return (
+    <ContextMenu.Content>
+      <ContextMenu.Option
+        onClick={() => {
+          dispatch({ type: "create", itemType: "link" });
+        }}
+      >
+        <FileIcon className="mr-3 text-lg" />
+        New Page
+      </ContextMenu.Option>
+      <ContextMenu.Option
+        onClick={() => {
+          dispatch({ type: "create", itemType: "category" });
+        }}
+      >
+        <BookIcon className="mr-3 text-lg" />
+        New Category
+      </ContextMenu.Option>
+    </ContextMenu.Content>
   );
 }
