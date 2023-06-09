@@ -18,12 +18,12 @@ function SidebarContent() {
   const dispatch = useSidebarDispatch();
   return (
     <>
-      <ContextMenu>
-        <div className="h-[80vh] overflow-y-auto">
+      <div className="flex-1 overflow-auto">
+        <ContextMenu>
           <Sidebar.Items />
-        </div>
-        <SidebarOption />
-      </ContextMenu>
+          <SidebarOption />
+        </ContextMenu>
+      </div>
 
       <div className="space-y-1">
         <Sidebar.Divider />
