@@ -1,11 +1,15 @@
 import * as Contextmenu from "@radix-ui/react-context-menu";
 import clsx from "clsx";
-import { forwardRef } from "react";
+import { PropsWithChildren, forwardRef } from "react";
 import { Category, ItemProps, Link } from "./Sidebar";
 
-type ContextMenuProps = {
-  item: ItemProps;
-};
+function ContextMenu({ children }: PropsWithChildren) {
+  return (
+    <Contextmenu.Root>
+      <Trigger>{children}</Trigger>
+    </Contextmenu.Root>
+  );
+}
 
 const Trigger = forwardRef<
   HTMLSpanElement,
@@ -17,23 +21,6 @@ const Trigger = forwardRef<
     </Contextmenu.Trigger>
   );
 });
-
-function ContextMenu({
-  children,
-  item,
-}: React.PropsWithChildren<ContextMenuProps>) {
-  const sidebarItem =
-    item.type === "category" ? <Category {...item} /> : <Link {...item} />;
-
-  return (
-    <Contextmenu.Root>
-      <Trigger>
-        {sidebarItem}
-        <Body>{children}</Body>
-      </Trigger>
-    </Contextmenu.Root>
-  );
-}
 
 const Option = forwardRef<HTMLDivElement, Contextmenu.MenuItemProps>(
   function Option({ children, className, ...props }, ref) {
@@ -58,7 +45,7 @@ function Divider() {
   );
 }
 
-const Body = forwardRef<HTMLDivElement, Contextmenu.MenuContentProps>(
+const Content = forwardRef<HTMLDivElement, Contextmenu.MenuContentProps>(
   function Body({ children, ...props }, ref) {
     return (
       <Contextmenu.Content
@@ -75,5 +62,6 @@ const Body = forwardRef<HTMLDivElement, Contextmenu.MenuContentProps>(
 export default Object.assign(ContextMenu, {
   Trigger,
   Option,
+  Content,
   Divider,
 });
