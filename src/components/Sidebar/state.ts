@@ -22,6 +22,7 @@ export type Action =
     }
   | {
       type: "create";
+      itemType: ItemProps["type"];
     };
 
 export function itemsReducer(items: ItemProps[], action: Action): ItemProps[] {
@@ -35,7 +36,7 @@ export function itemsReducer(items: ItemProps[], action: Action): ItemProps[] {
     case "insert":
       return insertItem(items, action.id, action.itemType);
     case "create":
-      return createItem(items);
+      return createItem(items, action.itemType);
   }
 }
 
@@ -88,13 +89,22 @@ function insertItem(
   });
 }
 
-function createItem(items: ItemProps[]) {
+function createItem(items: ItemProps[], itemType: ItemProps["type"]) {
   let newItem: ItemProps = {
-    label: "New item",
+    label: "New Link",
     type: "link",
     href: "#000",
     id: crypto.randomUUID(),
   };
+
+  if (itemType === "category") {
+    newItem = {
+      label: "New Category",
+      type: "category",
+      id: crypto.randomUUID(),
+      items: [],
+    };
+  }
 
   items = [...items, newItem];
   return items;
