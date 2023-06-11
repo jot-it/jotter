@@ -1,7 +1,6 @@
 import * as Contextmenu from "@radix-ui/react-context-menu";
 import clsx from "clsx";
 import { PropsWithChildren, forwardRef } from "react";
-import { Category, ItemProps, Link } from "./Sidebar";
 
 function ContextMenu({ children }: PropsWithChildren) {
   return (

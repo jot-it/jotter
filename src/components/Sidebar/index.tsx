@@ -70,7 +70,7 @@ function SidebarItemsRoot() {
 
 function SidebarItemList({ items }: SidebarItemListProps) {
   return (
-    <Accordion.Root type="single" collapsible>
+    <Accordion.Root className="h-full" type="single" collapsible>
       {items.map((props) => (
         <Sidebar.Item key={props.id} {...props} />
       ))}
