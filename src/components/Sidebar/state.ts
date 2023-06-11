@@ -57,10 +57,11 @@ function insertItem(
   id: string,
   itemType: ItemProps["type"]
 ) {
+  const newId = crypto.randomUUID();
   let newItem: ItemProps = {
     label: "New page",
     type: "link",
-    id: crypto.randomUUID(),
+    id: newId,
     href: "#ni000",
   };
 
@@ -68,7 +69,7 @@ function insertItem(
     newItem = {
       label: "New Category",
       type: "category",
-      id: crypto.randomUUID(),
+      id: newId,
       items: [],
     };
   }
@@ -81,7 +82,6 @@ function insertItem(
       return {
         ...item,
         items: [...item.items, newItem],
-        id: crypto.randomUUID(),
       };
     }
 
@@ -90,18 +90,19 @@ function insertItem(
 }
 
 function createItem(items: ItemProps[], itemType: ItemProps["type"]) {
+  const newId = crypto.randomUUID();
   let newItem: ItemProps = {
     label: "New Link",
     type: "link",
     href: "#000",
-    id: crypto.randomUUID(),
+    id: newId,
   };
 
   if (itemType === "category") {
     newItem = {
       label: "New Category",
       type: "category",
-      id: crypto.randomUUID(),
+      id: newId,
       items: [],
     };
   }
