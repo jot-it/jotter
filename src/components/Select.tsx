@@ -52,7 +52,7 @@ const Select = forwardRef<HTMLButtonElement, RadixSelect.SelectProps>(
 
         <RadixSelect.Content
           className="overflow-hidden rounded-md border bg-white shadow-lg 
-          dark:border-slate-800 dark:bg-slate-700"
+          dark:border-slate-600 dark:bg-slate-700"
           position="popper"
         >
           <RadixSelect.ScrollUpButton className="py-1 shadow">

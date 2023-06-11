@@ -23,13 +23,7 @@ function ToolbarPlugin(props: ToolbarPluginProps) {
       const isSelectionInsideEditor =
         selection && editorRoot && editorRoot.contains(selection.anchorNode);
 
-      setShowToolbar(
-        Boolean(
-          isSelectionInsideEditor &&
-            // Prevent rendering the toolbar when the selection is empty to avoid overflow issues
-            !selection.isCollapsed
-        )
-      );
+      setShowToolbar(Boolean(isSelectionInsideEditor));
     };
 
     document.addEventListener("selectionchange", updateToolbarVisibility);
