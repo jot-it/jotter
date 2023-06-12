@@ -5,7 +5,7 @@ import {
   CgRename as RenameIcon,
 } from "react-icons/cg";
 import { RiBook2Line as BookIcon } from "react-icons/ri";
-import { CategoryProps, LinkProps } from ".";
+import { CategoryProps, ItemProps, LinkProps } from ".";
 import ContextMenu from "../ContextMenu";
 import { useSidebarDispatch } from "./context";
 
@@ -58,10 +58,17 @@ export function CategoryOptions(props: CategoryProps) {
     <ContextMenu.Content>
       <ContextMenu.Option
         onClick={() => {
+          const item: ItemProps = {
+            label: "new item",
+            id: crypto.randomUUID(),
+            href: "#ni001",
+            type: "link",
+          };
+
           dispatch({
             type: "insert",
             id: props.id,
-            itemType: "link",
+            newItem: item,
           });
         }}
       >
@@ -102,7 +109,13 @@ export function SidebarOption() {
     <ContextMenu.Content>
       <ContextMenu.Option
         onClick={() => {
-          dispatch({ type: "create", itemType: "link" });
+          const item: ItemProps = {
+            label: "new item",
+            id: crypto.randomUUID(),
+            href: "#ni001",
+            type: "link",
+          };
+          dispatch({ type: "create", newItem: item });
         }}
       >
         <FileIcon className="mr-3 text-lg" />
@@ -110,7 +123,13 @@ export function SidebarOption() {
       </ContextMenu.Option>
       <ContextMenu.Option
         onClick={() => {
-          dispatch({ type: "create", itemType: "category" });
+          const item: ItemProps = {
+            label: "new item",
+            id: crypto.randomUUID(),
+            items: [],
+            type: "category",
+          };
+          dispatch({ type: "create", newItem: item });
         }}
       >
         <BookIcon className="mr-3 text-lg" />

@@ -18,11 +18,11 @@ export type Action =
   | {
       type: "insert";
       id: string;
-      itemType: ItemProps["type"];
+      newItem: ItemProps;
     }
   | {
       type: "create";
-      itemType: ItemProps["type"];
+      newItem: ItemProps;
     };
 
 export function itemsReducer(items: ItemProps[], action: Action): ItemProps[] {
@@ -34,9 +34,9 @@ export function itemsReducer(items: ItemProps[], action: Action): ItemProps[] {
     case "group":
       throw new Error("Not implemented");
     case "insert":
-      return insertItem(items, action.id, action.itemType);
+      return insertItem(items, action.id, action.newItem);
     case "create":
-      return createItem(items, action.itemType);
+      return createItem(items, action.newItem);
   }
 }
 
@@ -52,32 +52,12 @@ function updateItem(
   });
 }
 
-function insertItem(
-  items: ItemProps[],
-  id: string,
-  itemType: ItemProps["type"]
-) {
-  const newId = crypto.randomUUID();
-  let newItem: ItemProps = {
-    label: "New page",
-    type: "link",
-    id: newId,
-    href: "#ni000",
-  };
-
-  if (itemType === "category") {
-    newItem = {
-      label: "New Category",
-      type: "category",
-      id: newId,
-      items: [],
-    };
-  }
-
+function insertItem(items: ItemProps[], id: string, newItem: ItemProps) {
   return mapSidebar(items, (item) => {
     if (item.id !== id) {
       return item;
     }
+
     if (item.type === "category") {
       return {
         ...item,
@@ -89,24 +69,7 @@ function insertItem(
   });
 }
 
-function createItem(items: ItemProps[], itemType: ItemProps["type"]) {
-  const newId = crypto.randomUUID();
-  let newItem: ItemProps = {
-    label: "New Link",
-    type: "link",
-    href: "#000",
-    id: newId,
-  };
-
-  if (itemType === "category") {
-    newItem = {
-      label: "New Category",
-      type: "category",
-      id: newId,
-      items: [],
-    };
-  }
-
+function createItem(items: ItemProps[], newItem: ItemProps) {
   items = [...items, newItem];
   return items;
 }
