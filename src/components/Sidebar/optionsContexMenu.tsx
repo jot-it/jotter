@@ -5,7 +5,7 @@ import {
   CgRename as RenameIcon,
 } from "react-icons/cg";
 import { RiBook2Line as BookIcon } from "react-icons/ri";
-import { CategoryProps, ItemProps, LinkProps } from ".";
+import { CategoryProps, Item, LinkProps } from ".";
 import ContextMenu from "../ContextMenu";
 import { useSidebarDispatch } from "./context";
 
@@ -58,7 +58,7 @@ export function CategoryOptions(props: CategoryProps) {
     <ContextMenu.Content>
       <ContextMenu.Option
         onClick={() => {
-          const item: ItemProps = {
+          const item: Item = {
             label: "new item",
             id: crypto.randomUUID(),
             href: "#ni001",
@@ -109,7 +109,7 @@ export function SidebarOption() {
     <ContextMenu.Content>
       <ContextMenu.Option
         onClick={() => {
-          const item: ItemProps = {
+          const item: Item = {
             label: "new item",
             id: crypto.randomUUID(),
             href: "#ni001",
@@ -123,7 +123,7 @@ export function SidebarOption() {
       </ContextMenu.Option>
       <ContextMenu.Option
         onClick={() => {
-          const item: ItemProps = {
+          const item: Item = {
             label: "new item",
             id: crypto.randomUUID(),
             items: [],
