@@ -7,3 +7,11 @@
     text-decoration: underline line-through;
   }
 }
+
+@layer base {
+  @media (prefers-color-scheme: dark) {
+    html.dark {
+      color-scheme: dark;
+    }
+  }
+}
