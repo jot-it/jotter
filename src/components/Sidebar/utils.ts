@@ -1,9 +1,9 @@
-import { ItemProps } from "../Sidebar";
+import { Item } from "../Sidebar";
 
 export function filterSidebar(
-  items: ItemProps[],
-  fn: (item: ItemProps) => boolean
-): ItemProps[] {
+  items: Item[],
+  fn: (item: Item) => boolean
+): Item[] {
   const newItems = [];
   for (const item of items) {
     if (!fn(item)) {
@@ -17,10 +17,7 @@ export function filterSidebar(
   return newItems;
 }
 
-export function mapSidebar(
-  items: ItemProps[],
-  fn: (item: ItemProps) => ItemProps
-): ItemProps[] {
+export function mapSidebar(items: Item[], fn: (item: Item) => Item): Item[] {
   const newItems = [];
   for (const item of items) {
     if (item.type === "category") {

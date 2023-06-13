@@ -1,6 +1,6 @@
-import { ItemProps } from "./components/Sidebar";
+import { Item } from "./components/Sidebar";
 
-const sidebarConfig: ItemProps[] = [
+const sidebarConfig: Item[] = [
   {
     type: "category",
     label: "Introduction",

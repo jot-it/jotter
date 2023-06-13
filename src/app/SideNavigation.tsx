@@ -1,7 +1,7 @@
 "use client";
 import { RiAddLine as AddIcon } from "react-icons/ri";
 import ContextMenu from "../components/ContextMenu";
-import Sidebar, { ItemProps } from "../components/Sidebar";
+import Sidebar from "../components/Sidebar";
 import { useSidebarDispatch } from "../components/Sidebar/context";
 import { SidebarOption } from "../components/Sidebar/optionsContexMenu";
 import sidebarConfig from "../sidebarConfig";
@@ -16,14 +16,6 @@ function SideNavigation() {
 
 function SidebarContent() {
   const dispatch = useSidebarDispatch();
-
-  const item: ItemProps = {
-    label: "new item",
-    id: crypto.randomUUID(),
-    href: "#ni001",
-    type: "link",
-  };
-
   return (
     <>
       <div className="flex-1 overflow-auto">
@@ -36,7 +28,17 @@ function SidebarContent() {
       <div className="space-y-1">
         <Sidebar.Divider />
         <Sidebar.Button
-          onClick={() => dispatch({ type: "create", newItem: item })}
+          onClick={() =>
+            dispatch({
+              type: "create",
+              newItem: {
+                label: "new item",
+                id: crypto.randomUUID(),
+                href: "#ni001",
+                type: "link",
+              },
+            })
+          }
         >
           ADD NEW PAGE
           <AddIcon />

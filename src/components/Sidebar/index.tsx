@@ -18,7 +18,7 @@ import { itemsReducer } from "./state";
 //#region  Typings
 
 export type SidebarItemListProps = {
-  items: ItemProps[];
+  items: Item[];
 };
 
 export type SidebarProps = React.ComponentPropsWithoutRef<"aside"> &
@@ -34,13 +34,13 @@ export type LinkProps = {
 export type CategoryProps = {
   type: "category";
   label: string;
-  items: ItemProps[];
+  items: Item[];
   id: string;
 };
 
 export type ButtonProps = React.ComponentPropsWithoutRef<"button">;
 
-export type ItemProps = CategoryProps | LinkProps;
+export type Item = CategoryProps | LinkProps;
 
 //#endregion
 
@@ -78,7 +78,7 @@ function SidebarItemList({ items }: SidebarItemListProps) {
   );
 }
 
-function SidebarItem(props: ItemProps) {
+function SidebarItem(props: Item) {
   switch (props.type) {
     case "category":
       return (

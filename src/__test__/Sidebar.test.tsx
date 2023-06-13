@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import Sidebar, { ItemProps } from "../components/Sidebar";
+import Sidebar, { Item } from "../components/Sidebar";
 import { RiSideBarFill } from "react-icons/ri";
 
 test("Renders when the document loads", () => {
@@ -14,7 +14,7 @@ test("Renders when the document loads", () => {
 });
 
 test("Renders a link child", () => {
-  const items: ItemProps[] = [
+  const items: Item[] = [
     { type: "link", href: "#", label: "item link", id: 0 },
   ];
 
@@ -28,7 +28,7 @@ test("Renders a link child", () => {
 });
 
 test("Renders a category child", () => {
-  const items: ItemProps[] = [
+  const items: Item[] = [
     { type: "category", id: 0, label: "item category", items: [] },
   ];
 
@@ -41,7 +41,7 @@ test("Renders a category child", () => {
 });
 
 test("Links inside categories are hidden by default", () => {
-  const items: ItemProps[] = [
+  const items: Item[] = [
     {
       type: "category",
       label: "Category",
@@ -67,7 +67,7 @@ test("Links inside categories are hidden by default", () => {
 
 // Integration test
 test("Category opens and closes when the user clicks on it", async () => {
-  const items: ItemProps[] = [
+  const items: Item[] = [
     {
       type: "category",
       label: "Category",
