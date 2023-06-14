@@ -70,8 +70,6 @@ function HeadingSelect({ editor }: HeadingSelectProps) {
         <Select.Item value="h2">Heading 2</Select.Item>
         <Select.Item value="h3">Heading 3</Select.Item>
         <Select.Item value="h4">Heading 4</Select.Item>
-        <Select.Item value="h5">Heading 5</Select.Item>
-        <Select.Item value="h6">Heading 6</Select.Item>
       </Select>
     </ToolbarButton>
   );
