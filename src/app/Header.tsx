@@ -1,7 +1,8 @@
+
+import Avatar from "@/components/Avatar";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import Typography from "@/components/Typography";
 import Link from "next/link";
-import Avatar from "../components/Avatar";
-import Breadcrumbs from "../components/Breadcrumbs";
-import Typography from "../components/Typography";
 import { RiBook2Line as BookIcon } from "react-icons/ri";
 
 function Header() {
