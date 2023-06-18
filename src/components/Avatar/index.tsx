@@ -21,7 +21,7 @@ function Avatar(props: AvatarProps) {
     <div
       className={clsx(
         className,
-        "relative flex items-center justify-center rounded-full ",
+        "flex items-center justify-center rounded-full ",
         textVariants["body1"],
         {
           "h-6 w-6": size === "sm",
