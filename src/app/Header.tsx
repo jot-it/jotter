@@ -1,4 +1,3 @@
-
 import Avatar from "@/components/Avatar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Typography from "@/components/Typography";
