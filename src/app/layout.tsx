@@ -1,4 +1,5 @@
-import { PropsWithChildren } from "react";
+"use client";
+import { PropsWithChildren, useState } from "react";
 import { Barlow } from "next/font/google";
 import "./globals.css";
 import SideNavigation from "./SideNavigation";
@@ -11,15 +12,17 @@ const barlow = Barlow({
 });
 
 export default function RootLayout({ children }: PropsWithChildren) {
+  const [openSidebar, setOpenSidebar] = useState(false);
+  const toggleSidebar = () => setOpenSidebar((prev) => !prev);
   return (
     <html lang="en" className="dark">
       <body
         className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
       >
-        <div className="grid grid-cols-[20rem_auto]">
-          <SideNavigation />
+        <div className="grid lg:grid-cols-[20rem_auto]">
+          <SideNavigation open={openSidebar} toggleOpen={toggleSidebar} />
           <div>
-            <Header />
+            <Header toggleOpen={toggleSidebar} />
             {children}
           </div>
         </div>

@@ -1,6 +1,6 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import NextLink from "next/link";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import {
   RiBook2Line as BookIcon,
   RiArrowDownSLine as Chevron,
@@ -14,15 +14,24 @@ import {
 } from "./context";
 import { CategoryOptions, LinksOptions } from "./optionsContexMenu";
 import { itemsReducer } from "./state";
+import clsx from "clsx";
 
 //#region  Typings
-
 export type SidebarItemListProps = {
   items: ItemProps[];
 };
 
+export type SidebarToggler = {
+  /** Controls whether the sidebar is open or not on mobile screens */
+  open?: boolean;
+
+  /** Toggle sidebar open/closed state*/
+  toggleOpen?: () => void;
+};
+
 export type SidebarProps = React.ComponentPropsWithoutRef<"aside"> &
-  SidebarItemListProps;
+  SidebarItemListProps &
+  SidebarToggler;
 
 export type LinkProps = {
   type: "link";
@@ -44,18 +53,38 @@ export type ItemProps = CategoryProps | LinkProps;
 
 //#endregion
 
-function Sidebar({ children, items: initialItems, ...rest }: SidebarProps) {
+function Sidebar({
+  children,
+  items: initialItems,
+  open,
+  toggleOpen,
+  ...rest
+}: SidebarProps) {
   const [items, dispatch] = useReducer(itemsReducer, initialItems);
   return (
     <SidebarItemsContext.Provider value={items}>
       <SidebarDispatchContext.Provider value={dispatch}>
-        <nav
-          className="sticky top-0 flex h-screen flex-col justify-between space-y-1 
-          bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-slate-800 dark:text-inherit"
+        <aside
+          role={open ? "dialog" : undefined}
+          aria-modal={open || undefined}
+          className={clsx(
+            "bg-gray-200 font-medium text-gray-800 dark:bg-slate-800 dark:text-inherit", // Theme Styles
+            "top-0 z-10 max-lg:fixed max-lg:w-80 max-lg:transition-transform lg:sticky",
+            open ? "max-lg:translate-x-0" : "max-lg:-translate-x-full" // Slide in/out
+          )}
           {...rest}
         >
-          {children}
-        </nav>
+          <nav className="flex h-screen flex-col justify-between space-y-1 px-4 py-12">
+            {children}
+          </nav>
+        </aside>
+        {/* Modal backdrop for when the sidebar is opened on a mobile screen*/}
+        {open && (
+          <span
+            className="fixed inset-0 bg-slate-900/75"
+            onClick={toggleOpen}
+          />
+        )}
       </SidebarDispatchContext.Provider>
     </SidebarItemsContext.Provider>
   );
@@ -123,12 +152,12 @@ export function Category({ items, label }: CategoryProps) {
 
 export function Link(props: LinkProps) {
   const { href, label } = props;
+  // TODO: Add aria-current="page" when the link matches the current path
   return (
     <NextLink href={href}>
       <Typography
         className="block rounded-lg px-2 py-3 hover:bg-gray-300 dark:hover:bg-gray-700"
         variant="body1"
-        aria-selected="false"
       >
         {label}
       </Typography>

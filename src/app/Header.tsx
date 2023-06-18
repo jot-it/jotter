@@ -3,10 +3,20 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import Typography from "@/components/Typography";
 import Link from "next/link";
 import { RiBook2Line as BookIcon } from "react-icons/ri";
+import { BiMenuAltLeft as MenuIcon } from "react-icons/bi";
+import { SidebarToggler } from "@/components/Sidebar";
 
-function Header() {
+function Header({ toggleOpen }: SidebarToggler) {
   return (
     <header className="flex items-center border-b border-gray-200 p-4 shadow-sm dark:border-gray-700">
+      <button
+        type="button"
+        aria-label="Menu"
+        className="lg:hidden"
+        onClick={toggleOpen}
+      >
+        <MenuIcon className="text-3xl" />
+      </button>
       <Breadcrumbs aria-label="Breadcrumb">
         <Link href="#">
           <Typography as="span" variant="body1">
