@@ -23,12 +23,12 @@ function SidebarContent() {
           onClick={() =>
             dispatch({
               type: "create",
-              newItem: {
-                label: "",
+              newItem :{
+                label: "new item",
                 id: crypto.randomUUID(),
                 href: "#ni001",
                 type: "link",
-                isEditing: true,
+                isEditing : true,
               },
             })
           }

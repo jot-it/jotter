@@ -13,7 +13,6 @@ import {
   RiBook2Line as BookIcon,
   RiArrowDownSLine as Chevron,
 } from "react-icons/ri";
-import { useOnOutsideClick } from "../../hooks/useOnOutsideClick";
 import ContextMenu from "../ContextMenu";
 import Typography from "../Typography";
 import {
