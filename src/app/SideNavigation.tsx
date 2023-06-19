@@ -31,11 +31,12 @@ function SidebarContent() {
           onClick={() =>
             dispatch({
               type: "create",
-              newItem: {
+              newItem :{
                 label: "new item",
                 id: crypto.randomUUID(),
                 href: "#ni001",
                 type: "link",
+                isEditing : true,
               },
             })
           }

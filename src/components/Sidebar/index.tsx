@@ -1,6 +1,7 @@
 import * as Accordion from "@radix-ui/react-accordion";
+import clsx from "clsx";
 import NextLink from "next/link";
-import { useReducer } from "react";
+import { KeyboardEvent, useEffect, useReducer, useRef, useState } from "react";
 import {
   RiBook2Line as BookIcon,
   RiArrowDownSLine as Chevron,
@@ -10,10 +11,12 @@ import Typography from "../Typography";
 import {
   SidebarDispatchContext,
   SidebarItemsContext,
+  useSidebarDispatch,
   useSidebarItems,
 } from "./context";
 import { CategoryOptions, LinksOptions } from "./optionsContexMenu";
 import { itemsReducer } from "./state";
+import { useOutsideClick } from "../../hooks/useOutsideClick";
 
 //#region  Typings
 
@@ -21,26 +24,34 @@ export type SidebarItemListProps = {
   items: Item[];
 };
 
+type SidebarItemProps = {
+  isEditing: boolean;
+};
+
 export type SidebarProps = React.ComponentPropsWithoutRef<"aside"> &
   SidebarItemListProps;
 
-export type LinkProps = {
+export type LinkItem = {
   type: "link";
   href: string;
   label: string;
   id: string;
 };
 
-export type CategoryProps = {
+export type CategoryItem = {
   type: "category";
   label: string;
   items: Item[];
   id: string;
 };
 
+export type LinkProps = LinkItem & SidebarItemProps;
+export type CategoryProps = CategoryItem & SidebarItemProps;
+
 export type ButtonProps = React.ComponentPropsWithoutRef<"button">;
 
-export type Item = CategoryProps | LinkProps;
+export type Item = CategoryItem | LinkItem;
+export type ItemProps = CategoryProps | LinkProps;
 
 //#endregion
 
@@ -72,13 +83,13 @@ function SidebarItemList({ items }: SidebarItemListProps) {
   return (
     <Accordion.Root className="h-full" type="single" collapsible>
       {items.map((props) => (
-        <Sidebar.Item key={props.id} {...props} />
+        <SidebarItem isEditing={false} key={props.id} {...props} />
       ))}
     </Accordion.Root>
   );
 }
 
-function SidebarItem(props: Item) {
+function SidebarItem(props: ItemProps) {
   switch (props.type) {
     case "category":
       return (
@@ -120,16 +131,53 @@ export function Category({ items, label }: CategoryProps) {
   );
 }
 
-export function Link(props: LinkProps) {
-  const { href, label } = props;
+export function Link({...props }: LinkProps) {
+  const { href, label : initialLabel, isEditing, id} = props;
+  const [label, setLabel] = useState(initialLabel);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isEmpty = label.trim().length === 0;
+  const dispatch = useSidebarDispatch();
+  
+  const handleRename = (e : KeyboardEvent<HTMLInputElement>)=>{
+    if (e.key === "Enter") {
+      rename();
+    }
+  }
+
+  const rename = ()=> {
+    if(!isEmpty){
+      dispatch({type: "rename", id , isEditing : false, newLabel:label});
+    }
+  }
+
+  useOutsideClick(inputRef,rename);
+
+  useEffect(()=>{
+    // Prevent race condition between any active focus and this one
+    const timeout = setTimeout(()=> inputRef.current?.focus(), 200);
+    return ()=> clearTimeout(timeout);
+
+   },[isEditing]);
+
+  const content = isEditing ? (<input
+    className="block w-full cursor-text outline-none dark:bg-transparent bg-transparent dark:outline-none"
+    placeholder={label}
+    ref = {inputRef}
+    autoComplete="off"
+    onChange={(e) => {
+      setLabel(e.target.value);
+    }}
+    onKeyUp={handleRename}
+  />): <span>{label}</span>;
+
   return (
     <NextLink href={href}>
       <Typography
-        className="block rounded-lg px-2 py-3 hover:bg-gray-300 dark:hover:bg-gray-700"
+        className = {clsx(isEmpty && "-outline-offset-1 outline-1 outline dark:outline-red-400","focus-within:dark:bg-slate-700 dark:hover:bg-slate-700 hover:bg-gray-300 block rounded-lg px-2 py-3")}
         variant="body1"
         aria-selected="false"
       >
-        {label}
+        {content}
       </Typography>
     </NextLink>
   );
