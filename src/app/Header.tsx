@@ -4,15 +4,16 @@ import Typography from "@/components/Typography";
 import Link from "next/link";
 import { RiBook2Line as BookIcon } from "react-icons/ri";
 import { BiMenuAltLeft as MenuIcon } from "react-icons/bi";
+import { BsShareFill as ShareIcon } from "react-icons/bs";
 import { SidebarToggler } from "@/components/Sidebar";
 
 function Header({ toggleOpen }: SidebarToggler) {
   return (
     <header className="flex items-center border-b border-gray-200 p-4 shadow-sm dark:border-gray-700">
       <button
+        className="mr-4 lg:hidden"
         type="button"
         aria-label="Menu"
-        className="lg:hidden"
         onClick={toggleOpen}
       >
         <MenuIcon className="text-3xl" />
@@ -51,6 +52,7 @@ function Header({ toggleOpen }: SidebarToggler) {
          dark:bg-cyan-900 dark:text-cyan-200 dark:hover:bg-cyan-800"
       >
         Share
+        <ShareIcon />
       </Typography>
     </header>
   );
