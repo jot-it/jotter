@@ -5,11 +5,11 @@ import {
   CgRename as RenameIcon,
 } from "react-icons/cg";
 import { RiBook2Line as BookIcon } from "react-icons/ri";
-import { CategoryProps, Item, LinkProps } from ".";
+import { CategoryItem, ItemProps, LinkItem } from ".";
 import ContextMenu from "../ContextMenu";
 import { useSidebarDispatch } from "./context";
 
-export function LinksOptions(props: LinkProps) {
+export function LinksOptions(props: LinkItem) {
   const dispatch = useSidebarDispatch();
 
   return (
@@ -24,11 +24,13 @@ export function LinksOptions(props: LinkProps) {
       </ContextMenu.Option>
       <ContextMenu.Divider />
       <ContextMenu.Option
-        onClick={() => {
+        onClick={(e) => {
+          // Prevent executing whe user alse click outside
+          e.nativeEvent.stopImmediatePropagation();
           dispatch({
             type: "rename",
-            newLabel: "rename item",
             id: props.id,
+            isEditing: true,
           });
         }}
       >
@@ -52,17 +54,20 @@ export function LinksOptions(props: LinkProps) {
   );
 }
 
-export function CategoryOptions(props: CategoryProps) {
+export function CategoryOptions(props: CategoryItem) {
+  
   const dispatch = useSidebarDispatch();
+
   return (
     <ContextMenu.Content>
       <ContextMenu.Option
         onClick={() => {
-          const item: Item = {
+          const item: ItemProps = {
             label: "new item",
             id: crypto.randomUUID(),
             href: "#ni001",
             type: "link",
+            isEditing : true,
           };
 
           dispatch({
@@ -81,8 +86,8 @@ export function CategoryOptions(props: CategoryProps) {
         onClick={() => {
           dispatch({
             type: "rename",
-            newLabel: "rename category",
             id: props.id,
+            isEditing: true,
           });
         }}
       >
@@ -109,13 +114,13 @@ export function SidebarOption() {
     <ContextMenu.Content>
       <ContextMenu.Option
         onClick={() => {
-          const item: Item = {
+          dispatch({ type: "create", newItem: {
             label: "new item",
             id: crypto.randomUUID(),
             href: "#ni001",
             type: "link",
-          };
-          dispatch({ type: "create", newItem: item });
+            isEditing : true,
+          } });
         }}
       >
         <FileIcon className="mr-3 text-lg" />
@@ -123,11 +128,12 @@ export function SidebarOption() {
       </ContextMenu.Option>
       <ContextMenu.Option
         onClick={() => {
-          const item: Item = {
+          const item: ItemProps = {
             label: "new item",
             id: crypto.randomUUID(),
             items: [],
             type: "category",
+            isEditing : true,
           };
           dispatch({ type: "create", newItem: item });
         }}

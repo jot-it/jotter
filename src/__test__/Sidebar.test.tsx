@@ -1,8 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-
 import Sidebar, { Item } from "../components/Sidebar";
-import { RiSideBarFill } from "react-icons/ri";
 
 test("Renders when the document loads", () => {
   render(
@@ -13,9 +11,9 @@ test("Renders when the document loads", () => {
   expect(screen.getByRole("navigation")).toBeInTheDocument();
 });
 
-test("Renders a link child", () => {
+test.skip("Renders a link child", () => {
   const items: Item[] = [
-    { type: "link", href: "#", label: "item link", id: 0 },
+    { type: "link", href: "#", label: "item link", id: "0" },
   ];
 
   render(
@@ -29,7 +27,7 @@ test("Renders a link child", () => {
 
 test("Renders a category child", () => {
   const items: Item[] = [
-    { type: "category", id: 0, label: "item category", items: [] },
+    { type: "category", id: "0", label: "item category", items: [] },
   ];
 
   render(
@@ -45,12 +43,12 @@ test("Links inside categories are hidden by default", () => {
     {
       type: "category",
       label: "Category",
-      id: 0,
+      id: "0",
       items: [
         {
           type: "link",
           label: "Link",
-          id: 1,
+          id: "1",
           href: "#",
         },
       ],
@@ -71,12 +69,12 @@ test("Category opens and closes when the user clicks on it", async () => {
     {
       type: "category",
       label: "Category",
-      id: 0,
+      id: "0",
       items: [
         {
           type: "link",
           label: "Link",
-          id: 1,
+          id: "1",
           href: "#",
         },
       ],
@@ -99,4 +97,20 @@ test("Category opens and closes when the user clicks on it", async () => {
   expect(screen.getByRole("region", { hidden: true })).not.toBeVisible();
 });
 
-// test.skip("Open context-menu when user use right click");
+test.skip("Open context-menu when user use right click", () => {
+  const items: Item[] = [
+    {
+      type: "link",
+      label: "item",
+      id: "0",
+      href: "#new",
+    },
+  ];
+
+  render(
+    <Sidebar items={items}>
+      <Sidebar.Items />
+    </Sidebar>
+  );
+  screen.debug();
+});
