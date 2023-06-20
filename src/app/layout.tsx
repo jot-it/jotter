@@ -1,6 +1,7 @@
 import { PropsWithChildren } from "react";
 import { Barlow } from "next/font/google";
 import "./globals.css";
+import SideNavigation from "./SideNavigation";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -14,7 +15,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <body
         className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
       >
-        {children}
+        <div className="grid min-h-screen grid-cols-[1fr_3fr]">
+          <SideNavigation />
+          {children}
+        </div>
       </body>
     </html>
   );

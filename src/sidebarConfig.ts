@@ -9,30 +9,30 @@ const sidebarConfig: ItemProps[] = [
       {
         type: "link",
         label: "Topic 1",
-        href: "#in01",
+        href: "/note/1",
         id: "1",
       },
       {
         type: "link",
         label: "Topic 2",
-        href: "#in02",
+        href: "/note/2",
         id: "2",
       },
       {
         type: "category",
-        label: "Topic 3",
+        label: "Topic3",
         id: "3",
         items: [
           {
             type: "link",
             label: "Topic 1",
-            href: "#ch01",
+            href: "/note/4",
             id: "4",
           },
           {
             type: "link",
             label: "Topic 2",
-            href: "#ch02",
+            href: "/note/5",
             id: "5",
           },
         ],
@@ -41,33 +41,33 @@ const sidebarConfig: ItemProps[] = [
   },
   {
     type: "category",
-    label: "Chapter 1",
+    label: "Chapter1",
     id: "6",
     items: [
       {
         type: "link",
         label: "Topic 1",
-        href: "#ch01",
+        href: "/note/7",
         id: "7",
       },
       {
         type: "link",
         label: "Topic 2",
-        href: "#ch02",
+        href: "/note/8",
         id: "8",
       },
       {
         type: "link",
         label: "Topic 3",
-        href: "#ch03",
+        href: "/note/9",
         id: "9",
       },
     ],
   },
   {
     type: "link",
-    label: "Topic 1",
-    href: "#t001",
+    label: "Topic1",
+    href: "/note/10",
     id: "10",
   },
 ];
