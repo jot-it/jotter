@@ -14,9 +14,9 @@ import {
   useSidebarDispatch,
   useSidebarItems,
 } from "./context";
-import { CategoryOptions, LinksOptions } from "./optionsContexMenu";
+import { CategoryActions, LinksActions, SidebarActions } from "./menu-actions";
 import { itemsReducer } from "./state";
-import { useOutsideClick } from "../../hooks/useOutsideClick";
+import { useOnOutsideClick as useOnOutsideClick } from "../../hooks/useOnOutsideClick";
 
 //#region  Typings
 
@@ -47,9 +47,7 @@ export type CategoryItem = {
 
 export type LinkProps = LinkItem & SidebarItemProps;
 export type CategoryProps = CategoryItem & SidebarItemProps;
-
 export type ButtonProps = React.ComponentPropsWithoutRef<"button">;
-
 export type Item = CategoryItem | LinkItem;
 export type ItemProps = CategoryProps | LinkProps;
 
@@ -77,7 +75,13 @@ function Sidebar({ children, items: initialItems, ...rest }: SidebarProps) {
  */
 function SidebarItemsRoot() {
   const items = useSidebarItems();
-  return <SidebarItemList items={items} />;
+  return (
+    <div className="flex-1 overflow-auto">
+      <ContextMenu trigger={<SidebarItemList items={items} />}>
+        <SidebarActions />
+      </ContextMenu>
+    </div>
+  );
 }
 
 function SidebarItemList({ items }: SidebarItemListProps) {
@@ -91,19 +95,18 @@ function SidebarItemList({ items }: SidebarItemListProps) {
 }
 
 function SidebarItem(props: ItemProps) {
+  const id = props.id;
   switch (props.type) {
     case "category":
       return (
-        <ContextMenu>
-          <Category {...props} />
-          <CategoryOptions {...props} />
+        <ContextMenu trigger={<Category {...props} />}>
+          <CategoryActions id={id} />
         </ContextMenu>
       );
     case "link":
       return (
-        <ContextMenu>
-          <Link {...props} />
-          <LinksOptions {...props} />
+        <ContextMenu trigger={<Link {...props} />}>
+          <LinksActions id={id} />
         </ContextMenu>
       );
   }
@@ -132,49 +135,55 @@ export function Category({ items, label }: CategoryProps) {
   );
 }
 
-export function Link({...props }: LinkProps) {
-  const { href, label : initialLabel, isEditing, id} = props;
+export function Link({ ...props }: LinkProps) {
+  const { href, label: initialLabel, isEditing, id } = props;
   const [label, setLabel] = useState(initialLabel);
   const inputRef = useRef<HTMLInputElement>(null);
   const isEmpty = label.trim().length === 0;
   const dispatch = useSidebarDispatch();
-  
-  const handleRename = (e : KeyboardEvent<HTMLInputElement>)=>{
+
+  const handleRename = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       rename();
     }
-  }
+  };
 
-  const rename = ()=> {
-    if(!isEmpty){
-      dispatch({type: "rename", id , isEditing : false, newLabel:label});
+  const rename = () => {
+    if (!isEmpty) {
+      dispatch({ type: "rename", id, isEditing: false, newLabel: label });
     }
-  }
+  };
 
-  useOutsideClick(inputRef,rename);
+  useOnOutsideClick(inputRef, rename);
 
-  useEffect(()=>{
+  useEffect(() => {
     // Prevent race condition between any active focus and this one
-    const timeout = setTimeout(()=> inputRef.current?.focus(), 200);
-    return ()=> clearTimeout(timeout);
+    const timeout = setTimeout(() => inputRef.current?.focus(), 200);
+    return () => clearTimeout(timeout);
+  }, [isEditing]);
 
-   },[isEditing]);
-
-  const content = isEditing ? (<input
-    className="block w-full cursor-text outline-none dark:bg-transparent bg-transparent dark:outline-none"
-    placeholder={label}
-    ref = {inputRef}
-    autoComplete="off"
-    onChange={(e) => {
-      setLabel(e.target.value);
-    }}
-    onKeyUp={handleRename}
-  />): <span>{label}</span>;
+  const content = isEditing ? (
+    <input
+      className="block w-full cursor-text bg-transparent outline-none dark:bg-transparent dark:outline-none"
+      placeholder={label}
+      ref={inputRef}
+      autoComplete="off"
+      onChange={(e) => {
+        setLabel(e.target.value);
+      }}
+      onKeyUp={handleRename}
+    />
+  ) : (
+    <span>{label}</span>
+  );
 
   return (
     <NextLink href={href}>
       <Typography
-        className = {clsx(isEmpty && "-outline-offset-1 outline-1 outline dark:outline-red-400","focus-within:dark:bg-slate-700 dark:hover:bg-slate-700 hover:bg-gray-300 block rounded-lg px-2 py-3")}
+        className={clsx(
+          isEmpty && "outline outline-1 -outline-offset-1 dark:outline-red-400",
+          "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700"
+        )}
         variant="body1"
         aria-selected="false"
       >
