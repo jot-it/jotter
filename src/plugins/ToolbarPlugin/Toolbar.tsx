@@ -70,7 +70,7 @@ function TextFormatToolbar({ container, editor }: TextFormatToolbarProps) {
 
   return (
     <Toolbar.Root
-      className="absolute left-0 top-0 z-10 flex flex-grow-0 rounded-lg
+      className="absolute left-0 top-0 z-10 flex rounded-lg
         border bg-white p-3 text-gray-700 opacity-0 shadow-md transition-opacity
          dark:border-slate-600 dark:bg-slate-700 dark:text-inherit"
       ref={toolbarRef}

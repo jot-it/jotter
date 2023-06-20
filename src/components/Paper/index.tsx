@@ -66,18 +66,17 @@ function Paper() {
   }, []);
 
   return (
-    <div className="relative mx-auto my-12 max-w-3xl px-4" ref={onRef}>
+    <div
+      className="prose relative mx-auto my-12 max-w-3xl px-4 dark:prose-invert"
+      ref={onRef}
+    >
       <LexicalComposer initialConfig={editorConfig}>
         <RichTextPlugin
           contentEditable={<ContentEditable className="focus:outline-none" />}
           placeholder={
-            <Typography
-              className="absolute left-4 top-0 dark:text-gray-400"
-              variant="body1"
-              as="p"
-            >
+            <p className="absolute left-4 top-0 m-0 dark:text-gray-400">
               Begin your story...
-            </Typography>
+            </p>
           }
           ErrorBoundary={ErrorBoundary}
         />
