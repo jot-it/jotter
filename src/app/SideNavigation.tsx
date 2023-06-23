@@ -24,7 +24,7 @@ function SidebarContent() {
             dispatch({
               type: "create",
               newItem: {
-                label: "new item",
+                label: "",
                 id: crypto.randomUUID(),
                 href: "#ni001",
                 type: "link",

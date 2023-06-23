@@ -18,11 +18,12 @@ export function LinksActions({ id }: ActionProps) {
     <ContextMenu.Content>
       <RenameAction id={id} />
       <DeleteAction id={id} />
+
       {process.env.NODE_ENV !== "production" && (
-        <ContextMenu.Option disabled={true}>
-          <InfoIcon className="mr-3 text-lg " />
-          {"Id: " + id}
-        </ContextMenu.Option>
+        <>
+          <ContextMenu.Divider />
+          <DevActions id={id} />
+        </>
       )}
     </ContextMenu.Content>
   );
@@ -53,9 +54,9 @@ function RenameAction({ id }: ActionProps) {
   return (
     <ContextMenu.Option
       onClick={(e) => {
-        e.stopPropagation();
+        //e.stopPropagation();
         // Prevent executing whe user alse click outside
-        // e.nativeEvent.stopImmediatePropagation();
+        e.nativeEvent.stopImmediatePropagation();
         dispatch({
           id,
           type: "rename",
@@ -92,7 +93,7 @@ function NewPageAction() {
         dispatch({
           type: "create",
           newItem: {
-            label: "new item",
+            label: "",
             id: crypto.randomUUID(),
             href: "#ni001",
             type: "link",
@@ -113,7 +114,7 @@ function NewCategoryAction() {
     <ContextMenu.Option
       onClick={() => {
         const item: ItemProps = {
-          label: "new item",
+          label: "",
           id: crypto.randomUUID(),
           items: [],
           type: "category",
@@ -128,13 +129,14 @@ function NewCategoryAction() {
   );
 }
 
+//TODO: Open it by default
 function InsertPageAction({ id }: ActionProps) {
   const dispatch = useSidebarDispatch();
   return (
     <ContextMenu.Option
       onClick={() => {
         const item: ItemProps = {
-          label: "new item",
+          label: "",
           id: crypto.randomUUID(),
           href: "#ni001",
           type: "link",
@@ -150,6 +152,15 @@ function InsertPageAction({ id }: ActionProps) {
     >
       <FileIcon className="mr-3 text-lg" />
       Add new page
+    </ContextMenu.Option>
+  );
+}
+
+function DevActions({ id }: ActionProps) {
+  return (
+    <ContextMenu.Option disabled={true}>
+      <InfoIcon className="mr-3 text-lg " />
+      {"Id: " + id}
     </ContextMenu.Option>
   );
 }
