@@ -1,6 +1,5 @@
 import Avatar from "@/components/Avatar";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { SidebarToggler } from "@/components/Sidebar";
 import Typography from "@/components/Typography";
 import Link from "next/link";
 import { BiMenuAltLeft as MenuIcon } from "react-icons/bi";
@@ -9,15 +8,10 @@ import {
   RiUserAddLine as UserAddIcon,
 } from "react-icons/ri";
 
-function Header({ toggleOpen }: SidebarToggler) {
+function Header() {
   return (
     <header className="flex items-center border-b border-gray-200 p-4 shadow-sm dark:border-gray-700">
-      <button
-        className="mr-4 lg:hidden"
-        type="button"
-        aria-label="Menu"
-        onClick={toggleOpen}
-      >
+      <button className="mr-4 lg:hidden" type="button" aria-label="Menu">
         <MenuIcon className="text-3xl" />
       </button>
       <Breadcrumbs aria-label="Breadcrumb">

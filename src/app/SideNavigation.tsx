@@ -1,14 +1,14 @@
 "use client";
 import { RiAddLine as AddIcon } from "react-icons/ri";
 import ContextMenu from "../components/ContextMenu";
-import Sidebar, { ItemProps, SidebarToggler } from "../components/Sidebar";
+import Sidebar, { ItemProps } from "../components/Sidebar";
 import { useSidebarDispatch } from "../components/Sidebar/context";
 import { SidebarOption } from "../components/Sidebar/optionsContexMenu";
 import sidebarConfig from "../sidebarConfig";
 
-function SideNavigation({ open, toggleOpen }: SidebarToggler) {
+function SideNavigation() {
   return (
-    <Sidebar items={sidebarConfig} open={open} toggleOpen={toggleOpen}>
+    <Sidebar items={sidebarConfig}>
       <SidebarContent />
     </Sidebar>
   );
