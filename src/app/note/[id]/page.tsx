@@ -64,7 +64,7 @@ function Editor() {
       setEditorContainer(node);
     }
   }, []);
-
+  
   return (
     <div
       className="prose relative mx-auto my-12 max-w-3xl px-4 dark:prose-invert"
@@ -83,7 +83,7 @@ function Editor() {
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
 
-        {editorContainer && <ToolbarPlugin container={editorContainer} />}
+        {editorContainer ? <ToolbarPlugin container={editorContainer} />: <></>}
         <NoSSR>
           {/* <CollaborationPlugin
             id="yjs-plugin"

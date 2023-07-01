@@ -12,17 +12,17 @@ const barlow = Barlow({
 });
 
 export default function RootLayout({ children }: PropsWithChildren) {
-  const [openSidebar, setOpenSidebar] = useState(false);
-  const toggleSidebar = () => setOpenSidebar((prev) => !prev);
   return (
     <html lang="en" className="dark">
       <body
         className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
       >
         <div className="grid lg:grid-cols-[20rem_auto]">
-          <SideNavigation open={openSidebar} toggleOpen={toggleSidebar} />
+          <aside className="hidden lg:block">
+            <SideNavigation />
+          </aside>
           <div>
-            <Header toggleOpen={toggleSidebar} />
+            <Header />
             {children}
           </div>
         </div>
