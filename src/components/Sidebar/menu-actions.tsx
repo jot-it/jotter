@@ -90,15 +90,16 @@ function NewPageAction() {
   return (
     <ContextMenu.Option
       onClick={() => {
+        const newItem: ItemProps = {
+          label: "",
+          id: crypto.randomUUID(),
+          href: "#ni001",
+          type: "link",
+          isEditing: true,
+        };
         dispatch({
           type: "create",
-          newItem: {
-            label: "",
-            id: crypto.randomUUID(),
-            href: "#ni001",
-            type: "link",
-            isEditing: true,
-          },
+          newItem,
         });
       }}
     >
@@ -113,14 +114,14 @@ function NewCategoryAction() {
   return (
     <ContextMenu.Option
       onClick={() => {
-        const item: ItemProps = {
+        const newItem: ItemProps = {
           label: "",
           id: crypto.randomUUID(),
           items: [],
           type: "category",
           isEditing: true,
         };
-        dispatch({ type: "create", newItem: item });
+        dispatch({ type: "create", newItem });
       }}
     >
       <BookIcon className="mr-3 text-lg" />
@@ -135,7 +136,7 @@ function InsertPageAction({ id }: ActionProps) {
   return (
     <ContextMenu.Option
       onClick={() => {
-        const item: ItemProps = {
+        const newItem: ItemProps = {
           label: "",
           id: crypto.randomUUID(),
           href: "#ni001",
@@ -146,7 +147,7 @@ function InsertPageAction({ id }: ActionProps) {
         dispatch({
           type: "insert",
           id,
-          newItem: item,
+          newItem: newItem,
         });
       }}
     >
