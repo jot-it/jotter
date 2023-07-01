@@ -189,16 +189,16 @@ function ItemContent({ ...props }: ItemProps) {
   };
 
   const rename = () => {
+    //Empty labels are assumed to be new
+    if (isEmpty && initialLabel === "") {
+      dispatch({ type: "delete", id });
+      return;
+    }
+
     //Prevent empty label
     if (isEmpty) {
       setLabel(initialLabel);
     }
-
-    //Empty labels are assumed to be new
-    if (label === "") {
-      dispatch({ type: "delete", id });
-    }
-
     dispatch({ type: "rename", id, isEditing: false, newLabel: label });
   };
 
