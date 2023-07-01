@@ -24,7 +24,7 @@ function MobileNav() {
       <Dialog.Portal>
         <Dialog.Overlay
           className="data-[state=closed]:animate-fade-out fixed inset-0 bg-slate-900/50 backdrop-blur-sm 
-        data-[state=open]:animate-fade-in anime"
+        data-[state=open]:animate-fade-in"
         />
         <Dialog.Content
           className="fixed left-0 top-0 w-80 
