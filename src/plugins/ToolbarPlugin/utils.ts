@@ -23,7 +23,7 @@ export function moveToolbarToCurrentSelection(
   const currentSelection = window.getSelection();
   if (!currentSelection || currentSelection.isCollapsed) {
     toolbar.style.transform = "translate(-100vmax, -100vmax)";
-    toolbar.style.opacity = "0";
+    // toolbar.style.opacity = "0";
     return;
   }
 
@@ -38,6 +38,10 @@ export function moveToolbarToCurrentSelection(
   // Render it below the selection instead
   if (top < containerRect.top) {
     top += toolbarRect.height + selectionRect.height + TOOLBAR_MARGIN_Y * 2;
+  }
+
+  if (left + toolbarRect.width > containerRect.right) {
+    left = containerRect.right - toolbarRect.width;
   }
 
   // Translate position to be relative to the container

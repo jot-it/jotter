@@ -20,8 +20,9 @@ function ToolbarPlugin(props: ToolbarPluginProps) {
       const selection = window.getSelection();
       const editorRoot = editor.getRootElement();
 
+      const hasSelection = selection && !selection.isCollapsed;
       const isSelectionInsideEditor =
-        selection && editorRoot && editorRoot.contains(selection.anchorNode);
+        hasSelection && editorRoot && editorRoot.contains(selection.anchorNode);
 
       setShowToolbar(Boolean(isSelectionInsideEditor));
     };
@@ -33,7 +34,7 @@ function ToolbarPlugin(props: ToolbarPluginProps) {
   }, [editor]);
 
   if (!showToolbar) {
-    return null;
+    return <></>;
   }
 
   return <Toolbar {...props} editor={editor} />;

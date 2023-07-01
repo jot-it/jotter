@@ -61,6 +61,11 @@ function TextFormatToolbar({ container, editor }: TextFormatToolbarProps) {
   }, [editor, updateToolbarPosition]);
 
   useEffect(() => {
+    editor.getEditorState().read(() => {
+      // Update the toolbar position as soon as it is rendered
+      // Prevents the toolbar from being rendered in the wrong position initially
+      updateToolbarPosition();
+    })
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
       handleSelectionChanged,
@@ -71,7 +76,7 @@ function TextFormatToolbar({ container, editor }: TextFormatToolbarProps) {
   return (
     <Toolbar.Root
       className="absolute left-0 top-0 z-10 flex rounded-lg
-        border bg-white p-3 text-gray-700 opacity-0 shadow-md transition-opacity
+        border bg-white p-3 text-gray-700  shadow-md transition-opacity
          dark:border-slate-600 dark:bg-slate-700 dark:text-inherit"
       ref={toolbarRef}
     >

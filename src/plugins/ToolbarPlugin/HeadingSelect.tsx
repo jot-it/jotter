@@ -21,7 +21,7 @@ type HeadingSelectProps = {
 };
 
 function HeadingSelect({ editor }: HeadingSelectProps) {
-  const [headingStyle, setHeadingStyle] = useState<any>();
+  const [headingStyle, setHeadingStyle] = useState<string>();
 
   const formatAsHeading = (headingSize: HeadingTagType) => {
     formatSelectionAs(editor, () => $createHeadingNode(headingSize));
