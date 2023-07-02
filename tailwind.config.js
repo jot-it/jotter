@@ -26,15 +26,9 @@ module.exports = {
           to: { opacity: 0 },
         },
         "slide-in": {
-          "0%": {
-            translate: "-100%",
-          },
+          "0%": { translate: "-100%",},
         },
-        "slide-out": {
-          "100%": {
-            translate: "-100%",
-          },
-        },
+        "slide-out": { "100%": { translate: "-100%"} },
       },
       animation: {
         "fade-in": "fade-in 200ms ease-in-out",
