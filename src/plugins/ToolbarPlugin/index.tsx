@@ -1,6 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect, useState } from "react";
 import Toolbar from "./Toolbar";
+import useMatchMedia from "@/hooks/useMatchMedia";
 
 type ToolbarPluginProps = {
   /**
@@ -13,7 +14,8 @@ type ToolbarPluginProps = {
 
 function ToolbarPlugin(props: ToolbarPluginProps) {
   const [editor] = useLexicalComposerContext();
-  const [showToolbar, setShowToolbar] = useState(false);
+  const [editorHasSelection, setEditorHasSelection] = useState(false);  
+  const isMobileScreen = useMatchMedia("(max-width: 1023px)");
 
   useEffect(() => {
     const updateToolbarVisibility = () => {
@@ -24,7 +26,7 @@ function ToolbarPlugin(props: ToolbarPluginProps) {
       const isSelectionInsideEditor =
         hasSelection && editorRoot && editorRoot.contains(selection.anchorNode);
 
-      setShowToolbar(Boolean(isSelectionInsideEditor));
+      setEditorHasSelection(Boolean(isSelectionInsideEditor));
     };
 
     document.addEventListener("selectionchange", updateToolbarVisibility);
@@ -33,11 +35,11 @@ function ToolbarPlugin(props: ToolbarPluginProps) {
     };
   }, [editor]);
 
-  if (!showToolbar) {
-    return <></>;
+  if (!editorHasSelection && !isMobileScreen) {
+    return null;
   }
 
-  return <Toolbar {...props} editor={editor} />;
+  return <Toolbar {...props} editor={editor} fixedBottom={isMobileScreen}/>;
 }
 
 export default ToolbarPlugin;

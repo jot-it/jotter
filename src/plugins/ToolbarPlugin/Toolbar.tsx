@@ -17,11 +17,22 @@ import {
 } from "react-icons/ri";
 import { moveToolbarToCurrentSelection } from "./utils";
 
-import HeadingSelect from "./HeadingSelect";
+import TextFormatSelect from "./TextFormatSelect";
+import clsx from "clsx";
 
 type TextFormatToolbarProps = {
+  /**
+   * The container surrounding the editor.
+   */
   container: HTMLDivElement;
+  /**
+   * The editor instance.
+   */
   editor: LexicalEditor;
+  /**
+   * Whether the toolbar should be fixed to the bottom of the container.
+   */
+  fixedBottom?: boolean;
 };
 
 const TEXT_FORMATS: TextFormatType[] = [
@@ -31,7 +42,7 @@ const TEXT_FORMATS: TextFormatType[] = [
   "strikethrough",
 ];
 
-function TextFormatToolbar({ container, editor }: TextFormatToolbarProps) {
+function TextFormatToolbar({ container, editor, fixedBottom}: TextFormatToolbarProps) {
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [activeTextFormats, setActiveTextFormats] = useState<TextFormatType[]>(
     []
@@ -39,10 +50,10 @@ function TextFormatToolbar({ container, editor }: TextFormatToolbarProps) {
 
   const updateToolbarPosition = useCallback(() => {
     const toolbar = toolbarRef.current;
-    if (!toolbar) return;
+    if (fixedBottom || !toolbar) return;
 
     moveToolbarToCurrentSelection(toolbar, container);
-  }, [container]);
+  }, [container, fixedBottom]);
 
   const handleSelectionChanged = useCallback(() => {
     editor.getEditorState().read(() => {
@@ -65,7 +76,7 @@ function TextFormatToolbar({ container, editor }: TextFormatToolbarProps) {
       // Update the toolbar position as soon as it is rendered
       // Prevents the toolbar from being rendered in the wrong position initially
       updateToolbarPosition();
-    })
+    });
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
       handleSelectionChanged,
@@ -75,12 +86,14 @@ function TextFormatToolbar({ container, editor }: TextFormatToolbarProps) {
 
   return (
     <Toolbar.Root
-      className="absolute left-0 top-0 z-10 flex rounded-lg
-        border bg-white p-3 text-gray-700  shadow-md transition-opacity
-         dark:border-slate-600 dark:bg-slate-700 dark:text-inherit"
+      className={clsx("flex rounded-lg border bg-white p-3",
+      "text-gray-700  shadow-md  data-[state=hidden]:animate-fade-out data-[state=visible]:animate-fade-in",
+       "dark:border-slate-600 dark:bg-slate-700 dark:text-inherit",
+       fixedBottom ? "fixed bottom-4 left-1/2 -translate-x-1/2" : "absolute left-0 top-0 z-10", 
+       )}
       ref={toolbarRef}
     >
-      <HeadingSelect editor={editor} />
+      <TextFormatSelect editor={editor} />
 
       <Toolbar.Separator className="mx-2 w-[1px] bg-gray-300 dark:bg-gray-600" />
 

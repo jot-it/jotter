@@ -1,6 +1,5 @@
 "use client";
 import NoSSR from "@/components/NoSSR";
-import Typography from "@/components/Typography";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
@@ -67,7 +66,7 @@ function Editor() {
   
   return (
     <div
-      className="prose relative mx-auto my-12 max-w-3xl px-4 dark:prose-invert"
+      className="prose relative mx-auto my-12 max-w-3xl px-4 dark:prose-invert pb-7 lg:pb-0"
       ref={onRef}
     >
       <LexicalComposer initialConfig={editorConfig}>

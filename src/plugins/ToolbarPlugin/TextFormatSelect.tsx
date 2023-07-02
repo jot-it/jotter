@@ -16,11 +16,11 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { $getSelectionParentNode, formatSelectionAs } from "./utils";
 
-type HeadingSelectProps = {
+type TextFormatSelectProps = {
   editor: LexicalEditor;
 };
 
-function HeadingSelect({ editor }: HeadingSelectProps) {
+function TextFormatSelect({ editor }: TextFormatSelectProps) {
   const [headingStyle, setHeadingStyle] = useState<string>();
 
   const formatAsHeading = (headingSize: HeadingTagType) => {
@@ -75,4 +75,4 @@ function HeadingSelect({ editor }: HeadingSelectProps) {
   );
 }
 
-export default HeadingSelect;
+export default TextFormatSelect;
