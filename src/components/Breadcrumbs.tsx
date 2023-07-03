@@ -11,7 +11,7 @@ function Breadcrumbs({ children, className, ...rest }: BreadcrumbsProps) {
       <ol
         className={clsx(
           className,
-          "flex items-center gap-1 text-gray-500 dark:text-gray-200"
+          "hidden sm:flex items-center gap-1 text-gray-500 dark:text-gray-200"
         )}
         {...rest}
       >

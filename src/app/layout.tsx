@@ -1,7 +1,9 @@
-import { PropsWithChildren } from "react";
+"use client";
+import { PropsWithChildren, useState } from "react";
 import { Barlow } from "next/font/google";
 import "./globals.css";
 import SideNavigation from "./SideNavigation";
+import Header from "./Header";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -15,9 +17,14 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <body
         className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
       >
-        <div className="grid min-h-screen grid-cols-[1fr_3fr]">
-          <SideNavigation />
-          {children}
+        <div className="grid lg:grid-cols-[20rem_auto]">
+          <aside className="hidden lg:block">
+            <SideNavigation />
+          </aside>
+          <div>
+            <Header />
+            {children}
+          </div>
         </div>
       </body>
     </html>

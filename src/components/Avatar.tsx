@@ -2,7 +2,7 @@
 import clsx from "clsx";
 import Image, { ImageProps } from "next/image";
 import { PropsWithChildren, useState } from "react";
-import { textVariants } from "../Typography";
+import { textVariants } from "./Typography";
 
 export type AvatarProps = Partial<ImageProps> & {
   size?: "sm" | "md" | "lg" | "xl";
@@ -21,7 +21,7 @@ function Avatar(props: AvatarProps) {
     <div
       className={clsx(
         className,
-        "relative flex items-center justify-center rounded-full ",
+        "flex items-center justify-center rounded-full font-medium",
         textVariants["body1"],
         {
           "h-6 w-6": size === "sm",

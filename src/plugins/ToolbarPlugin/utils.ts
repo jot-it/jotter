@@ -22,8 +22,7 @@ export function moveToolbarToCurrentSelection(
 ) {
   const currentSelection = window.getSelection();
   if (!currentSelection || currentSelection.isCollapsed) {
-    toolbar.style.transform = "translate(-100vmax, -100vmax)";
-    toolbar.style.opacity = "0";
+    toolbar.setAttribute("data-state", "hidden");
     return;
   }
 
@@ -40,12 +39,16 @@ export function moveToolbarToCurrentSelection(
     top += toolbarRect.height + selectionRect.height + TOOLBAR_MARGIN_Y * 2;
   }
 
+  if (left + toolbarRect.width > containerRect.right) {
+    left = containerRect.right - toolbarRect.width;
+  }
+
   // Translate position to be relative to the container
   left -= containerRect.left;
   top -= containerRect.top;
 
+  toolbar.setAttribute("data-state", "visible");
   toolbar.style.transform = `translate(${left}px, ${top}px)`;
-  toolbar.style.opacity = "1";
 }
 
 /**
@@ -66,7 +69,7 @@ export function $getSelectionParentNode() {
     return parent !== null && $isRootOrShadowRoot(parent);
   });
 
-  return parentNode ? parentNode : anchorNode.getTopLevelElementOrThrow();
+  return parentNode ?? anchorNode.getTopLevelElementOrThrow();
 }
 
 /**
