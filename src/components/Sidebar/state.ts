@@ -19,11 +19,11 @@ export type Action =
   | {
       type: "insert";
       id: string;
-      newItem: ItemProps;
+      newItem: DistributiveOmit<ItemProps, "id" | "isEditing" | "href">;
     }
   | {
       type: "create";
-      newItem: ItemProps;
+      newItem: DistributiveOmit<ItemProps, "id" | "isEditing" | "href">;
     };
 
 export function itemsReducer(items: Item[], action: Action): Item[] {
@@ -36,10 +36,26 @@ export function itemsReducer(items: Item[], action: Action): Item[] {
       return deleteItem(items, action.id);
     case "group":
       throw new Error("Not implemented");
-    case "insert":
-      return insertItem(items, action.id, action.newItem);
-    case "create":
-      return createItem(items, action.newItem);
+    case "insert": {
+      const id = window.crypto.randomUUID();
+      const href = `/notes/${id}`;
+      return insertItem(items, action.id, {
+        ...action.newItem,
+        href,
+        id,
+        isEditing: true,
+      });
+    }
+    case "create": {
+      const id = window.crypto.randomUUID();
+      const href = `/notes/${id}`;
+      return createItem(items, {
+        ...action.newItem,
+        isEditing: true,
+        id,
+        href,
+      });
+    }
   }
 }
 
