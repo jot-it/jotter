@@ -13,11 +13,11 @@ type ActionProps = {
   id: string;
 };
 
-export function LinksActions({ id }: ActionProps) {
+export function LinkActions({ id }: ActionProps) {
   return (
     <ContextMenu.Content>
       <RenameAction id={id} />
-      <DeleteAction id={id} />
+      <DeleteItemAction id={id} />
 
       {process.env.NODE_ENV !== "production" && (
         <>
@@ -35,7 +35,7 @@ export function CategoryActions({ id }: ActionProps) {
       <InsertPageAction id={id} />
       <ContextMenu.Divider />
       <RenameAction id={id} />
-      <DeleteAction id={id} />
+      <DeleteItemAction id={id} />
     </ContextMenu.Content>
   );
 }
@@ -70,7 +70,7 @@ function RenameAction({ id }: ActionProps) {
   );
 }
 
-function DeleteAction({ id }: ActionProps) {
+function DeleteItemAction({ id }: ActionProps) {
   const dispatch = useSidebarDispatch();
   return (
     <ContextMenu.Option
@@ -118,6 +118,7 @@ function NewCategoryAction() {
           label: "",
           id: crypto.randomUUID(),
           items: [],
+          href: "#",
           type: "category",
           isEditing: true,
         };
