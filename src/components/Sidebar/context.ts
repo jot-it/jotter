@@ -1,8 +1,8 @@
 import { createContext, useContext } from "react";
 import { Action } from "./state";
-import { ItemProps } from ".";
+import { Item } from ".";
 
-export const SidebarItemsContext = createContext<ItemProps[]>([]);
+export const SidebarItemsContext = createContext<Item[]>([]);
 
 export const SidebarDispatchContext = createContext<React.Dispatch<Action>>(
   () => {}

@@ -1,11 +1,12 @@
-import { ItemProps } from "../Sidebar";
+import { Item, ItemProps } from "../Sidebar";
 import { filterSidebar, mapSidebar } from "./utils";
 
 export type Action =
   | {
       type: "rename";
       id: string;
-      newLabel: string;
+      isEditing: boolean;
+      newLabel?: string;
     }
   | {
       type: "delete";
@@ -25,10 +26,12 @@ export type Action =
       newItem: ItemProps;
     };
 
-export function itemsReducer(items: ItemProps[], action: Action): ItemProps[] {
+export function itemsReducer(items: Item[], action: Action): Item[] {
   switch (action.type) {
     case "rename":
-      return updateItem(items, action.id, { label: action.newLabel });
+      return updateItem(items, action.id, {
+        isEditing: action.isEditing,
+      });
     case "delete":
       return deleteItem(items, action.id);
     case "group":
@@ -41,18 +44,14 @@ export function itemsReducer(items: ItemProps[], action: Action): ItemProps[] {
 }
 
 //#region REDUCER ACTIONS
-function updateItem(
-  items: ItemProps[],
-  id: string,
-  newItem: Partial<ItemProps>
-) {
+function updateItem(items: Item[], id: string, newItem: Partial<ItemProps>) {
   return mapSidebar(items, (item) => {
     if (item.id === id) return Object.assign(item, newItem);
     return item;
   });
 }
 
-function insertItem(items: ItemProps[], id: string, newItem: ItemProps) {
+function insertItem(items: Item[], id: string, newItem: ItemProps) {
   return mapSidebar(items, (item) => {
     if (item.id !== id) {
       return item;
@@ -69,12 +68,12 @@ function insertItem(items: ItemProps[], id: string, newItem: ItemProps) {
   });
 }
 
-function createItem(items: ItemProps[], newItem: ItemProps) {
+function createItem(items: Item[], newItem: ItemProps) {
   items = [...items, newItem];
   return items;
 }
 
-function deleteItem(items: ItemProps[], id: string) {
+function deleteItem(items: Item[], id: string) {
   return filterSidebar(items, (item) => item.id !== id);
 }
 //#endregion
