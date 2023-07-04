@@ -4,6 +4,7 @@ const sidebarConfig: Item[] = [
   {
     type: "category",
     label: "Introduction",
+    href: "/note/0",
     id: "0",
     items: [
       {
@@ -21,6 +22,7 @@ const sidebarConfig: Item[] = [
       {
         type: "category",
         label: "Topic3",
+        href: "/note/3",
         id: "3",
         items: [
           {
@@ -42,6 +44,7 @@ const sidebarConfig: Item[] = [
   {
     type: "category",
     label: "Chapter1",
+    href: "/note/6",
     id: "6",
     items: [
       {

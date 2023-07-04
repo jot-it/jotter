@@ -21,8 +21,9 @@ import {
   useSidebarDispatch,
   useSidebarItems,
 } from "./context";
-import { CategoryActions, LinksActions, SidebarActions } from "./menu-actions";
+import { CategoryActions, LinkActions, SidebarActions } from "./menu-actions";
 import { itemsReducer } from "./state";
+import { useRouter } from "next/navigation";
 
 //#region  Typings
 export type SidebarItemListProps = {
@@ -32,8 +33,6 @@ export type SidebarItemListProps = {
 type SidebarItemBaseProps = {
   isEditing?: boolean;
 };
-
-type CategoryBodyProps = Pick<CategoryProps, "label" | "items" | "id">;
 
 export type SidebarProps = React.ComponentPropsWithoutRef<"aside"> &
   SidebarItemListProps;
@@ -47,6 +46,7 @@ export type LinkItem = {
 
 export type CategoryItem = {
   type: "category";
+  href: string;
   label: string;
   items: Item[];
   id: string;
@@ -114,42 +114,53 @@ function SidebarItem(props: ItemProps) {
     case "link":
       return (
         <ContextMenu trigger={<Link {...props} />}>
-          <LinksActions id={id} />
+          <LinkActions id={id} />
         </ContextMenu>
       );
   }
 }
 //#endregion
 
-export function Category({ ...props }: CategoryProps) {
-  const { label, items, id } = props;
-
+export function Category(props: CategoryProps) {
+  const router = useRouter();
   return (
-    <CategoryBody id={id} items={items} label={label}>
-      <div>
-        <BookIcon className="mr-2 inline-block" />
-        <ItemContent {...props} />
-      </div>
-    </CategoryBody>
+    <Accordion.Item value={props.id}>
+      <Accordion.Header className="p-0.5">
+        <Accordion.Trigger
+          onClick={() => router.push(props.href)}
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left 
+          hover:bg-gray-300 data-[state=open]:bg-cyan-400/20 data-[state=open]:text-cyan-950
+          dark:hover:bg-gray-700 dark:data-[state=open]:bg-cyan-900 dark:data-[state=open]:text-cyan-200"
+        >
+          <div>
+            <BookIcon className="mr-2 inline-block" />
+            <ItemContent {...props} />
+          </div>
+          <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
+        </Accordion.Trigger>
+      </Accordion.Header>
+
+      <Accordion.Content className="ml-2">
+        <SidebarItemList items={props.items} />
+      </Accordion.Content>
+    </Accordion.Item>
   );
 }
 
-export function Link({ ...props }: LinkProps) {
-  const { href } = props;
-
+export function Link(props: LinkProps) {
   return (
-    <NextLink href={href}>
-      <Typography
-        className={clsx(
-          // isEmpty && "outline outline-1 -outline-offset-1 dark:outline-red-400",
-          "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700"
-        )}
-        variant="body1"
-        aria-selected="false"
-      >
-        <ItemContent {...props} />
-      </Typography>
-    </NextLink>
+    //@ts-expect-error Next.js links also have a "as" prop
+    <Typography
+      as={NextLink}
+      href={props.href}
+      className={clsx(
+        // isEmpty && "outline outline-1 -outline-offset-1 dark:outline-red-400",
+        "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700"
+      )}
+      variant="body1"
+    >
+      <ItemContent {...props} />
+    </Typography>
   );
 }
 
@@ -170,9 +181,8 @@ function Divider() {
 }
 
 //#region Items Content
-function ItemContent({ ...props }: ItemProps) {
+function ItemContent(props: ItemProps) {
   const { label: initialLabel, isEditing, id, type } = props;
-
   const [label, setLabel] = useState(initialLabel);
   const inputRef = useRef<HTMLInputElement>(null);
   const isEmpty = label.trim().length === 0;
@@ -203,52 +213,32 @@ function ItemContent({ ...props }: ItemProps) {
   };
 
   useEffect(() => {
-    // Prevent race condition between any active focus and this one
-    const timeout = setTimeout(() => inputRef.current?.focus(), 200);
+    // HACK Use a timeout to prevent race condition between any active focus and this one
+    const timeout = setTimeout(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }, 200);
     return () => clearTimeout(timeout);
   }, [isEditing]);
 
-  const content = isEditing ? (
+  if (!isEditing) {
+    return <span>{label}</span>;
+  }
+
+  return (
     <input
       className={clsx(
         type === "link" && "w-full",
         "cursor-text bg-transparent outline-none dark:bg-transparent dark:outline-none"
       )}
-      placeholder={label}
+      autoComplete="off"
+      value={label}
+      spellCheck={false}
       ref={inputRef}
       onBlur={rename}
-      autoComplete="off"
-      spellCheck={false}
-      onChange={(e) => {
-        setLabel(e.target.value);
-      }}
+      onChange={(e) => setLabel(e.target.value)}
       onKeyUp={handleRename}
     />
-  ) : (
-    <span>{label}</span>
-  );
-
-  return content;
-}
-
-function CategoryBody({ ...props }: PropsWithChildren<CategoryBodyProps>) {
-  const { children, items, id } = props;
-  return (
-    <Accordion.Item value={id}>
-      <Accordion.Header className="p-[2px]">
-        <Accordion.Trigger
-          className="group flex w-full items-center justify-between rounded-lg p-3 text-left 
-          hover:bg-gray-300 data-[state=open]:bg-cyan-400/20 data-[state=open]:text-cyan-950
-          dark:hover:bg-gray-700 dark:data-[state=open]:bg-cyan-900 dark:data-[state=open]:text-cyan-200"
-        >
-          {children}
-          <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
-        </Accordion.Trigger>
-      </Accordion.Header>
-      <Accordion.Content className="ml-2">
-        <SidebarItemList items={items} />
-      </Accordion.Content>
-    </Accordion.Item>
   );
 }
 //#endregion

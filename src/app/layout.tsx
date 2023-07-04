@@ -1,9 +1,10 @@
 "use client";
-import { PropsWithChildren, useState } from "react";
+import sidebarConfig from "@/sidebarConfig";
 import { Barlow } from "next/font/google";
-import "./globals.css";
-import SideNavigation from "./SideNavigation";
+import { PropsWithChildren } from "react";
 import Header from "./Header";
+import SideNavigation from "./SideNavigation";
+import "./globals.css";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -22,7 +23,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
             <SideNavigation />
           </aside>
           <div>
-            <Header />
+            <Header items={sidebarConfig} />
             {children}
           </div>
         </div>

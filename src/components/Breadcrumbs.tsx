@@ -1,30 +1,51 @@
 import clsx from "clsx";
-import React, { Fragment, cloneElement } from "react";
+import Link from "next/link";
+import { Fragment, ReactNode } from "react";
 import { MdNavigateNext as NextIcon } from "react-icons/md";
+import Typography from "./Typography";
 
-type BreadcrumbsProps = React.ComponentPropsWithoutRef<"ol">;
+export type BreadcrumbItem = {
+  icon?: ReactNode;
+  href: string;
+  label: string;
+};
 
-function Breadcrumbs({ children, className, ...rest }: BreadcrumbsProps) {
-  const lastIndex = React.Children.count(children) - 1;
+export type BreadcrumbsProps = {
+  items: BreadcrumbItem[];
+};
+
+function Breadcrumbs({ items }: BreadcrumbsProps) {
+  const lastIndex = items.length - 1;
   return (
     <nav>
       <ol
-        className={clsx(
-          className,
-          "hidden sm:flex items-center gap-1 text-gray-500 dark:text-gray-200"
-        )}
-        {...rest}
+        className="hidden items-center gap-1 text-gray-500 dark:text-gray-200 sm:flex"
+        aria-label="Breadcrumb"
       >
-        {React.Children.map(children, (child, index) => (
-          <Fragment key={index}>
+        {items.map(({ icon, href, label }, index) => (
+          <Fragment key={href}>
             <li>
-              {cloneElement(child as React.ReactElement, {
-                className: clsx(
-                  "p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700",
+              <Link
+                className={clsx(
+                  "rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700",
                   index === lastIndex && "text-gray-800 dark:text-gray-100"
-                ),
-                "aria-current": index === lastIndex ? "page" : undefined,
-              })}
+                )}
+                href={href}
+                aria-current={index === lastIndex ? "page" : undefined}
+              >
+                <Typography
+                  as="span"
+                  variant="body1"
+                  className="inline-flex items-center gap-1"
+                >
+                  {icon && (
+                    <span className="text-lg" aria-hidden>
+                      {icon}
+                    </span>
+                  )}
+                  {label}
+                </Typography>
+              </Link>
             </li>
             {index < lastIndex && (
               <li aria-hidden>

@@ -1,29 +1,29 @@
+"use client";
 import Avatar from "@/components/Avatar";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import Breadcrumbs, { BreadcrumbItem } from "@/components/Breadcrumbs";
+import { SidebarProps } from "@/components/Sidebar";
 import Typography from "@/components/Typography";
-import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
   RiBook2Line as BookIcon,
   RiUserAddLine as UserAddIcon,
 } from "react-icons/ri";
 import MobileNavigation from "./MobileNavigation";
 
-function Header() {
-  return (
-    <header className="sticky top-0 flex items-center border-b border-gray-200 bg-white/90 p-4 shadow-sm 
-    dark:border-gray-700 dark:bg-slate-850/80 z-10 backdrop-blur-sm">
-      <MobileNavigation />
-      <Breadcrumbs aria-label="Breadcrumb">
-        <Link href="#">
-          <Typography as="span" variant="body1">
-            <BookIcon className="mr-1 inline-block text-lg" />
-            Chapter 1
-          </Typography>
-        </Link>
-        <Link href="#">Section a</Link>
-        <Link href="#">Topic 1</Link>
-      </Breadcrumbs>
+type HeaderProps = {
+  items: SidebarProps["items"];
+};
 
+function Header({ items }: HeaderProps) {
+  const { id } = useParams();
+  const crumbs = getBreadcrumbs(items, id);
+  return (
+    <header
+      className="sticky top-0 z-10 flex items-center border-b border-gray-200 bg-white/90 p-4 
+    shadow-sm backdrop-blur-sm dark:border-gray-700 dark:bg-slate-850/80"
+    >
+      <MobileNavigation />
+      <Breadcrumbs items={crumbs} />
       {/* Current users in this notebook */}
       <div className="ml-auto mr-4 flex -space-x-1 text-white">
         <Avatar className="bg-gray-200 text-gray-700" size="lg">
@@ -53,6 +53,34 @@ function Header() {
       </Typography>
     </header>
   );
+}
+
+function getBreadcrumbs(
+  items: SidebarProps["items"],
+  id: string
+): BreadcrumbItem[] {
+  const crumbs = [];
+  for (const item of items) {
+    crumbs.push({
+      href: item.href,
+      label: item.label,
+    });
+
+    if (item.id === id) {
+      break;
+    }
+
+    if (item.type === "category") {
+      const path = getBreadcrumbs(item.items, id);
+      const pathContainsId = path.length > 0;
+      if (pathContainsId) {
+        crumbs.push(...path);
+        break;
+      }
+    }
+    crumbs.pop();
+  }
+  return crumbs;
 }
 
 export default Header;
