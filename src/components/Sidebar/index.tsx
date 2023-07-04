@@ -1,13 +1,13 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import clsx from "clsx";
 import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import {
   KeyboardEvent,
   PropsWithChildren,
   useEffect,
-  useReducer,
   useRef,
-  useState,
+  useState
 } from "react";
 import {
   RiBook2Line as BookIcon,
@@ -16,14 +16,10 @@ import {
 import ContextMenu from "../ContextMenu";
 import Typography from "../Typography";
 import {
-  SidebarDispatchContext,
-  SidebarItemsContext,
   useSidebarDispatch,
-  useSidebarItems,
-} from "./context";
+  useSidebarItems
+} from "./SidebarContextProvider";
 import { CategoryActions, LinkActions, SidebarActions } from "./menu-actions";
-import { itemsReducer } from "./state";
-import { useRouter } from "next/navigation";
 
 //#region  Typings
 export type SidebarItemListProps = {
@@ -34,8 +30,7 @@ type SidebarItemBaseProps = {
   isEditing?: boolean;
 };
 
-export type SidebarProps = React.ComponentPropsWithoutRef<"aside"> &
-  SidebarItemListProps;
+export type SidebarProps = PropsWithChildren;
 
 export type LinkItem = {
   type: "link";
@@ -60,20 +55,14 @@ export type ItemProps = CategoryProps | LinkProps;
 
 //#endregion
 
-function Sidebar({ children, items: initialItems, ...rest }: SidebarProps) {
-  const [items, dispatch] = useReducer(itemsReducer, initialItems);
+function Sidebar({ children }: PropsWithChildren) {
   return (
-    <SidebarItemsContext.Provider value={items}>
-      <SidebarDispatchContext.Provider value={dispatch}>
-        <nav
-          className="sticky top-0 flex h-screen flex-col justify-between space-y-1 
+    <nav
+      className="sticky top-0 flex h-screen flex-col justify-between space-y-1 
           bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-slate-800 dark:text-inherit"
-          {...rest}
-        >
-          {children}
-        </nav>
-      </SidebarDispatchContext.Provider>
-    </SidebarItemsContext.Provider>
+    >
+      {children}
+    </nav>
   );
 }
 

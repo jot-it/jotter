@@ -1,43 +1,33 @@
 "use client";
 import { RiAddLine as AddIcon } from "react-icons/ri";
 import Sidebar from "../components/Sidebar";
-import { useSidebarDispatch } from "../components/Sidebar/context";
-import sidebarConfig from "../sidebarConfig";
+import { useSidebarDispatch } from "../components/Sidebar/SidebarContextProvider";
 
 function SideNavigation() {
-  return (
-    <Sidebar items={sidebarConfig}>
-      <SidebarContent />
-    </Sidebar>
-  );
-}
-
-function SidebarContent() {
   const dispatch = useSidebarDispatch();
+  
+  const handleCreatePage = () => {
+    dispatch({
+      type: "create",
+      newItem: {
+        label: "new item",
+        href: "#ni001",
+        type: "link",
+      },
+    });
+  };
+  
   return (
-    <>
+    <Sidebar>
       <Sidebar.Items />
       <div className="space-y-1">
         <Sidebar.Divider />
-        <Sidebar.Button
-          onClick={() =>
-            dispatch({
-              type: "create",
-              newItem :{
-                label: "new item",
-                id: crypto.randomUUID(),
-                href: "#ni001",
-                type: "link",
-                isEditing : true,
-              },
-            })
-          }
-        >
+        <Sidebar.Button onClick={handleCreatePage}>
           ADD NEW PAGE
           <AddIcon />
         </Sidebar.Button>
       </div>
-    </>
+    </Sidebar>
   );
 }
 

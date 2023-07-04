@@ -9,13 +9,12 @@ import {
   RiUserAddLine as UserAddIcon,
 } from "react-icons/ri";
 import MobileNavigation from "./MobileNavigation";
+import { useSidebarItems } from "@/components/Sidebar/SidebarContextProvider";
 
-type HeaderProps = {
-  items: SidebarProps["items"];
-};
 
-function Header({ items }: HeaderProps) {
+function Header() {
   const { id } = useParams();
+  const items = useSidebarItems();
   const crumbs = getBreadcrumbs(items, id);
   return (
     <header
