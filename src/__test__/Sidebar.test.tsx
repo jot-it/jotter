@@ -27,7 +27,7 @@ test.skip("Renders a link child", () => {
 
 test("Renders a category child", () => {
   const items: Item[] = [
-    { type: "category", id: "0", label: "item category", items: [] },
+    { type: "category", id: "0", label: "item category",  href: "#", items: [] },
   ];
 
   render(

@@ -5,9 +5,8 @@ import {
   CgRename as RenameIcon,
 } from "react-icons/cg";
 import { RiBook2Line as BookIcon } from "react-icons/ri";
-import { ItemProps } from ".";
 import ContextMenu from "../ContextMenu";
-import { useSidebarDispatch } from "./context";
+import { useSidebarDispatch } from "./SidebarContextProvider";
 
 type ActionProps = {
   id: string;
@@ -90,16 +89,12 @@ function NewPageAction() {
   return (
     <ContextMenu.Option
       onClick={() => {
-        const newItem: ItemProps = {
-          label: "",
-          id: crypto.randomUUID(),
-          href: "#ni001",
-          type: "link",
-          isEditing: true,
-        };
         dispatch({
           type: "create",
-          newItem,
+          newItem: {
+            type: "link",
+            label: "",
+          },
         });
       }}
     >
@@ -114,15 +109,14 @@ function NewCategoryAction() {
   return (
     <ContextMenu.Option
       onClick={() => {
-        const newItem: ItemProps = {
-          label: "",
-          id: crypto.randomUUID(),
-          items: [],
-          href: "#",
-          type: "category",
-          isEditing: true,
-        };
-        dispatch({ type: "create", newItem });
+        dispatch({
+          type: "create",
+          newItem: {
+            type: "category",
+            label: "",
+            items: [],
+          },
+        });
       }}
     >
       <BookIcon className="mr-3 text-lg" />
@@ -137,18 +131,13 @@ function InsertPageAction({ id }: ActionProps) {
   return (
     <ContextMenu.Option
       onClick={() => {
-        const newItem: ItemProps = {
-          label: "",
-          id: crypto.randomUUID(),
-          href: "#ni001",
-          type: "link",
-          isEditing: true,
-        };
-
         dispatch({
           type: "insert",
           id,
-          newItem: newItem,
+          newItem: {
+            label: "",
+            type: "link",
+          },
         });
       }}
     >

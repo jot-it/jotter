@@ -7,7 +7,7 @@ import {
   PropsWithChildren,
   useEffect,
   useRef,
-  useState
+  useState,
 } from "react";
 import {
   RiBook2Line as BookIcon,
@@ -15,10 +15,7 @@ import {
 } from "react-icons/ri";
 import ContextMenu from "../ContextMenu";
 import Typography from "../Typography";
-import {
-  useSidebarDispatch,
-  useSidebarItems
-} from "./SidebarContextProvider";
+import { useSidebarDispatch, useSidebarItems } from "./SidebarContextProvider";
 import { CategoryActions, LinkActions, SidebarActions } from "./menu-actions";
 
 //#region  Typings

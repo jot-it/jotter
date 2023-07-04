@@ -1,16 +1,14 @@
 "use client";
 import Avatar from "@/components/Avatar";
 import Breadcrumbs, { BreadcrumbItem } from "@/components/Breadcrumbs";
-import { SidebarProps } from "@/components/Sidebar";
+import { Item } from "@/components/Sidebar";
+import { useSidebarItems } from "@/components/Sidebar/SidebarContextProvider";
 import Typography from "@/components/Typography";
 import { useParams } from "next/navigation";
 import {
-  RiBook2Line as BookIcon,
-  RiUserAddLine as UserAddIcon,
+  RiUserAddLine as UserAddIcon
 } from "react-icons/ri";
 import MobileNavigation from "./MobileNavigation";
-import { useSidebarItems } from "@/components/Sidebar/SidebarContextProvider";
-
 
 function Header() {
   const { id } = useParams();
@@ -54,11 +52,8 @@ function Header() {
   );
 }
 
-function getBreadcrumbs(
-  items: SidebarProps["items"],
-  id: string
-): BreadcrumbItem[] {
-  const crumbs = [];
+function getBreadcrumbs(items: Item[], id: string) {
+  const crumbs: BreadcrumbItem[] = [];
   for (const item of items) {
     crumbs.push({
       href: item.href,
