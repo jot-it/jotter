@@ -11,7 +11,6 @@ function SideNavigation() {
       type: "create",
       newItem: {
         label: "new item",
-        href: "#ni001",
         type: "link",
       },
     });
