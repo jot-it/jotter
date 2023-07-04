@@ -5,8 +5,7 @@ export type Action =
   | {
       type: "rename";
       id: string;
-      isEditing: boolean;
-      newLabel?: string;
+      newLabel: string;
     }
   | {
       type: "delete";
@@ -24,18 +23,26 @@ export type Action =
   | {
       type: "create";
       newItem: DistributiveOmit<ItemProps, "id" | "isEditing" | "href">;
+    }
+  | {
+      type: "toggle_editing";
+      id: string;
     };
 
 export function itemsReducer(items: Item[], action: Action): Item[] {
   switch (action.type) {
     case "rename":
       return updateItem(items, action.id, {
-        isEditing: action.isEditing,
+        label: action.newLabel,
+        isEditing: false,
       });
+
     case "delete":
       return deleteItem(items, action.id);
+
     case "group":
       throw new Error("Not implemented");
+
     case "insert": {
       const id = window.crypto.randomUUID();
       const href = `/note/${id}`;
@@ -46,6 +53,7 @@ export function itemsReducer(items: Item[], action: Action): Item[] {
         isEditing: true,
       });
     }
+
     case "create": {
       const id = window.crypto.randomUUID();
       const href = `/note/${id}`;
@@ -56,6 +64,10 @@ export function itemsReducer(items: Item[], action: Action): Item[] {
         href,
       });
     }
+    case "toggle_editing":
+      return updateItem(items, action.id, {
+        isEditing: true,
+      });
   }
 }
 

@@ -52,16 +52,7 @@ function RenameAction({ id }: ActionProps) {
   const dispatch = useSidebarDispatch();
   return (
     <ContextMenu.Option
-      onClick={(e) => {
-        //e.stopPropagation();
-        // Prevent executing whe user alse click outside
-        e.nativeEvent.stopImmediatePropagation();
-        dispatch({
-          id,
-          type: "rename",
-          isEditing: true,
-        });
-      }}
+      onClick={(e) => dispatch({ type: "toggle_editing", id })}
     >
       <RenameIcon className="mr-3 text-lg" />
       <span>Rename</span>

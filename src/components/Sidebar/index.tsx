@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   KeyboardEvent,
   PropsWithChildren,
+  memo,
   useEffect,
   useRef,
   useState,
@@ -13,7 +14,6 @@ import {
   RiBook2Line as BookIcon,
   RiArrowDownSLine as Chevron,
 } from "react-icons/ri";
-import { useOnOutsideClick } from "../../hooks/useOnOutsideClick";
 import ContextMenu from "../ContextMenu";
 import Typography from "../Typography";
 import { useSidebarDispatch, useSidebarItems } from "./SidebarContextProvider";
@@ -56,7 +56,7 @@ export type ItemProps = CategoryProps | LinkProps;
 function Sidebar({ children }: PropsWithChildren) {
   return (
     <nav
-      className="sticky top-0 flex h-screen flex-col justify-between space-y-1 
+      className="sticky top-0 z-20 flex h-screen flex-col justify-between space-y-1 
           bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-slate-800 dark:text-inherit"
     >
       {children}
@@ -79,7 +79,10 @@ function SidebarItemsRoot() {
   );
 }
 
-function SidebarItemList({ items }: SidebarItemListProps) {
+// Memoize to prevent re-rendering when the user is renaming an item
+const SidebarItemList = memo(function SidebarItemList({
+  items,
+}: SidebarItemListProps) {
   return (
     <Accordion.Root className="h-full" type="single" collapsible>
       {items.map((props) => (
@@ -87,7 +90,7 @@ function SidebarItemList({ items }: SidebarItemListProps) {
       ))}
     </Accordion.Root>
   );
-}
+});
 
 function SidebarItem(props: ItemProps) {
   const id = props.id;
@@ -172,7 +175,7 @@ function ItemContent(props: ItemProps) {
   const { label: initialLabel, isEditing, id, type } = props;
   const [label, setLabel] = useState(initialLabel);
   const inputRef = useRef<HTMLInputElement>(null);
-  const isEmpty = label.trim().length === 0;
+  const isLabelEmpty = label.trim().length === 0;
   const dispatch = useSidebarDispatch();
 
   const handleRename = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -186,17 +189,21 @@ function ItemContent(props: ItemProps) {
   };
 
   const rename = () => {
-    //Empty labels are assumed to be new
-    if (isEmpty && initialLabel === "") {
+    // Both initial label and current label are empty this must be a new item
+    if (isLabelEmpty && initialLabel.length === 0) {
       dispatch({ type: "delete", id });
       return;
     }
 
-    //Prevent empty label
-    if (isEmpty) {
-      setLabel(initialLabel);
+    if (isLabelEmpty) {
+      setLabel(initialLabel); // Reset label
     }
-    dispatch({ type: "rename", id, isEditing: false, newLabel: label });
+
+    dispatch({
+      type: "rename",
+      id,
+      newLabel: isLabelEmpty ? initialLabel : label,
+    });
   };
 
   useEffect(() => {
