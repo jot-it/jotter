@@ -38,7 +38,7 @@ export function itemsReducer(items: Item[], action: Action): Item[] {
       throw new Error("Not implemented");
     case "insert": {
       const id = window.crypto.randomUUID();
-      const href = `/notes/${id}`;
+      const href = `/note/${id}`;
       return insertItem(items, action.id, {
         ...action.newItem,
         href,
@@ -48,7 +48,7 @@ export function itemsReducer(items: Item[], action: Action): Item[] {
     }
     case "create": {
       const id = window.crypto.randomUUID();
-      const href = `/notes/${id}`;
+      const href = `/note/${id}`;
       return createItem(items, {
         ...action.newItem,
         isEditing: true,

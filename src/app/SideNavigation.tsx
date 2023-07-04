@@ -10,7 +10,7 @@ function SideNavigation() {
     dispatch({
       type: "create",
       newItem: {
-        label: "new item",
+        label: "",
         type: "link",
       },
     });
