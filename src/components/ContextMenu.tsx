@@ -3,7 +3,9 @@ import clsx from "clsx";
 import { PropsWithChildren, ReactNode, forwardRef } from "react";
 
 type ContextMenuProps = PropsWithChildren<{
-  /** Element that will have contextual menu behaviour. */
+  /** 
+   * Element that will have contextual menu behaviour. 
+   */
   trigger: ReactNode;
 }>;
 

@@ -1,7 +1,7 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import clsx from "clsx";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   KeyboardEvent,
   PropsWithChildren,
@@ -86,7 +86,7 @@ const SidebarItemList = memo(function SidebarItemList({
   return (
     <Accordion.Root className="h-full" type="single" collapsible>
       {items.map((props) => (
-        <SidebarItem isEditing={false} key={props.id} {...props} />
+        <SidebarItem key={props.id} {...props} />
       ))}
     </Accordion.Root>
   );
@@ -138,14 +138,17 @@ export function Category(props: CategoryProps) {
 }
 
 export function Link(props: LinkProps) {
+  const isActive = usePathname() === props.href;
   return (
     //@ts-expect-error Next.js links also have a "as" prop
     <Typography
       as={NextLink}
       href={props.href}
+      aria-current={isActive ? "page" : undefined}
       className={clsx(
         // isEmpty && "outline outline-1 -outline-offset-1 dark:outline-red-400",
-        "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700"
+        isActive && "bg-gray-300 dark:bg-slate-700",
+        "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700"
       )}
       variant="body1"
     >
@@ -223,7 +226,7 @@ function ItemContent(props: ItemProps) {
     <input
       className={clsx(
         type === "link" && "w-full",
-        "cursor-text bg-transparent outline-none dark:bg-transparent dark:outline-none"
+        "cursor-text bg-transparent outline-none"
       )}
       autoComplete="off"
       value={label}
