@@ -22,15 +22,18 @@ import {
   $getRoot,
   LexicalEditor,
 } from "lexical";
+import {$createHeadingNode} from "@lexical/rich-text"
+import { WebsocketProvider } from "y-websocket";
+import {CollaborationPlugin} from "@lexical/react/LexicalCollaborationPlugin";
 import { useCallback, useState } from "react";
 import theme from "./theme";
+import * as Y from "yjs";
+import { useParams } from "next/navigation";
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
-  const paragraph = $createParagraphNode();
-  const text = $createTextNode("Welcome to collab!");
-  paragraph.append(text);
-  root.append(paragraph);
+  const headingPlaceholder = $createHeadingNode("h1");
+  root.append(headingPlaceholder);
 }
 
 const editorConfig: InitialConfigType = {
@@ -57,6 +60,7 @@ const editorConfig: InitialConfigType = {
 
 function Editor() {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
+  const params = useParams();
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
     if (node !== null) {
@@ -84,8 +88,9 @@ function Editor() {
 
         {editorContainer ? <ToolbarPlugin container={editorContainer} />: <></>}
         <NoSSR>
-          {/* <CollaborationPlugin
-            id="yjs-plugin"
+          <CollaborationPlugin
+            id={params.id}
+            //@ts-expect-error LexicalComposer doesn't have a type for this
             providerFactory={(id, yjsDocMap) => {
               const doc = new Y.Doc();
               yjsDocMap.set(id, doc);
@@ -93,7 +98,7 @@ function Editor() {
               const provider = new WebsocketProvider(
                 "ws://localhost:1234",
                 id,
-                doc
+                doc,
               );
               return provider;
             }}
@@ -103,7 +108,7 @@ function Editor() {
             // prop (json string, state object, or a function)
             initialEditorState={initialEditorState}
             shouldBootstrap={true}
-          /> */}
+          />
         </NoSSR>
       </LexicalComposer>
     </div>
