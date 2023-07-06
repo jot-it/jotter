@@ -2,14 +2,15 @@ import Header from "@/app/Header";
 import Sidebar, { Item } from "@/components/Sidebar";
 import SidebarContextProvider from "@/components/Sidebar/SidebarContextProvider";
 import { render, screen } from "@testing-library/react";
-import * as nextRouter from "next/navigation";
+import { useParams } from "next/navigation";
+import { mocked } from "./helpers";
 
 jest.mock("next/navigation");
 
-jest.mock("../hooks/useMatchMedia", () => jest.fn());
+jest.mock("../hooks/useMatchMedia");
 
 test("Renders when some path matches", () => {
-  jest.spyOn(nextRouter, "useParams").mockReturnValue({
+  mocked(useParams).mockReturnValue({
     id: "1",
   });
 
@@ -37,7 +38,7 @@ test("Renders when some path matches", () => {
 });
 
 test("Does not render when path does not match any link", () => {
-  jest.spyOn(nextRouter, "useParams").mockReturnValue({
+  mocked(useParams).mockReturnValue({
     id: "0",
   });
 
@@ -65,7 +66,7 @@ test("Does not render when path does not match any link", () => {
 });
 
 test("Last link contains aria-current page", () => {
-  jest.spyOn(nextRouter, "useParams").mockReturnValue({
+  mocked(useParams).mockReturnValue({
     id: "1",
   });
 
