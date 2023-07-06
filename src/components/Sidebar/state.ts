@@ -5,8 +5,7 @@ export type Action =
   | {
       type: "rename";
       id: string;
-      isEditing: boolean;
-      newLabel?: string;
+      newLabel: string;
     }
   | {
       type: "delete";
@@ -19,27 +18,56 @@ export type Action =
   | {
       type: "insert";
       id: string;
-      newItem: ItemProps;
+      newItem: DistributiveOmit<ItemProps, "id" | "isEditing" | "href">;
     }
   | {
       type: "create";
-      newItem: ItemProps;
+      newItem: DistributiveOmit<ItemProps, "id" | "isEditing" | "href">;
+    }
+  | {
+      type: "toggle_editing";
+      id: string;
     };
 
 export function itemsReducer(items: Item[], action: Action): Item[] {
   switch (action.type) {
     case "rename":
       return updateItem(items, action.id, {
-        isEditing: action.isEditing,
+        label: action.newLabel,
+        isEditing: false,
       });
+
     case "delete":
       return deleteItem(items, action.id);
+
     case "group":
       throw new Error("Not implemented");
-    case "insert":
-      return insertItem(items, action.id, action.newItem);
-    case "create":
-      return createItem(items, action.newItem);
+
+    case "insert": {
+      const id = window.crypto.randomUUID();
+      const href = `/note/${id}`;
+      return insertItem(items, action.id, {
+        ...action.newItem,
+        href,
+        id,
+        isEditing: true,
+      });
+    }
+
+    case "create": {
+      const id = window.crypto.randomUUID();
+      const href = `/note/${id}`;
+      return createItem(items, {
+        ...action.newItem,
+        isEditing: true,
+        id,
+        href,
+      });
+    }
+    case "toggle_editing":
+      return updateItem(items, action.id, {
+        isEditing: true,
+      });
   }
 }
 

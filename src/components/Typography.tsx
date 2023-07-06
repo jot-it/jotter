@@ -1,6 +1,6 @@
+import { PolymorphicProps, RefForwardingComponent } from "@/types/as-prop";
 import clsx from "clsx";
 import { forwardRef } from "react";
-import { PolymorphicProps, RefForwardingComponent } from "./helpers";
 
 export const textVariants = {
   h1: "text-8xl font-light",

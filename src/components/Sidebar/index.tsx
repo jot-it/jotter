@@ -1,11 +1,12 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import clsx from "clsx";
 import NextLink from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   KeyboardEvent,
   PropsWithChildren,
+  memo,
   useEffect,
-  useReducer,
   useRef,
   useState,
 } from "react";
@@ -13,17 +14,10 @@ import {
   RiBook2Line as BookIcon,
   RiArrowDownSLine as Chevron,
 } from "react-icons/ri";
-import { useOnOutsideClick } from "../../hooks/useOnOutsideClick";
 import ContextMenu from "../ContextMenu";
 import Typography from "../Typography";
-import {
-  SidebarDispatchContext,
-  SidebarItemsContext,
-  useSidebarDispatch,
-  useSidebarItems,
-} from "./context";
-import { CategoryActions, LinksActions, SidebarActions } from "./menu-actions";
-import { itemsReducer } from "./state";
+import { useSidebarDispatch, useSidebarItems } from "./SidebarContextProvider";
+import { CategoryActions, LinkActions, SidebarActions } from "./menu-actions";
 
 //#region  Typings
 export type SidebarItemListProps = {
@@ -34,10 +28,7 @@ type SidebarItemBaseProps = {
   isEditing?: boolean;
 };
 
-type CategoryBodyProps = Pick<CategoryProps, "label" | "items" | "id">;
-
-export type SidebarProps = React.ComponentPropsWithoutRef<"aside"> &
-  SidebarItemListProps;
+export type SidebarProps = PropsWithChildren;
 
 export type LinkItem = {
   type: "link";
@@ -48,6 +39,7 @@ export type LinkItem = {
 
 export type CategoryItem = {
   type: "category";
+  href: string;
   label: string;
   items: Item[];
   id: string;
@@ -61,20 +53,14 @@ export type ItemProps = CategoryProps | LinkProps;
 
 //#endregion
 
-function Sidebar({ children, items: initialItems, ...rest }: SidebarProps) {
-  const [items, dispatch] = useReducer(itemsReducer, initialItems);
+function Sidebar({ children }: PropsWithChildren) {
   return (
-    <SidebarItemsContext.Provider value={items}>
-      <SidebarDispatchContext.Provider value={dispatch}>
-        <nav
-          className="sticky top-0 flex h-screen flex-col justify-between space-y-1 
+    <nav
+      className="sticky top-0 z-20 flex h-screen flex-col justify-between space-y-1 
           bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-slate-800 dark:text-inherit"
-          {...rest}
-        >
-          {children}
-        </nav>
-      </SidebarDispatchContext.Provider>
-    </SidebarItemsContext.Provider>
+    >
+      {children}
+    </nav>
   );
 }
 
@@ -93,15 +79,18 @@ function SidebarItemsRoot() {
   );
 }
 
-function SidebarItemList({ items }: SidebarItemListProps) {
+// Memoize to prevent re-rendering when the user is renaming an item
+const SidebarItemList = memo(function SidebarItemList({
+  items,
+}: SidebarItemListProps) {
   return (
     <Accordion.Root className="h-full" type="single" collapsible>
       {items.map((props) => (
-        <SidebarItem isEditing={false} key={props.id} {...props} />
+        <SidebarItem key={props.id} {...props} />
       ))}
     </Accordion.Root>
   );
-}
+});
 
 function SidebarItem(props: ItemProps) {
   const id = props.id;
@@ -115,42 +104,56 @@ function SidebarItem(props: ItemProps) {
     case "link":
       return (
         <ContextMenu trigger={<Link {...props} />}>
-          <LinksActions id={id} />
+          <LinkActions id={id} />
         </ContextMenu>
       );
   }
 }
 //#endregion
 
-export function Category({ ...props }: CategoryProps) {
-  const { label, items, id } = props;
-
+export function Category(props: CategoryProps) {
+  const router = useRouter();
   return (
-    <CategoryBody id={id} items={items} label={label}>
-      <div>
-        <BookIcon className="mr-2 inline-block" />
-        <ItemContent {...props} />
-      </div>
-    </CategoryBody>
+    <Accordion.Item value={props.id}>
+      <Accordion.Header className="p-0.5">
+        <Accordion.Trigger
+          onClick={() => router.push(props.href)}
+          className="group flex w-full items-center justify-between rounded-lg p-3 text-left 
+          hover:bg-gray-300 data-[state=open]:bg-cyan-400/20 data-[state=open]:text-cyan-950
+          dark:hover:bg-gray-700 dark:data-[state=open]:bg-cyan-900 dark:data-[state=open]:text-cyan-200"
+        >
+          <div>
+            <BookIcon className="mr-2 inline-block" />
+            <ItemContent {...props} />
+          </div>
+          <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
+        </Accordion.Trigger>
+      </Accordion.Header>
+
+      <Accordion.Content className="ml-2">
+        <SidebarItemList items={props.items} />
+      </Accordion.Content>
+    </Accordion.Item>
   );
 }
 
-export function Link({ ...props }: LinkProps) {
-  const { href } = props;
-
+export function Link(props: LinkProps) {
+  const isActive = usePathname() === props.href;
   return (
-    <NextLink href={href}>
-      <Typography
-        className={clsx(
-          // isEmpty && "outline outline-1 -outline-offset-1 dark:outline-red-400",
-          "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700"
-        )}
-        variant="body1"
-        aria-selected="false"
-      >
-        <ItemContent {...props} />
-      </Typography>
-    </NextLink>
+    //@ts-expect-error Next.js links also have a "as" prop
+    <Typography
+      as={NextLink}
+      href={props.href}
+      aria-current={isActive ? "page" : undefined}
+      className={clsx(
+        // isEmpty && "outline outline-1 -outline-offset-1 dark:outline-red-400",
+        isActive && "bg-gray-300 dark:bg-slate-700",
+        "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700"
+      )}
+      variant="body1"
+    >
+      <ItemContent {...props} />
+    </Typography>
   );
 }
 
@@ -171,12 +174,11 @@ function Divider() {
 }
 
 //#region Items Content
-function ItemContent({ ...props }: ItemProps) {
+function ItemContent(props: ItemProps) {
   const { label: initialLabel, isEditing, id, type } = props;
-
   const [label, setLabel] = useState(initialLabel);
   const inputRef = useRef<HTMLInputElement>(null);
-  const isEmpty = label.trim().length === 0;
+  const isLabelEmpty = label.trim().length === 0;
   const dispatch = useSidebarDispatch();
 
   const handleRename = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -190,66 +192,50 @@ function ItemContent({ ...props }: ItemProps) {
   };
 
   const rename = () => {
-    //Empty labels are assumed to be new
-    if (isEmpty && initialLabel === "") {
+    // Both initial label and current label are empty this must be a new item
+    if (isLabelEmpty && initialLabel.length === 0) {
       dispatch({ type: "delete", id });
       return;
     }
 
-    //Prevent empty label
-    if (isEmpty) {
-      setLabel(initialLabel);
+    if (isLabelEmpty) {
+      setLabel(initialLabel); // Reset label
     }
-    dispatch({ type: "rename", id, isEditing: false, newLabel: label });
+
+    dispatch({
+      type: "rename",
+      id,
+      newLabel: isLabelEmpty ? initialLabel : label,
+    });
   };
 
   useEffect(() => {
-    // Prevent race condition between any active focus and this one
-    const timeout = setTimeout(() => inputRef.current?.focus(), 200);
+    // HACK Use a timeout to prevent race condition between any active focus and this one
+    const timeout = setTimeout(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }, 200);
     return () => clearTimeout(timeout);
   }, [isEditing]);
 
-  const content = isEditing ? (
+  if (!isEditing) {
+    return <span>{label}</span>;
+  }
+
+  return (
     <input
       className={clsx(
         type === "link" && "w-full",
-        "cursor-text bg-transparent outline-none dark:bg-transparent dark:outline-none"
+        "cursor-text bg-transparent outline-none"
       )}
-      placeholder={label}
+      autoComplete="off"
+      value={label}
+      spellCheck={false}
       ref={inputRef}
       onBlur={rename}
-      autoComplete="off"
-      spellCheck={false}
-      onChange={(e) => {
-        setLabel(e.target.value);
-      }}
+      onChange={(e) => setLabel(e.target.value)}
       onKeyUp={handleRename}
     />
-  ) : (
-    <span>{label}</span>
-  );
-
-  return content;
-}
-
-function CategoryBody({ ...props }: PropsWithChildren<CategoryBodyProps>) {
-  const { children, items, id } = props;
-  return (
-    <Accordion.Item value={id}>
-      <Accordion.Header className="p-[2px]">
-        <Accordion.Trigger
-          className="group flex w-full items-center justify-between rounded-lg p-3 text-left 
-          hover:bg-gray-300 data-[state=open]:bg-cyan-400/20 data-[state=open]:text-cyan-950
-          dark:hover:bg-gray-700 dark:data-[state=open]:bg-cyan-900 dark:data-[state=open]:text-cyan-200"
-        >
-          {children}
-          <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
-        </Accordion.Trigger>
-      </Accordion.Header>
-      <Accordion.Content className="ml-2">
-        <SidebarItemList items={items} />
-      </Accordion.Content>
-    </Accordion.Item>
   );
 }
 //#endregion

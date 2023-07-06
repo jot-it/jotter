@@ -1,9 +1,11 @@
 "use client";
-import { PropsWithChildren, useState } from "react";
+import sidebarConfig from "@/sidebarConfig";
 import { Barlow } from "next/font/google";
-import "./globals.css";
-import SideNavigation from "./SideNavigation";
+import { PropsWithChildren } from "react";
 import Header from "./Header";
+import SideNavigation from "./SideNavigation";
+import "./globals.css";
+import SidebarContextProvider from "@/components/Sidebar/SidebarContextProvider";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -17,15 +19,17 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <body
         className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
       >
-        <div className="grid lg:grid-cols-[20rem_auto]">
-          <aside className="hidden lg:block">
-            <SideNavigation />
-          </aside>
-          <div>
-            <Header />
-            {children}
+        <SidebarContextProvider items={sidebarConfig}>
+          <div className="grid lg:grid-cols-[20rem_auto]">
+            <aside className="hidden lg:block">
+              <SideNavigation />
+            </aside>
+            <div>
+              <Header />
+              {children}
+            </div>
           </div>
-        </div>
+        </SidebarContextProvider>
       </body>
     </html>
   );

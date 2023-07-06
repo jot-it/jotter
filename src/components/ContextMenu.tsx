@@ -3,7 +3,9 @@ import clsx from "clsx";
 import { PropsWithChildren, ReactNode, forwardRef } from "react";
 
 type ContextMenuProps = PropsWithChildren<{
-  /** Element that will have contextual menu behaviour. */
+  /** 
+   * Element that will have contextual menu behaviour. 
+   */
   trigger: ReactNode;
 }>;
 
@@ -46,7 +48,7 @@ const Content = forwardRef<
 >(function Body({ children, ...props }, ref) {
   return (
     <ContextMenuPrimitive.Content
-      className="min-w-[220px] overflow-hidden rounded-lg bg-gray-50  p-2 drop-shadow-md data-[disabled]:text-gray-500 dark:bg-slate-700"
+      className="min-w-[220px] overflow-hidden rounded-lg bg-gray-50  p-2 drop-shadow-md data-[disabled]:text-gray-500 dark:bg-slate-700 z-50"
       ref={ref}
       {...props}
     >
