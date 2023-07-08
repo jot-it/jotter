@@ -14,21 +14,15 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import ErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { $createHeadingNode, HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import {
-  $createParagraphNode,
-  $createTextNode,
-  $getRoot,
-  LexicalEditor,
-} from "lexical";
-import {$createHeadingNode} from "@lexical/rich-text"
-import { WebsocketProvider } from "y-websocket";
-import {CollaborationPlugin} from "@lexical/react/LexicalCollaborationPlugin";
-import { useCallback, useState } from "react";
-import theme from "./theme";
-import * as Y from "yjs";
+import { $getRoot, LexicalEditor } from "lexical";
 import { useParams } from "next/navigation";
+import { useCallback, useState } from "react";
+import { WebsocketProvider } from "y-websocket";
+import * as Y from "yjs";
+import theme from "./theme";
+import dynamic from "next/dynamic";
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -58,6 +52,14 @@ const editorConfig: InitialConfigType = {
   ],
 };
 
+const CollaborationPlugin = dynamic(
+  () =>
+    import("@lexical/react/LexicalCollaborationPlugin").then(
+      (module) => module.CollaborationPlugin,
+    ),
+  { ssr: false },
+);
+
 function Editor() {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
   const params = useParams();
@@ -67,7 +69,7 @@ function Editor() {
       setEditorContainer(node);
     }
   }, []);
-  
+
   return (
     <div
       className="prose relative mx-auto my-12 max-w-3xl px-4 dark:prose-invert pb-7 lg:pb-0"
@@ -86,8 +88,12 @@ function Editor() {
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
 
-        {editorContainer ? <ToolbarPlugin container={editorContainer} />: <></>}
-        <NoSSR>
+        {editorContainer ? (
+          <ToolbarPlugin container={editorContainer} />
+        ) : (
+          <></>
+        )}
+        {params.id && (
           <CollaborationPlugin
             id={params.id}
             //@ts-expect-error LexicalComposer doesn't have a type for this
@@ -109,7 +115,7 @@ function Editor() {
             initialEditorState={initialEditorState}
             shouldBootstrap={true}
           />
-        </NoSSR>
+        )}
       </LexicalComposer>
     </div>
   );
