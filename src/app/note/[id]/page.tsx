@@ -1,5 +1,4 @@
 "use client";
-import NoSSR from "@/components/NoSSR";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
@@ -12,17 +11,19 @@ import {
 } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import ErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { $createHeadingNode, HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { $getRoot, LexicalEditor } from "lexical";
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
+import { IndexeddbPersistence } from "y-indexeddb";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 import theme from "./theme";
-import dynamic from "next/dynamic";
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -87,6 +88,7 @@ function Editor() {
         />
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        <HistoryPlugin />
 
         {editorContainer ? (
           <ToolbarPlugin container={editorContainer} />
@@ -97,13 +99,21 @@ function Editor() {
           <CollaborationPlugin
             id={params.id}
             //@ts-expect-error LexicalComposer doesn't have a type for this
-            providerFactory={(id, yjsDocMap) => {
+            providerFactory={(docName, yjsDocMap) => {
               const doc = new Y.Doc();
-              yjsDocMap.set(id, doc);
+              const persistenceProvider = new IndexeddbPersistence(
+                docName,
+                doc,
+              );
+              persistenceProvider.on("synced", () => {
+                console.log("Document synced!");
+              });
+
+              yjsDocMap.set(docName, doc);
 
               const provider = new WebsocketProvider(
                 "ws://localhost:1234",
-                id,
+                docName,
                 doc,
               );
               return provider;
@@ -113,7 +123,6 @@ function Editor() {
             // It accepts same type of values as LexicalComposer editorState
             // prop (json string, state object, or a function)
             initialEditorState={initialEditorState}
-            shouldBootstrap={true}
           />
         )}
       </LexicalComposer>

@@ -91,6 +91,7 @@ function TextFormatToolbar({ container, editor, fixedBottom}: TextFormatToolbarP
        "dark:border-slate-600 dark:bg-slate-700 dark:text-inherit",
        fixedBottom ? "fixed bottom-4 left-1/2 -translate-x-1/2" : "absolute left-0 top-0 z-10", 
        )}
+       
       ref={toolbarRef}
     >
       <TextFormatSelect editor={editor} />
