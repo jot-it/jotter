@@ -24,6 +24,7 @@ import {
 } from "lexical";
 import { useCallback, useState } from "react";
 import theme from "./theme";
+import ComponentPickerPlugin from "@/plugins/ComponentPickerPlugin";
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -63,10 +64,10 @@ function Editor() {
       setEditorContainer(node);
     }
   }, []);
-  
+
   return (
     <div
-      className="prose relative mx-auto my-12 max-w-3xl px-4 dark:prose-invert pb-7 lg:pb-0"
+      className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert lg:pb-0"
       ref={onRef}
     >
       <LexicalComposer initialConfig={editorConfig}>
@@ -74,15 +75,20 @@ function Editor() {
           contentEditable={<ContentEditable className="focus:outline-none" />}
           placeholder={
             <p className="absolute left-4 top-0 m-0 dark:text-gray-400">
-              Begin your story...
+              Press <span className="rounded py-1 px-2 bg-slate-800">/</span> for commands...
             </p>
           }
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        <ComponentPickerPlugin />
 
-        {editorContainer ? <ToolbarPlugin container={editorContainer} />: <></>}
+        {editorContainer ? (
+          <ToolbarPlugin container={editorContainer} />
+        ) : (
+          <></>
+        )}
         <NoSSR>
           {/* <CollaborationPlugin
             id="yjs-plugin"
