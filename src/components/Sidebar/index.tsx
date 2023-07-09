@@ -148,7 +148,7 @@ export function Link(props: LinkProps) {
       className={clsx(
         // isEmpty && "outline outline-1 -outline-offset-1 dark:outline-red-400",
         isActive && "bg-gray-300 dark:bg-slate-700",
-        "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700"
+        "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700",
       )}
       variant="body1"
     >
@@ -181,14 +181,11 @@ function ItemContent(props: ItemProps) {
   const isLabelEmpty = label.trim().length === 0;
   const dispatch = useSidebarDispatch();
 
-  const handleRename = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      rename();
-    }
+  const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") rename();
+
     // Prevent category from opening when the users presses space bar
-    if (e.key === " ") {
-      e.preventDefault();
-    }
+    if (e.key === " ") e.preventDefault();
   };
 
   const rename = () => {
@@ -226,7 +223,7 @@ function ItemContent(props: ItemProps) {
     <input
       className={clsx(
         type === "link" && "w-full",
-        "cursor-text bg-transparent outline-none"
+        "cursor-text bg-transparent outline-none",
       )}
       autoComplete="off"
       value={label}
@@ -234,7 +231,7 @@ function ItemContent(props: ItemProps) {
       ref={inputRef}
       onBlur={rename}
       onChange={(e) => setLabel(e.target.value)}
-      onKeyUp={handleRename}
+      onKeyUp={handleKeyUp}
     />
   );
 }
