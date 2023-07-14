@@ -8,17 +8,17 @@ import {
   SELECTION_CHANGE_COMMAND,
   TextFormatType,
 } from "lexical";
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import {
   RiBold as Bold,
   RiItalic as Italic,
   RiStrikethrough as StrikeThrough,
   RiUnderline as Underline,
 } from "react-icons/ri";
-import { moveToolbarToCurrentSelection } from "./utils";
 
-import TextFormatSelect from "./TextFormatSelect";
+import useFloatingBox from "@/plugins/useFloatingBox";
 import clsx from "clsx";
+import TextFormatSelect from "./TextFormatSelect";
 
 type TextFormatToolbarProps = {
   /**
@@ -42,18 +42,30 @@ const TEXT_FORMATS: TextFormatType[] = [
   "strikethrough",
 ];
 
-function TextFormatToolbar({ container, editor, fixedBottom}: TextFormatToolbarProps) {
-  const toolbarRef = useRef<HTMLDivElement>(null);
+function TextFormatToolbar({
+  container,
+  editor,
+  fixedBottom,
+}: TextFormatToolbarProps) {
   const [activeTextFormats, setActiveTextFormats] = useState<TextFormatType[]>(
-    []
+    [],
   );
+  const [selectionRect, setSelectionRect] = useState<DOMRect>();
+  const boxProps = useFloatingBox({
+    position: selectionRect,
+    anchor: container,
+    offsetX: 10,
+    offsetY: 10,
+  });
 
   const updateToolbarPosition = useCallback(() => {
-    const toolbar = toolbarRef.current;
-    if (fixedBottom || !toolbar) return;
+    if (fixedBottom) return;
 
-    moveToolbarToCurrentSelection(toolbar, container);
-  }, [container, fixedBottom]);
+    const nativeSelection = window.getSelection();
+    if (nativeSelection && !nativeSelection.isCollapsed) {
+      setSelectionRect(nativeSelection.getRangeAt(0).getBoundingClientRect());
+    }
+  }, [fixedBottom]);
 
   const handleSelectionChanged = useCallback(() => {
     editor.getEditorState().read(() => {
@@ -62,7 +74,7 @@ function TextFormatToolbar({ container, editor, fixedBottom}: TextFormatToolbarP
       if (!$isRangeSelection(selection)) return;
 
       setActiveTextFormats(
-        TEXT_FORMATS.filter((format) => selection.hasFormat(format))
+        TEXT_FORMATS.filter((format) => selection.hasFormat(format)),
       );
 
       updateToolbarPosition();
@@ -80,18 +92,21 @@ function TextFormatToolbar({ container, editor, fixedBottom}: TextFormatToolbarP
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
       handleSelectionChanged,
-      COMMAND_PRIORITY_LOW
+      COMMAND_PRIORITY_LOW,
     );
   }, [editor, handleSelectionChanged, updateToolbarPosition]);
 
   return (
     <Toolbar.Root
-      className={clsx("flex rounded-lg border bg-white p-3",
-      "text-gray-700  shadow-md  data-[state=hidden]:animate-fade-out data-[state=visible]:animate-fade-in",
-       "dark:border-slate-600 dark:bg-slate-700 dark:text-inherit",
-       fixedBottom ? "fixed bottom-4 left-1/2 -translate-x-1/2" : "absolute left-0 top-0 z-10", 
-       )}
-      ref={toolbarRef}
+      ref={!fixedBottom ? boxProps.ref: undefined} // Do not float the toolbar if it is fixed to the bottom
+      className={clsx(
+        "flex rounded-lg border bg-white p-3",
+        "text-gray-700  shadow-md animate-fade-in",
+        "dark:border-slate-600 dark:bg-slate-700 dark:text-inherit",
+        fixedBottom
+          ? "fixed bottom-4 left-1/2 -translate-x-1/2"
+          : "absolute left-0 top-0 z-10",
+      )}
     >
       <TextFormatSelect editor={editor} />
 
