@@ -1,4 +1,5 @@
 "use client";
+import { useDBContext } from "@/app/PersistenceProvider";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
@@ -20,9 +21,6 @@ import { $getRoot, LexicalEditor } from "lexical";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import { IndexeddbPersistence } from "y-indexeddb";
-import { WebsocketProvider } from "y-websocket";
-import * as Y from "yjs";
 import theme from "./theme";
 
 function initialEditorState(editor: LexicalEditor): void {
@@ -63,6 +61,8 @@ const CollaborationPlugin = dynamic(
 
 function Editor() {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
+  const {db, providerFactory} = useDBContext();
+  
   const params = useParams();
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
@@ -98,31 +98,13 @@ function Editor() {
         {params.id && (
           <CollaborationPlugin
             id={params.id}
-            //@ts-expect-error LexicalComposer doesn't have a type for this
-            providerFactory={(docName, yjsDocMap) => {
-              const doc = new Y.Doc();
-              const persistenceProvider = new IndexeddbPersistence(
-                docName,
-                doc,
-              );
-              persistenceProvider.on("synced", () => {
-                console.log("Document synced!");
-              });
-
-              yjsDocMap.set(docName, doc);
-
-              const provider = new WebsocketProvider(
-                "ws://localhost:1234",
-                docName,
-                doc,
-              );
-              return provider;
-            }}
+            providerFactory={providerFactory}
             // Optional initial editor state in case collaborative Y.Doc won't
             // have any existing data on server. Then it'll user this value to populate editor.
             // It accepts same type of values as LexicalComposer editorState
             // prop (json string, state object, or a function)
             initialEditorState={initialEditorState}
+            shouldBootstrap={false}
           />
         )}
       </LexicalComposer>

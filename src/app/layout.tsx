@@ -1,8 +1,9 @@
 import { Barlow } from "next/font/google";
-import { PropsWithChildren, Suspense, lazy } from "react";
+import { PropsWithChildren, lazy } from "react";
 import Header from "./Header";
 import SideNavigation from "./SideNavigation";
 import "./globals.css";
+import PersistenceProvider from "./PersistenceProvider";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -10,26 +11,30 @@ const barlow = Barlow({
   variable: "--font-barlow",
 });
 
-const SidebarContextProvider = lazy(() => import("@/components/Sidebar/SidebarContextProvider"));
+const SidebarContextProvider = lazy(
+  () => import("@/components/Sidebar/SidebarContextProvider"),
+);
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
-      >
-        <SidebarContextProvider>
-          <div className="grid lg:grid-cols-[20rem_auto]">
-            <aside className="hidden lg:block">
-              <SideNavigation />
-            </aside>
-            <div>
-              <Header />
-              {children}
+    <PersistenceProvider>
+      <html lang="en" className="dark">
+        <body
+          className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
+        >
+          <SidebarContextProvider>
+            <div className="grid lg:grid-cols-[20rem_auto]">
+              <aside className="hidden lg:block">
+                <SideNavigation />
+              </aside>
+              <div>
+                <Header />
+                {children}
+              </div>
             </div>
-          </div>
-        </SidebarContextProvider>
-      </body>
-    </html>
+          </SidebarContextProvider>
+        </body>
+      </html>
+    </PersistenceProvider>
   );
 }
