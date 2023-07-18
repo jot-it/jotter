@@ -22,9 +22,15 @@ import {
   $getRoot,
   LexicalEditor,
 } from "lexical";
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import theme from "./theme";
-import ComponentPickerPlugin from "@/plugins/ComponentPickerPlugin";
+import dynamic from "next/dynamic";
+import TreeViewPlugin from "@/plugins/TreeViewPlugin";
+
+const ComponentPickerPlugin = dynamic(
+  () => import("@/plugins/CommandPickerPlugin"),
+  { ssr: false }
+);
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -75,15 +81,20 @@ function Editor() {
           contentEditable={<ContentEditable className="focus:outline-none" />}
           placeholder={
             <p className="absolute left-4 top-0 m-0 dark:text-gray-400">
-              Press <span className="rounded py-1 px-2 bg-slate-800">/</span> for commands...
+              Press{" "}
+              <span className="rounded bg-gray-200 px-2 py-1 dark:bg-slate-800">
+                /
+              </span>{" "}
+              for commands...
             </p>
           }
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-        <ComponentPickerPlugin />
 
+        <ComponentPickerPlugin />
+        {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
         {editorContainer ? (
           <ToolbarPlugin container={editorContainer} />
         ) : (
