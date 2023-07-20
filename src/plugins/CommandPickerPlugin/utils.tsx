@@ -1,4 +1,4 @@
-import { LexicalCommand, RangeSelection, TextNode } from "lexical";
+import { $getSelection, $isRangeSelection, LexicalCommand, RangeSelection, TextNode } from "lexical";
 
 export type ComponentPickerOption = {
   key: string;
@@ -31,6 +31,35 @@ export function getNodeUpToAnchor(selection: RangeSelection): TextNode | null {
     return null;
   }
   return anchorNode;
+}
+
+export function $getQueryTextForSearch() {
+  const selection = $getSelection();
+  if (!$isRangeSelection(selection)) {
+    return null;
+  }
+
+  const text = getTextUpToAnchor(selection);
+  return text;
+}
+
+export function $getTextNodeForSeach() {
+  const selection = $getSelection();
+  if (!$isRangeSelection(selection)) {
+    return null;
+  }
+
+  const anchor = selection.anchor;
+  if (anchor.type !== "text") {
+    return null;
+  }
+
+  const node = anchor.getNode();
+
+  if (!node.isSimpleText()) {
+    return null;
+  }
+  return node;
 }
 
 const SUPPORTED_URL_PROTOCOLS = new Set([

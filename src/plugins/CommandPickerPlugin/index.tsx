@@ -1,27 +1,27 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import clsx from "clsx";
 import {
-  $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_LOW,
   FORMAT_TEXT_COMMAND,
+  INSERT_PARAGRAPH_COMMAND,
   KEY_ESCAPE_COMMAND,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { getNodeUpToAnchor, getTextUpToAnchor } from "./utils";
+import { $getQueryTextForSearch } from "./utils";
 import {
+  CLEAR_FORMAT_TEXT_COMMAND,
   INSERT_BLOCKQUOTE_COMMAND,
   INSERT_HEANDING_COMMAND,
   REMOVE_CARECT_COMMAND,
   useBlockQuoteCommand,
   useHeadingCommand,
-  useLinkCommand,
+  useClearformatText,
   useListCommand,
+  useRemoveCarectCommand,
+  useParagraph,
+  FORMAT_PARAGRAPH_COMMAND,
 } from "./commads";
-import { mergeRegister } from "@lexical/utils";
 import { createPortal } from "react-dom";
 import CommandPicker from "./CommandPicker";
 import {
@@ -34,11 +34,15 @@ import {
   RiUnderline as UnderlineIcon,
   RiStrikethrough as StrikethroughIcon,
   RiCodeSSlashLine as CodeIcon,
+  RiText as ClearFormatTextIcon,
 } from "react-icons/ri";
+
 import {
   GoListUnordered as ListIcon,
   GoListOrdered as OrderedListIcon,
 } from "react-icons/go";
+
+import { BsTextParagraph as ParagraphIcon } from "react-icons/bs";
 
 import {
   INSERT_ORDERED_LIST_COMMAND,
@@ -53,25 +57,18 @@ export default function ComponentPickerMenuPlugin() {
 
   const [_isPending, startTransition] = useTransition();
 
-  //TODO: Change better function
+  useListCommand(editor);
+  useHeadingCommand(editor);
+  useClearformatText(editor);
+  useParagraph(editor);
+  useBlockQuoteCommand(editor);
+  useRemoveCarectCommand(editor);
+
+  //TODO Change better function
   function handleClick(fn: () => void) {
     fn();
     editor.dispatchCommand(REMOVE_CARECT_COMMAND, undefined);
   }
-
-  const handleRemoveCommandString = useCallback(() => {
-    editor.update(() => {
-      const textNode = $getTextNodeForSeach();
-      if (!textNode) {
-        return false;
-      }
-      const textContent = textNode.getTextContent();
-      const newText = textContent.replace(/(?<=\s|\B)\/[a-zA-Z]*\d*/, "");
-      textNode.setTextContent(newText);
-    });
-
-    return true;
-  }, [editor]);
 
   const handleSelectionChanged = useCallback(() => {
     editor.getEditorState().read(() => {
@@ -81,11 +78,11 @@ export default function ComponentPickerMenuPlugin() {
       const matcher = /(?<=\s|\B)\/([a-zA-Z]*\d*)$/;
       const foundMatch = matcher.exec(selectionString);
       const canShow = Boolean(foundMatch?.[0]);
-      const command = foundMatch?.[1];
+      const command = foundMatch?.[1] ?? "";
 
       // Optimization
       startTransition(() => {
-        setCommand(command ?? "");
+        setCommand(command);
       });
 
       setShow(canShow);
@@ -95,19 +92,12 @@ export default function ComponentPickerMenuPlugin() {
   }, [editor]);
 
   useEffect(() => {
-    return mergeRegister(
-      editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
-        handleSelectionChanged,
-        COMMAND_PRIORITY_LOW
-      ),
-      editor.registerCommand(
-        REMOVE_CARECT_COMMAND,
-        handleRemoveCommandString,
-        COMMAND_PRIORITY_EDITOR
-      )
+    editor.registerCommand(
+      SELECTION_CHANGE_COMMAND,
+      handleSelectionChanged,
+      COMMAND_PRIORITY_LOW
     );
-  }, [editor, handleSelectionChanged, handleRemoveCommandString]);
+  }, [editor, handleSelectionChanged]);
 
   // Close Commponet Picker
   useEffect(() => {
@@ -121,13 +111,21 @@ export default function ComponentPickerMenuPlugin() {
     );
   }, [editor]);
 
-  useListCommand(editor);
-  useHeadingCommand(editor);
-  useLinkCommand(editor);
-  useBlockQuoteCommand(editor);
-
   return createPortal(
     <CommandPicker show={show}>
+      <CommandPicker.Command
+        onClick={() =>
+          handleClick(() =>
+            editor.dispatchCommand(FORMAT_PARAGRAPH_COMMAND, undefined)
+          )
+        }
+        queryString={command}
+        keywords="normal text clear unformat paragraph"
+      >
+        <ParagraphIcon />
+        {"Paragraph"}
+      </CommandPicker.Command>
+
       <CommandPicker.Command
         onClick={() =>
           handleClick(() =>
@@ -218,6 +216,19 @@ export default function ComponentPickerMenuPlugin() {
       </CommandPicker.Command>
 
       <CommandPicker.Command
+        onClick={() =>
+          handleClick(() =>
+            editor.dispatchCommand(CLEAR_FORMAT_TEXT_COMMAND, undefined)
+          )
+        }
+        queryString={command}
+        keywords="normal text clear unformat"
+      >
+        <ClearFormatTextIcon />
+        {"Normal"}
+      </CommandPicker.Command>
+
+      <CommandPicker.Command
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
           editor.dispatchCommand(REMOVE_CARECT_COMMAND, undefined);
@@ -270,24 +281,4 @@ export default function ComponentPickerMenuPlugin() {
     </CommandPicker>,
     document.body
   );
-}
-
-//TODO: Move to utils
-function $getQueryTextForSearch() {
-  const selection = $getSelection();
-  if (!$isRangeSelection(selection)) {
-    return null;
-  }
-
-  const text = getTextUpToAnchor(selection);
-  return text;
-}
-
-//FIXME: Styling commands (bold, italic, code... ) not working
-function $getTextNodeForSeach() {
-  const selection = $getSelection();
-  if (!$isRangeSelection(selection) || selection.isCollapsed()) {
-    return null;
-  }
-  return getNodeUpToAnchor(selection);
 }

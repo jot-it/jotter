@@ -1,15 +1,26 @@
 import clsx from "clsx";
 import { type } from "os";
-import { Children, MouseEventHandler, PropsWithChildren } from "react";
+import {
+  Children,
+  Dispatch,
+  MouseEventHandler,
+  PropsWithChildren,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { createContext } from "react";
 
 export type CommandItemProps = PropsWithChildren<{
-    /**
-     * String separate by space use to filter by `queryString`
-     */
+  /**
+   * String separate by space use to filter by `queryString`
+   */
   keywords: string;
   /**
-     * It's used to filter by `Keywords` and to be able to display
-  */
+   * It's used to filter by `Keywords` and to be able to display
+   */
   queryString: string;
   onClick: MouseEventHandler;
 }>;
@@ -18,15 +29,21 @@ export type CommandPickerProps = PropsWithChildren<{
   /**
    * Use to show it
    */
-  show : boolean;
+  show: boolean;
 }>;
 
-function CommandPicker({ children, show}: CommandPickerProps) {
-  if(!show){
+const MatchesContext = createContext<Dispatch<SetStateAction<number>>>(
+  () => {}
+);
+
+function CommandPicker({ children, show }: CommandPickerProps) {
+  const [matches, setMatches] = useState(0);
+
+  if (!show) {
     return null;
   }
 
-  //console.log(Children.toArray(children));
+  console.log(matches);
 
   return (
     <div
@@ -37,7 +54,11 @@ function CommandPicker({ children, show}: CommandPickerProps) {
         "dark:border-slate-600 dark:bg-slate-700 dark:text-inherit"
       )}
     >
-      <ul>{children}</ul>
+      <ul>
+        <MatchesContext.Provider value={setMatches}>
+          {children}
+        </MatchesContext.Provider>
+      </ul>
     </div>
   );
 }
@@ -48,8 +69,25 @@ function CommandItem({
   queryString,
   onClick,
 }: CommandItemProps) {
+  const isMatch = keywords.includes(queryString.toLowerCase());
+  const setMatches = useContext(MatchesContext);
+  const hasMounted = useRef(false);
 
-  if (!keywords.includes(queryString.toLowerCase())) {
+  useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
+    setMatches((p) => p + (isMatch ? 1 : -1));
+    
+    //HACK 
+    return ()=>{
+      hasMounted.current = false;
+    }
+  }, [setMatches, isMatch]);
+
+
+  if (!isMatch) {
     return null;
   }
 
@@ -71,4 +109,4 @@ function CommandItem({
   );
 }
 
-export default Object.assign(CommandPicker, { Command : CommandItem  });
+export default Object.assign(CommandPicker, { Command: CommandItem });
