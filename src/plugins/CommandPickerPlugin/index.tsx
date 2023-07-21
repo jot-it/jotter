@@ -48,6 +48,9 @@ import {
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
+import { createContext } from "react";
+
+export const CommandPickeContext = createContext("");
 
 export default function ComponentPickerMenuPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -78,7 +81,7 @@ export default function ComponentPickerMenuPlugin() {
       const matcher = /(?<=\s|\B)\/([a-zA-Z]*\d*)$/;
       const foundMatch = matcher.exec(selectionString);
       const canShow = Boolean(foundMatch?.[0]);
-      const command = foundMatch?.[1] ?? "";
+      const command = foundMatch?.[1].toLowerCase() ?? "";
 
       // Optimization
       startTransition(() => {
@@ -112,6 +115,7 @@ export default function ComponentPickerMenuPlugin() {
   }, [editor]);
 
   return createPortal(
+    <CommandPickeContext.Provider value={command}>
     <CommandPicker show={show}>
       <CommandPicker.Command
         onClick={() =>
@@ -119,7 +123,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(FORMAT_PARAGRAPH_COMMAND, undefined)
           )
         }
-        queryString={command}
         keywords="normal text clear unformat paragraph"
       >
         <ParagraphIcon />
@@ -132,7 +135,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(INSERT_HEANDING_COMMAND, "H1")
           )
         }
-        queryString={command}
         keywords="heading h1 header tittle"
       >
         <HeadingIcon />
@@ -145,7 +147,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(INSERT_HEANDING_COMMAND, "h2")
           )
         }
-        queryString={command}
         keywords="heading h2 header tittle subtittle"
       >
         <HeadingIcon />
@@ -158,7 +159,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(INSERT_HEANDING_COMMAND, "h3")
           )
         }
-        queryString={command}
         keywords="heading h3 header tittle subtittle"
       >
         <HeadingIcon />
@@ -171,7 +171,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
           )
         }
-        queryString={command}
         keywords="list bullet unordered ul"
       >
         <ListIcon />
@@ -184,7 +183,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
           )
         }
-        queryString={command}
         keywords="list numbered ordered ol"
       >
         <OrderedListIcon />
@@ -195,7 +193,6 @@ export default function ComponentPickerMenuPlugin() {
         onClick={() =>
           handleClick(() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code"))
         }
-        queryString={command}
         keywords="code codeblock javascript python js"
       >
         <CodeIcon />
@@ -208,7 +205,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(INSERT_BLOCKQUOTE_COMMAND, undefined)
           )
         }
-        queryString={command}
         keywords="quote block blockquote"
       >
         <QuoteIcon />
@@ -221,7 +217,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(CLEAR_FORMAT_TEXT_COMMAND, undefined)
           )
         }
-        queryString={command}
         keywords="normal text clear unformat"
       >
         <ClearFormatTextIcon />
@@ -233,7 +228,6 @@ export default function ComponentPickerMenuPlugin() {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
           editor.dispatchCommand(REMOVE_CARECT_COMMAND, undefined);
         }}
-        queryString={command}
         keywords="bold strong"
       >
         <BoldIcon />
@@ -246,7 +240,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")
           )
         }
-        queryString={command}
         keywords="italic oblique"
       >
         <ItalicIcon />
@@ -259,7 +252,6 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")
           )
         }
-        queryString={command}
         keywords="underline underscore mark"
       >
         <UnderlineIcon />
@@ -272,13 +264,13 @@ export default function ComponentPickerMenuPlugin() {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")
           )
         }
-        queryString={command}
         keywords="strikethrough cross out"
       >
         <StrikethroughIcon />
         {"Strikethrough"}
       </CommandPicker.Command>
-    </CommandPicker>,
+    </CommandPicker>
+    </CommandPickeContext.Provider>,
     document.body
   );
 }
