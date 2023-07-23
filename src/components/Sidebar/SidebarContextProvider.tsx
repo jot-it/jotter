@@ -1,12 +1,13 @@
 "use client";
+import { useRootDocument } from "@/app/CollaborationContext";
 import {
   PropsWithChildren,
   createContext,
   useContext,
   useEffect,
-  useReducer,
-  useState
+  useReducer
 } from "react";
+import { Transaction } from "yjs";
 import { Item, SidebarItemListProps } from ".";
 import { Action, itemsReducer } from "./state";
 
@@ -31,31 +32,37 @@ function SidebarContextProvider({
   items: initialItems = [],
 }: PropsWithChildren<Partial<SidebarItemListProps>>) {
   const [items, dispatch] = useReducer(itemsReducer, initialItems);
-  const [hasInitialized, setHasinitialized] = useState(false);
+  const ydoc = useRootDocument();
+  
+  const origin = ydoc.clientID;
 
+  // Sync local to yjs
   useEffect(() => {
-    // Using the initializer function from useReducer is not an option here
-    // because we need to read from localStorage and returning something different
-    // on the server and client will cause hydration errors.
-    const notes = window.localStorage.getItem(SIDEBAR_LOCAL_STORAGE_KEY);
-    if (!notes) {
-      return;
-    }
-    dispatch({ type: "initialize_state", items: JSON.parse(notes) });
-    setHasinitialized(true);
-  }, []);
-
-  useEffect(() => {
-    // Ensure we first set the initial items from localStorage
-    if (!hasInitialized) {
-      return;
+    const ysidebar = ydoc.getArray("sidebar");
+    const onSidebarChange = (_: unknown, transaction: Transaction) => {
+      const isMyOwnChange = transaction.origin === origin;
+      if (isMyOwnChange) {
+        return;
+      }
+      dispatch({ type: "initialize_state", items: ysidebar.toJSON() });
     }
 
-    window.localStorage.setItem(
-      SIDEBAR_LOCAL_STORAGE_KEY,
-      JSON.stringify(items),
-    );
-  }, [items, hasInitialized]);
+    ysidebar.observeDeep(onSidebarChange);
+
+    return () => {
+      ysidebar.unobserveDeep(onSidebarChange);
+    }
+  }, [ydoc, origin]);
+
+  // TODO Save history of who updated the sidebar
+  // Sync yjs to local
+  useEffect(() => {
+    const sidebar = ydoc.getArray("sidebar");
+    ydoc.transact(() => {
+      sidebar.delete(0, sidebar.length);
+      sidebar.push(items);
+    }, origin);
+  }, [items, ydoc, origin]);
 
   return (
     <SidebarItemsContext.Provider value={items}>
