@@ -10,7 +10,7 @@ export const documentAtom = atom<Y.Doc>(new Y.Doc());
 function CollaborationProvider() {
   const rootDocument = useAtomValue(documentAtom);
   useEffect(() => {
-    const provider = new WebsocketProvider(getCollabServerURL(), "root", rootDocument);
+    const provider = new WebsocketProvider(getCollabServerURL(), "collab_root", rootDocument);
     provider.connect();
     return () => provider.disconnect();
   }, [rootDocument]);

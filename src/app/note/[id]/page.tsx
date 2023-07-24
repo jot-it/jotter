@@ -94,7 +94,7 @@ function Editor() {
         ) : (
           <></>
         )}
-        {params.id && (
+        {/* {params.id && (
           <CollaborationPlugin
             id={params.id}
             providerFactory={providerFactory}
@@ -105,7 +105,7 @@ function Editor() {
             initialEditorState={initialEditorState}
             shouldBootstrap={false}
           />
-        )}
+        )} */}
       </LexicalComposer>
     </div>
   );

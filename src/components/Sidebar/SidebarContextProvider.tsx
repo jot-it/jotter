@@ -3,6 +3,7 @@ import { useRootDocument } from "@/app/CollaborationContext";
 import {
   PropsWithChildren,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useReducer
@@ -42,8 +43,11 @@ function SidebarContextProvider({
     const onSidebarChange = (_: unknown, transaction: Transaction) => {
       const isMyOwnChange = transaction.origin === origin;
       if (isMyOwnChange) {
+        console.log("Ignoring change because it was my own change");
         return;
       }
+      console.log("Updating because", transaction.origin, "changed the sidebar my origin is", origin);
+
       dispatch({ type: "initialize_state", items: ysidebar.toJSON() });
     }
 
@@ -54,19 +58,24 @@ function SidebarContextProvider({
     }
   }, [ydoc, origin]);
 
-  // TODO Save history of who updated the sidebar
-  // Sync yjs to local
   useEffect(() => {
+    console.log("items Changed");
+  }, [items]);
+
+  const dispatchWithSync: typeof dispatch = useCallback((action) => {
+    dispatch(action);
+    const nextState = itemsReducer(items, action);
     const sidebar = ydoc.getArray("sidebar");
     ydoc.transact(() => {
       sidebar.delete(0, sidebar.length);
-      sidebar.push(items);
+      sidebar.push(nextState);
     }, origin);
-  }, [items, ydoc, origin]);
+
+  }, [dispatch, items, origin, ydoc]);
 
   return (
     <SidebarItemsContext.Provider value={items}>
-      <SidebarDispatchContext.Provider value={dispatch}>
+      <SidebarDispatchContext.Provider value={dispatchWithSync}>
         {children}
       </SidebarDispatchContext.Provider>
     </SidebarItemsContext.Provider>
