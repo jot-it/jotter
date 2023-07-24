@@ -7,50 +7,6 @@ import {
   LexicalEditor,
 } from "lexical";
 
-const TOOLBAR_MARGIN_Y = 10;
-
-/**
- * Translates the toolbar to the position of the current selection relative to the container.
- * If there is no selection, the toolbar is hidden.
- *
- * @param toolbar
- * @param container Where the toolbar is present
- */
-export function moveToolbarToCurrentSelection(
-  toolbar: HTMLDivElement,
-  container: HTMLDivElement
-) {
-  const currentSelection = window.getSelection();
-  if (!currentSelection || currentSelection.isCollapsed) {
-    toolbar.setAttribute("data-state", "hidden");
-    return;
-  }
-
-  const selectionRect = currentSelection.getRangeAt(0).getBoundingClientRect();
-  const containerRect = container.getBoundingClientRect();
-  const toolbarRect = toolbar.getBoundingClientRect();
-
-  let top = selectionRect.top - toolbarRect.height - TOOLBAR_MARGIN_Y;
-  let left = selectionRect.left;
-
-  // If the toolbar is going to be rendered outside of the editor's container
-  // Render it below the selection instead
-  if (top < containerRect.top) {
-    top += toolbarRect.height + selectionRect.height + TOOLBAR_MARGIN_Y * 2;
-  }
-
-  if (left + toolbarRect.width > containerRect.right) {
-    left = containerRect.right - toolbarRect.width;
-  }
-
-  // Translate position to be relative to the container
-  left -= containerRect.left;
-  top -= containerRect.top;
-
-  toolbar.setAttribute("data-state", "visible");
-  toolbar.style.transform = `translate(${left}px, ${top}px)`;
-}
-
 /**
  * Finds the parent node of the current `Range selection`.
  */
