@@ -1,10 +1,9 @@
 import { Barlow } from "next/font/google";
-import { PropsWithChildren, lazy } from "react";
+import { PropsWithChildren } from "react";
 import Header from "./Header";
+import Providers from "./Providers";
 import SideNavigation from "./SideNavigation";
 import "./globals.css";
-import PersistenceProvider from "./PersistenceProvider";
-import CollaborationProvider from "./CollaborationContext";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -12,31 +11,24 @@ const barlow = Barlow({
   variable: "--font-barlow",
 });
 
-const SidebarContextProvider = lazy(
-  () => import("@/components/Sidebar/SidebarContextProvider"),
-);
-
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <PersistenceProvider>
-        <CollaborationProvider />
-        <html lang="en" className="dark">
-          <body
-            className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
-          >
-            <SidebarContextProvider>
-              <div className="grid lg:grid-cols-[20rem_auto]">
-                <aside className="hidden lg:block">
-                  <SideNavigation />
-                </aside>
-                <div>
-                  <Header />
-                  {children}
-                </div>
-              </div>
-            </SidebarContextProvider>
-          </body>
-        </html>
-      </PersistenceProvider>
+    <html lang="en" className="dark">
+      <body
+        className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
+      >
+        <Providers>
+          <div className="grid lg:grid-cols-[20rem_auto]">
+            <aside className="hidden lg:block">
+              <SideNavigation />
+            </aside>
+            <div>
+              <Header />
+              {children}
+            </div>
+          </div>
+        </Providers>
+      </body>
+    </html>
   );
 }

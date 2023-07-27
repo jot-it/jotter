@@ -1,43 +1,46 @@
 "use client";
-import { useRootDocument } from "@/app/CollaborationContext";
-import {
-  PropsWithChildren,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer
-} from "react";
+import { documentAtom, useRootDocument } from "@/app/CollaborationContext";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atomWithReducer } from "jotai/utils";
+import { useEffect } from "react";
 import { Transaction } from "yjs";
-import { Item, SidebarItemListProps } from ".";
 import { Action, itemsReducer } from "./state";
 
-export const SIDEBAR_LOCAL_STORAGE_KEY = "notes";
+const itemReducerAtom = atomWithReducer([], itemsReducer);
 
-export const SidebarItemsContext = createContext<Item[]>([]);
+const dispatchWithSyncAtom = atom(null, (get, set, action: Action) => {
+  const prevItems = get(itemReducerAtom);
+  const nextItems = itemsReducer(prevItems, action);
 
-export const SidebarDispatchContext = createContext<React.Dispatch<Action>>(
-  () => {},
-);
+  set(itemReducerAtom, {
+    type: "set_items",
+    items: nextItems,
+  });
+
+  const ydoc = get(documentAtom);
+  const sidebar = ydoc.getArray("sidebar");
+  const origin = ydoc.clientID;
+
+  ydoc.transact(() => {
+    sidebar.delete(0, sidebar.length);
+    sidebar.push(nextItems);
+  }, origin);
+});
 
 export function useSidebarItems() {
-  return useContext(SidebarItemsContext);
+  return useAtomValue(itemReducerAtom);
 }
 
 export function useSidebarDispatch() {
-  return useContext(SidebarDispatchContext);
+  return useSetAtom(dispatchWithSyncAtom);
 }
 
-function SidebarContextProvider({
-  children,
-  items: initialItems = [],
-}: PropsWithChildren<Partial<SidebarItemListProps>>) {
-  const [items, dispatch] = useReducer(itemsReducer, initialItems);
+function SidebarContextProvider() {
+  const dispatch = useSetAtom(itemReducerAtom);
   const ydoc = useRootDocument();
-  
+
   const origin = ydoc.clientID;
 
-  // Sync local to yjs
   useEffect(() => {
     const ysidebar = ydoc.getArray("sidebar");
     const onSidebarChange = (_: unknown, transaction: Transaction) => {
@@ -46,39 +49,25 @@ function SidebarContextProvider({
         console.log("Ignoring change because it was my own change");
         return;
       }
-      console.log("Updating because", transaction.origin, "changed the sidebar my origin is", origin);
+      console.log(
+        "Updating because",
+        transaction.origin,
+        "changed the sidebar my origin is",
+        origin,
+      );
 
-      dispatch({ type: "initialize_state", items: ysidebar.toJSON() });
-    }
+      console.log(ysidebar.toJSON())
+      dispatch({ type: "set_items", items: ysidebar.toJSON() });
+    };
 
     ysidebar.observeDeep(onSidebarChange);
 
     return () => {
       ysidebar.unobserveDeep(onSidebarChange);
-    }
-  }, [ydoc, origin]);
+    };
+  }, [ydoc, origin, dispatch]);
 
-  useEffect(() => {
-    console.log("items Changed");
-  }, [items]);
-
-  const dispatchWithSync: typeof dispatch = useCallback((action) => {
-    dispatch(action);
-    const nextState = itemsReducer(items, action);
-    const sidebar = ydoc.getArray("sidebar");
-    ydoc.transact(() => {
-      sidebar.delete(0, sidebar.length);
-      sidebar.push(nextState);
-    }, origin);
-
-  }, [dispatch, items, origin, ydoc]);
-
-  return (
-    <SidebarItemsContext.Provider value={items}>
-      <SidebarDispatchContext.Provider value={dispatchWithSync}>
-        {children}
-      </SidebarDispatchContext.Provider>
-    </SidebarItemsContext.Provider>
-  );
+  return null;
 }
+
 export default SidebarContextProvider;

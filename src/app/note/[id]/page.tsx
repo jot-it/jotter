@@ -61,7 +61,6 @@ const CollaborationPlugin = dynamic(
 
 function Editor() {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
-  const {db, providerFactory} = useDBContext();
   const params = useParams();
 
   const onRef = useCallback((node: HTMLDivElement | null) => {

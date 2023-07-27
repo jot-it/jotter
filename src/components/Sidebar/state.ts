@@ -3,7 +3,7 @@ import { filterSidebar, mapSidebar } from "./utils";
 
 export type Action =
   | {
-      type: "initialize_state";
+      type: "set_items";
       items: Item[];
     }
   | {
@@ -35,7 +35,7 @@ export type Action =
 
 export function itemsReducer(items: Item[], action: Action): Item[] {
   switch (action.type) {
-    case "initialize_state":
+    case "set_items":
       return action.items;
     case "rename":
       return updateItem(items, action.id, {

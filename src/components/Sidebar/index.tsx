@@ -124,7 +124,7 @@ export function Category(props: CategoryProps) {
         >
           <div>
             <BookIcon className="mr-2 inline-block" />
-            <ItemContent {...props} />
+            <EditableItemContent {...props} />
           </div>
           <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
         </Accordion.Trigger>
@@ -152,7 +152,7 @@ export function Link(props: LinkProps) {
       )}
       variant="body1"
     >
-      <ItemContent {...props} />
+      <EditableItemContent {...props} />
     </Typography>
   );
 }
@@ -173,9 +173,8 @@ function Divider() {
   return <hr className="h-0.5 w-full border-gray-300 dark:border-slate-700" />;
 }
 
-//#region Items Content
-function ItemContent(props: ItemProps) {
-  const { label: initialLabel, isEditing, id, type } = props;
+function EditableItemContent(props: ItemProps) {
+  const { label: initialLabel, isEditing, id} = props;
   const [label, setLabel] = useState(initialLabel);
   const inputRef = useRef<HTMLInputElement>(null);
   const isLabelEmpty = label.trim().length === 0;
@@ -192,19 +191,22 @@ function ItemContent(props: ItemProps) {
     // Both initial label and current label are empty this must be a new item
     if (isLabelEmpty && initialLabel.length === 0) {
       dispatch({ type: "delete", id });
-      return;
     }
-
-    if (isLabelEmpty) {
+    else if (isLabelEmpty) {
       setLabel(initialLabel); // Reset label
     }
-
-    dispatch({
-      type: "rename",
-      id,
-      newLabel: isLabelEmpty ? initialLabel : label,
-    });
+    else {
+      dispatch({
+        type: "rename",
+        id,
+        newLabel: label,
+      });
+    }
   };
+
+  useEffect(() => {
+    setLabel(initialLabel);
+  }, [initialLabel]);
 
   useEffect(() => {
     // HACK Use a timeout to prevent race condition between any active focus and this one
@@ -216,15 +218,12 @@ function ItemContent(props: ItemProps) {
   }, [isEditing]);
 
   if (!isEditing) {
-    return <span>{label}</span>;
+    return <span>{initialLabel}</span>;
   }
 
   return (
     <input
-      className={clsx(
-        type === "link" && "w-full",
-        "cursor-text bg-transparent outline-none",
-      )}
+      className="cursor-text bg-transparent outline-none"
       autoComplete="off"
       value={label}
       spellCheck={false}
@@ -235,7 +234,6 @@ function ItemContent(props: ItemProps) {
     />
   );
 }
-//#endregion
 
 Sidebar.Item = SidebarItem;
 Sidebar.Items = SidebarItemsRoot;
