@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { ComponentPropsWithoutRef } from "react";
+import { ComponentPropsWithoutRef } from "react";
 
 export const textVariants = {
   h1: "text-8xl font-light",

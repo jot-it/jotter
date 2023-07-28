@@ -1,8 +1,9 @@
 import SidebarContextProvider from "@/components/Sidebar/SidebarContextProvider";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as nextRouter from "next/navigation";
+import { usePathname, useRouter} from "next/navigation";
 import Sidebar, { Item } from "../components/Sidebar";
+import { mocked } from "./helpers";
 
 jest.mock("next/navigation");
 
@@ -18,15 +19,6 @@ const renderWithItems = (items: Item[], options?: RenderParameters[1]) => {
     options
   );
 };
-
-const mockUseRouter = jest.spyOn(nextRouter, "useRouter").mockReturnValue({
-  push: jest.fn(),
-  back: jest.fn(),
-  prefetch: jest.fn(),
-  replace: jest.fn(),
-  forward: jest.fn(),
-  refresh: jest.fn(),
-});
 
 test("Renders when the document loads", () => {
   renderWithItems([]);
@@ -101,7 +93,7 @@ test("Active links have aria-current attribute set to page", async () => {
       href: "#new",
     },
   ];
-  jest.spyOn(nextRouter, "usePathname").mockReturnValueOnce("#new");
+  mocked(usePathname).mockReturnValueOnce("#new");
 
   renderWithItems(items);
 
@@ -112,7 +104,11 @@ test("Active links have aria-current attribute set to page", async () => {
 
 // Integration test
 test("Category opens and closes when the user clicks on it", async () => {
-  jest.mock("next/navigation");
+  mocked(useRouter).mockReturnValueOnce({
+    push: jest.fn(),
+    
+  });
+
   const items: Item[] = [
     {
       type: "category",

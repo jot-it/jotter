@@ -1,6 +1,6 @@
 "use client";
 import { documentAtom, useRootDocument } from "@/app/CollaborationContext";
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { atomWithReducer } from "jotai/utils";
 import { useEffect } from "react";
 import { Transaction } from "yjs";
