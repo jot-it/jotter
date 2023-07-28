@@ -1,6 +1,7 @@
 "use client";
 import NoSSR from "@/components/NoSSR";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
+import TreeViewPlugin from "@/plugins/TreeViewPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -22,10 +23,9 @@ import {
   $getRoot,
   LexicalEditor,
 } from "lexical";
-import { Suspense, useCallback, useState } from "react";
-import theme from "./theme";
 import dynamic from "next/dynamic";
-import TreeViewPlugin from "@/plugins/TreeViewPlugin";
+import { useCallback, useState } from "react";
+import theme from "./theme";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -93,13 +93,20 @@ function Editor() {
         <AutoFocusPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
 
-        <ComponentPickerPlugin />
-        {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
         {editorContainer ? (
           <ToolbarPlugin container={editorContainer} />
         ) : (
           <></>
         )}
+
+        {editorContainer ? (
+          <ComponentPickerPlugin container={editorContainer} />
+        ) : (
+          <></>
+        )}
+
+        {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
+
         <NoSSR>
           {/* <CollaborationPlugin
             id="yjs-plugin"

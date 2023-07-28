@@ -1,16 +1,11 @@
-import clsx from "clsx";
+import { Command } from "cmdk";
 import {
-  Dispatch,
   MouseEventHandler,
   PropsWithChildren,
-  SetStateAction,
-  useContext,
   useEffect,
-  useRef,
-  useState,
+  useState
 } from "react";
-import { Command } from "cmdk";
-import { CommandPickeContext } from ".";
+import useFloatingBox from "../useFloatingBox";
 
 export type CommandItemProps = PropsWithChildren<{
   /**
@@ -26,25 +21,52 @@ export type CommandPickerProps = PropsWithChildren<{
    * Use to show it
    */
   show: boolean;
+  /**
+   * Use to filter commands
+   */
+  query: string;
+  /**
+   * The container surrounding the editor.
+   */
+  container: HTMLDivElement;
 }>;
 
-function CommandPicker({ children, show}: CommandPickerProps) {
-  const command = useContext(CommandPickeContext);
-  const [search, setSearch] = useState(command);
-  
-  useEffect(()=>{
-    setSearch(command);
-  },[command])
+function CommandPicker({
+  children,
+  query,
+  container,
+  show,
+}: CommandPickerProps) {
+  const [selectionRect, setSelectionRect] = useState<DOMRect>();
+
+  const boxProps = useFloatingBox({
+    position: selectionRect,
+    anchor: container,
+    offsetX: 10,
+    offsetY: 10,
+  });
+
+  useEffect(() => {
+    const nativeSelection = window.getSelection();
+    if (nativeSelection) {
+      console.log(nativeSelection.getRangeAt(0));
+      setSelectionRect(nativeSelection.getRangeAt(0).getBoundingClientRect());
+    }
+  }, [show]);
 
   if (!show) {
     return null;
   }
 
   return (
-    <Command label="Command Menu">
-      <Command.List className="absolute left-[460px] top-40 max-h-[30vh] min-w-[180px] flex-1 overflow-auto rounded-lg border bg-white p-1 text-gray-700  shadow-md  data-[state=hidden]:animate-fade-out data-[state=visible]:animate-fade-in dark:border-slate-600 dark:bg-slate-700 dark:text-inherit">
-      {/* HACK not working with value and onValueChange in Command */}
-      <Command.Input className="hidden" value={search} onValueChange={setSearch}/>
+    <Command
+      ref={boxProps.ref}
+      label="Command Menu"
+      className="absolute left-0 top-0 z-20 max-h-[30vh] min-w-[180px] flex-1 overflow-auto rounded-lg border bg-white p-1 text-gray-700  shadow-md  data-[state=hidden]:animate-fade-out data-[state=visible]:animate-fade-in dark:border-slate-600 dark:bg-slate-700 dark:text-inherit"
+    >
+      <Command.List>
+        {/* HACK not working with value and onValueChange in Command */}
+        <Command.Input className="hidden" value={query} />
         <Command.Empty className=" px-2 py-1 text-base">
           Command not found
         </Command.Empty>

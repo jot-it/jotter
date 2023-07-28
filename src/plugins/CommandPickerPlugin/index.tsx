@@ -2,40 +2,36 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import {
   COMMAND_PRIORITY_LOW,
   FORMAT_TEXT_COMMAND,
-  INSERT_PARAGRAPH_COMMAND,
   KEY_ESCAPE_COMMAND,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { $getQueryTextForSearch } from "./utils";
+import {
+  RiBold as BoldIcon,
+  RiText as ClearFormatTextIcon,
+  RiCodeSSlashLine as CodeIcon,
+  RiHeading as HeadingIcon,
+  RiItalic as ItalicIcon,
+  RiDoubleQuotesR as QuoteIcon,
+  RiStrikethrough as StrikethroughIcon,
+  RiUnderline as UnderlineIcon,
+} from "react-icons/ri";
+import CommandPicker from "./CommandPicker";
 import {
   CLEAR_FORMAT_TEXT_COMMAND,
+  FORMAT_PARAGRAPH_COMMAND,
   INSERT_BLOCKQUOTE_COMMAND,
   INSERT_HEANDING_COMMAND,
   REMOVE_CARECT_COMMAND,
   useBlockQuoteCommand,
-  useHeadingCommand,
   useClearformatText,
+  useHeadingCommand,
   useListCommand,
-  useRemoveCarectCommand,
   useParagraph,
-  FORMAT_PARAGRAPH_COMMAND,
+  useRemoveCarectCommand,
 } from "./commads";
-import { createPortal } from "react-dom";
-import CommandPicker from "./CommandPicker";
-import {
-  RiHeading as HeadingIcon,
-  RiLinkM as LinkIcon,
-  RiDoubleQuotesR as QuoteIcon,
-  RiTable2 as TableIcon,
-  RiBold as BoldIcon,
-  RiItalic as ItalicIcon,
-  RiUnderline as UnderlineIcon,
-  RiStrikethrough as StrikethroughIcon,
-  RiCodeSSlashLine as CodeIcon,
-  RiText as ClearFormatTextIcon,
-} from "react-icons/ri";
+import { $getQueryTextForSearch } from "./utils";
 
 import {
   GoListUnordered as ListIcon,
@@ -52,7 +48,16 @@ import { createContext } from "react";
 
 export const CommandPickeContext = createContext("");
 
-export default function ComponentPickerMenuPlugin() {
+export type ComponentPickerMenuPluginProps = {
+  /**
+   * The container surrounding the editor.
+   */
+  container: HTMLDivElement;
+};
+
+export default function ComponentPickerMenuPlugin({
+  container,
+}: ComponentPickerMenuPluginProps) {
   const [editor] = useLexicalComposerContext();
 
   const [command, setCommand] = useState("");
@@ -67,11 +72,10 @@ export default function ComponentPickerMenuPlugin() {
   useBlockQuoteCommand(editor);
   useRemoveCarectCommand(editor);
 
-  //TODO Change better function
-  function handleClick(fn: () => void) {
+  const withHideCaret = (fn: () => void) => {
     fn();
     editor.dispatchCommand(REMOVE_CARECT_COMMAND, undefined);
-  }
+  };
 
   const handleSelectionChanged = useCallback(() => {
     editor.getEditorState().read(() => {
@@ -114,12 +118,11 @@ export default function ComponentPickerMenuPlugin() {
     );
   }, [editor]);
 
-  return createPortal(
-    <CommandPickeContext.Provider value={command}>
-    <CommandPicker show={show}>
+  return (
+    <CommandPicker container={container} query={command} show={show}>
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(FORMAT_PARAGRAPH_COMMAND, undefined)
           )
         }
@@ -131,7 +134,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(INSERT_HEANDING_COMMAND, "H1")
           )
         }
@@ -143,7 +146,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(INSERT_HEANDING_COMMAND, "h2")
           )
         }
@@ -155,7 +158,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(INSERT_HEANDING_COMMAND, "h3")
           )
         }
@@ -167,7 +170,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
           )
         }
@@ -179,7 +182,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
           )
         }
@@ -191,7 +194,9 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code"))
+          withHideCaret(() =>
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
+          )
         }
         keywords="code codeblock javascript python js"
       >
@@ -201,7 +206,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(INSERT_BLOCKQUOTE_COMMAND, undefined)
           )
         }
@@ -213,7 +218,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(CLEAR_FORMAT_TEXT_COMMAND, undefined)
           )
         }
@@ -236,7 +241,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")
           )
         }
@@ -248,7 +253,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")
           )
         }
@@ -260,7 +265,7 @@ export default function ComponentPickerMenuPlugin() {
 
       <CommandPicker.Command
         onClick={() =>
-          handleClick(() =>
+          withHideCaret(() =>
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")
           )
         }
@@ -270,7 +275,5 @@ export default function ComponentPickerMenuPlugin() {
         {"Strikethrough"}
       </CommandPicker.Command>
     </CommandPicker>
-    </CommandPickeContext.Provider>,
-    document.body
   );
 }
