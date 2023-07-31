@@ -3,7 +3,7 @@ import {
   MouseEventHandler,
   PropsWithChildren,
   useEffect,
-  useState
+  useState,
 } from "react";
 import useFloatingBox from "../useFloatingBox";
 
@@ -48,8 +48,7 @@ function CommandPicker({
 
   useEffect(() => {
     const nativeSelection = window.getSelection();
-    if (nativeSelection) {
-      console.log(nativeSelection.getRangeAt(0));
+    if (nativeSelection && nativeSelection.rangeCount != 0) {
       setSelectionRect(nativeSelection.getRangeAt(0).getBoundingClientRect());
     }
   }, [show]);
