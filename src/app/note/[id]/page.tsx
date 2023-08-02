@@ -1,6 +1,7 @@
 "use client";
 import NoSSR from "@/components/NoSSR";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
+import TreeViewPlugin from "@/plugins/TreeViewPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -22,9 +23,15 @@ import {
   $getRoot,
   LexicalEditor,
 } from "lexical";
+import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
 import theme from "./theme";
 import AutoLinkPlugin from "../../../plugins/AutolinkPlugin/index";
+
+const ComponentPickerPlugin = dynamic(
+  () => import("@/plugins/CommandPickerPlugin"),
+  { ssr: false }
+);
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -75,7 +82,11 @@ function Editor() {
           contentEditable={<ContentEditable className="focus:outline-none" />}
           placeholder={
             <p className="absolute left-4 top-0 m-0 dark:text-gray-400">
-              Begin your story...
+              Press{" "}
+              <span className="rounded bg-gray-200 px-2 py-1 dark:bg-slate-800">
+                /
+              </span>{" "}
+              for commands...
             </p>
           }
           ErrorBoundary={ErrorBoundary}
@@ -89,6 +100,15 @@ function Editor() {
         ) : (
           <></>
         )}
+
+        {editorContainer ? (
+          <ComponentPickerPlugin container={editorContainer} />
+        ) : (
+          <></>
+        )}
+
+        {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
+        
         <NoSSR>
           {/* <CollaborationPlugin
             id="yjs-plugin"
