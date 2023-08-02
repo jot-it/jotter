@@ -26,6 +26,7 @@ import {
 import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
 import theme from "./theme";
+import AutoLinkPlugin from "../../../plugins/AutolinkPlugin/index";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -91,6 +92,7 @@ function Editor() {
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
+        <AutoLinkPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
 
         {editorContainer ? (
@@ -106,7 +108,7 @@ function Editor() {
         )}
 
         {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
-
+        
         <NoSSR>
           {/* <CollaborationPlugin
             id="yjs-plugin"
