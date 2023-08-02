@@ -22,14 +22,14 @@ import {
   CLEAR_FORMAT_TEXT_COMMAND,
   FORMAT_PARAGRAPH_COMMAND,
   INSERT_BLOCKQUOTE_COMMAND,
-  INSERT_HEANDING_COMMAND,
+  INSERT_HEADING_COMMAND,
   REMOVE_CARECT_COMMAND,
   useBlockQuoteCommand,
   useClearformatText,
   useHeadingCommand,
   useListCommand,
   useParagraph,
-  useRemoveCarectCommand,
+  useRemoveCaretCommand,
 } from "./commads";
 import { $getQueryTextForSearch } from "./utils";
 
@@ -70,7 +70,7 @@ export default function ComponentPickerMenuPlugin({
   useClearformatText(editor);
   useParagraph(editor);
   useBlockQuoteCommand(editor);
-  useRemoveCarectCommand(editor);
+  useRemoveCaretCommand(editor);
 
   const withHideCaret = (fn: () => void) => {
     fn();
@@ -135,7 +135,7 @@ export default function ComponentPickerMenuPlugin({
       <CommandPicker.Command
         onClick={() =>
           withHideCaret(() =>
-            editor.dispatchCommand(INSERT_HEANDING_COMMAND, "H1")
+            editor.dispatchCommand(INSERT_HEADING_COMMAND, "H1")
           )
         }
         keywords="heading h1 header tittle"
@@ -147,7 +147,7 @@ export default function ComponentPickerMenuPlugin({
       <CommandPicker.Command
         onClick={() =>
           withHideCaret(() =>
-            editor.dispatchCommand(INSERT_HEANDING_COMMAND, "h2")
+            editor.dispatchCommand(INSERT_HEADING_COMMAND, "h2")
           )
         }
         keywords="heading h2 header tittle subtittle"
@@ -159,7 +159,7 @@ export default function ComponentPickerMenuPlugin({
       <CommandPicker.Command
         onClick={() =>
           withHideCaret(() =>
-            editor.dispatchCommand(INSERT_HEANDING_COMMAND, "h3")
+            editor.dispatchCommand(INSERT_HEADING_COMMAND, "h3")
           )
         }
         keywords="heading h3 header tittle subtittle"

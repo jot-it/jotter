@@ -17,7 +17,6 @@ import {
   $getSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_LOW,
-  DEPRECATED_$isGridSelection,
   LexicalCommand,
   LexicalEditor,
   TextFormatType,
@@ -27,8 +26,8 @@ import { useCallback, useEffect } from "react";
 import { formatSelectionAs } from "../ToolbarPlugin/utils";
 import { $getTextNodeForSeach } from "./utils";
 
-export const INSERT_HEANDING_COMMAND: LexicalCommand<string> = createCommand(
-  "INSERT_HEANDING_COMMAND"
+export const INSERT_HEADING_COMMAND: LexicalCommand<string> = createCommand(
+  "INSERT_HEADING_COMMAND"
 );
 
 export const INSERT_BLOCKQUOTE_COMMAND: LexicalCommand<void> = createCommand(
@@ -83,10 +82,7 @@ export function useHeadingCommand(editor: LexicalEditor) {
     (headingSize: HeadingTagType) => {
       editor.update(() => {
         const selection = $getSelection();
-        if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
-        ) {
+        if ($isRangeSelection(selection)) {
           $setBlocksType(selection, () => $createHeadingNode(headingSize));
         }
       });
@@ -97,14 +93,14 @@ export function useHeadingCommand(editor: LexicalEditor) {
 
   useEffect(() => {
     return editor.registerCommand(
-      INSERT_HEANDING_COMMAND,
+      INSERT_HEADING_COMMAND,
       formatHeading,
       COMMAND_PRIORITY_LOW
     );
   }, [editor, formatHeading]);
 }
 
-export function useRemoveCarectCommand(editor: LexicalEditor) {
+export function useRemoveCaretCommand(editor: LexicalEditor) {
   const handleRemoveCommandString = useCallback(() => {
     editor.update(() => {
       const textNode = $getTextNodeForSeach();
@@ -133,10 +129,7 @@ export function useBlockQuoteCommand(editor: LexicalEditor) {
   const InsertBLockQuote = useCallback(() => {
     editor.update(() => {
       const selection = $getSelection();
-      if (
-        $isRangeSelection(selection) ||
-        DEPRECATED_$isGridSelection(selection)
-      ) {
+      if ($isRangeSelection(selection)) {
         $setBlocksType(selection, () => $createQuoteNode());
       }
     });
