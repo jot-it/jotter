@@ -2,20 +2,10 @@ import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
 import clsx from "clsx";
 import { PropsWithChildren, ReactNode, forwardRef } from "react";
 
-type ContextMenuProps = PropsWithChildren<{
-  /** 
-   * Element that will have contextual menu behaviour. 
-   */
-  trigger: ReactNode;
-}>;
+type ContextMenuProps = PropsWithChildren;
 
-function ContextMenu({ children, trigger }: ContextMenuProps) {
-  return (
-    <ContextMenuPrimitive.Root>
-      <ContextMenuPrimitive.Trigger>{trigger}</ContextMenuPrimitive.Trigger>
-      {children}
-    </ContextMenuPrimitive.Root>
-  );
+function ContextMenu({ children }: ContextMenuProps) {
+  return <ContextMenuPrimitive.Root>{children}</ContextMenuPrimitive.Root>;
 }
 
 const Option = forwardRef<HTMLDivElement, ContextMenuPrimitive.MenuItemProps>(
@@ -27,13 +17,13 @@ const Option = forwardRef<HTMLDivElement, ContextMenuPrimitive.MenuItemProps>(
         className={clsx(
           className,
           "flex select-none items-center rounded-md px-2 py-1 data-[highlighted]:bg-gray-200/75",
-          "dark:data-[highlighted]:bg-slate-800 dark:data-[highlighted]:text-cyan-300"
+          "dark:data-[highlighted]:bg-slate-800 dark:data-[highlighted]:text-cyan-300",
         )}
       >
         {children}
       </ContextMenuPrimitive.Item>
     );
-  }
+  },
 );
 
 function Divider() {
@@ -61,4 +51,5 @@ export default Object.assign(ContextMenu, {
   Option,
   Content,
   Divider,
+  Trigger: ContextMenuPrimitive.Trigger,
 });

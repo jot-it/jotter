@@ -40,7 +40,7 @@ export function itemsReducer(items: Item[], action: Action): Item[] {
     case "rename":
       return updateItem(items, action.id, {
         label: action.newLabel,
-        isEditing: false,
+        editable: false,
       });
 
     case "delete":
@@ -56,7 +56,7 @@ export function itemsReducer(items: Item[], action: Action): Item[] {
         ...action.newItem,
         href,
         id,
-        isEditing: true,
+        editable: true,
       });
     }
 
@@ -65,14 +65,14 @@ export function itemsReducer(items: Item[], action: Action): Item[] {
       const href = `/note/${id}`;
       return createItem(items, {
         ...action.newItem,
-        isEditing: true,
+        editable: true,
         id,
         href,
       });
     }
     case "toggle_editing":
       return updateItem(items, action.id, {
-        isEditing: true,
+        editable: true,
       });
   }
 }

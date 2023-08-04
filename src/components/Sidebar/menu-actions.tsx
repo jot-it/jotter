@@ -7,9 +7,16 @@ import {
 import { RiBook2Line as BookIcon } from "react-icons/ri";
 import ContextMenu from "../ContextMenu";
 import { useSidebarDispatch } from "./SidebarContextProvider";
+import { CategoryItem, Item, ItemProps, LinkItem } from ".";
+import { ComponentPropsWithoutRef } from "react";
 
-type ActionProps = {
+type ActionProps = ComponentPropsWithoutRef<typeof ContextMenu.Option> & {
   id: string;
+};
+
+type InsertActionProps = ActionProps & {
+  type: ItemProps["type"];
+  actionName: string;
 };
 
 export function LinkActions({ id }: ActionProps) {
@@ -28,17 +35,6 @@ export function LinkActions({ id }: ActionProps) {
   );
 }
 
-export function CategoryActions({ id }: ActionProps) {
-  return (
-    <ContextMenu.Content>
-      <InsertPageAction id={id} />
-      <ContextMenu.Divider />
-      <RenameAction id={id} />
-      <DeleteItemAction id={id} />
-    </ContextMenu.Content>
-  );
-}
-
 export function SidebarActions() {
   return (
     <ContextMenu.Content>
@@ -48,26 +44,21 @@ export function SidebarActions() {
   );
 }
 
-function RenameAction({ id }: ActionProps) {
-  const dispatch = useSidebarDispatch();
+export function RenameAction({ id, ...rest }: ActionProps) {
   return (
-    <ContextMenu.Option
-      onClick={(e) => dispatch({ type: "toggle_editing", id })}
-    >
+    <ContextMenu.Option {...rest}>
       <RenameIcon className="mr-3 text-lg" />
       <span>Rename</span>
     </ContextMenu.Option>
   );
 }
 
-function DeleteItemAction({ id }: ActionProps) {
+export function DeleteItemAction({ id }: ActionProps) {
   const dispatch = useSidebarDispatch();
   return (
     <ContextMenu.Option
       className="text-rose-800 data-[highlighted]:bg-rose-200/75  dark:text-red-400 dark:data-[highlighted]:text-red-400"
-      onClick={() => {
-        dispatch({ type: "delete", id });
-      }}
+      onClick={() => dispatch({ type: "delete", id })}
     >
       <DeleteIcon className="mr-3 text-lg " />
       <span>Delete</span>
@@ -75,7 +66,7 @@ function DeleteItemAction({ id }: ActionProps) {
   );
 }
 
-function NewPageAction() {
+export function NewPageAction() {
   const dispatch = useSidebarDispatch();
   return (
     <ContextMenu.Option
@@ -116,24 +107,29 @@ function NewCategoryAction() {
   );
 }
 
-//TODO: Open it by default
-function InsertPageAction({ id }: ActionProps) {
+export function InsertItemAction({ id, type, actionName }: InsertActionProps) {
   const dispatch = useSidebarDispatch();
+  const item: Record<string, unknown> = {
+    type,
+    label: "",
+  };
+
+  if (type === "category") {
+    item.items = [];
+  }
+
   return (
     <ContextMenu.Option
       onClick={() => {
         dispatch({
           type: "insert",
           id,
-          newItem: {
-            label: "",
-            type: "link",
-          },
+          newItem: item as Item,
         });
       }}
     >
       <FileIcon className="mr-3 text-lg" />
-      Add new page
+      {actionName}
     </ContextMenu.Option>
   );
 }
