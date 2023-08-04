@@ -1,3 +1,4 @@
+import useToggle from "@/hooks/useToggle";
 import * as Accordion from "@radix-ui/react-accordion";
 import clsx from "clsx";
 import NextLink from "next/link";
@@ -17,18 +18,32 @@ import {
 import ContextMenu from "../ContextMenu";
 import Typography from "../Typography";
 import { useSidebarDispatch, useSidebarItems } from "./SidebarContextProvider";
-import { CategoryActions, LinkActions, SidebarActions } from "./menu-actions";
+import {
+  DeleteItemAction,
+  InsertItemAction,
+  RenameAction,
+  SidebarActions,
+} from "./menu-actions";
 
 //#region  Typings
 export type SidebarItemListProps = {
   items: Item[];
 };
 
-type SidebarItemBaseProps = {
-  isEditing?: boolean;
-};
+type SidebarItemBaseProps = Pick<
+  EditableLabelProps,
+  "editable" | "onRename" | "onReset"
+>;
 
 export type SidebarProps = PropsWithChildren;
+
+type EditableLabelProps = {
+  id: ItemProps["id"];
+  editable?: boolean;
+  initialLabel: string;
+  onRename?(label: string): void;
+  onReset?(): void;
+};
 
 export type LinkItem = {
   type: "link";
@@ -72,7 +87,10 @@ function SidebarItemsRoot() {
   const items = useSidebarItems();
   return (
     <div className="flex-1 overflow-auto">
-      <ContextMenu trigger={<SidebarItemList items={items} />}>
+      <ContextMenu>
+        <ContextMenu.Trigger>
+          <SidebarItemList items={items} />
+        </ContextMenu.Trigger>
         <SidebarActions />
       </ContextMenu>
     </div>
@@ -84,7 +102,11 @@ const SidebarItemList = memo(function SidebarItemList({
   items,
 }: SidebarItemListProps) {
   return (
-    <Accordion.Root className="h-full" type="single" collapsible>
+    <Accordion.Root
+      className="h-full"
+      type="multiple"
+      data-testid="sidebar-item-list"
+    >
       {items.map((props) => (
         <SidebarItem key={props.id} {...props} />
       ))}
@@ -93,57 +115,121 @@ const SidebarItemList = memo(function SidebarItemList({
 });
 
 function SidebarItem(props: ItemProps) {
-  const id = props.id;
+  const [editable, toggleEditable] = useToggle(props.editable);
+  const dispatch = useSidebarDispatch();
+
+  const handleRename = (label: string) => {
+    dispatch({ type: "rename", id: props.id, newLabel: label });
+    toggleEditable();
+  };
+
+  const handleReset = () => {
+    if (!props.label.length) {
+      dispatch({ type: "delete", id: props.id });
+    }
+    toggleEditable();
+  };
+
   switch (props.type) {
     case "category":
       return (
-        <ContextMenu trigger={<Category {...props} />}>
-          <CategoryActions id={id} />
+        <ContextMenu>
+          <ContextMenu.Trigger>
+            <Category
+              {...props}
+              onRename={handleRename}
+              onReset={handleReset}
+            />
+          </ContextMenu.Trigger>
+          <ContextMenu.Content>
+            <InsertItemAction id={props.id} actionName="New page" type="link" />
+            <InsertItemAction
+              id={props.id}
+              actionName="New category"
+              type="category"
+            />
+            <ContextMenu.Divider />
+            <RenameAction id={props.id} onClick={toggleEditable} />
+            <DeleteItemAction id={props.id} />
+          </ContextMenu.Content>
         </ContextMenu>
       );
     case "link":
       return (
-        <ContextMenu trigger={<Link {...props} />}>
-          <LinkActions id={id} />
+        <ContextMenu>
+          <ContextMenu.Trigger>
+            <Link
+              {...props}
+              editable={editable}
+              onRename={handleRename}
+              onReset={handleReset}
+            />
+          </ContextMenu.Trigger>
+          <ContextMenu.Content>
+            <RenameAction id={props.id} onClick={toggleEditable} />
+            <DeleteItemAction id={props.id} />
+          </ContextMenu.Content>
         </ContextMenu>
       );
   }
 }
 //#endregion
 
-export function Category(props: CategoryProps) {
+export function Category({
+  id,
+  href,
+  items,
+  label,
+  editable,
+  onRename,
+  onReset,
+}: CategoryProps) {
   const router = useRouter();
   return (
-    <Accordion.Item value={props.id}>
+    <Accordion.Item value={id}>
       <Accordion.Header className="p-0.5">
         <Accordion.Trigger
-          onClick={() => router.push(props.href)}
+          data-testid="sidebar-item"
+          onClick={() => router.push(href)}
           className="group flex w-full items-center justify-between rounded-lg p-3 text-left 
           hover:bg-gray-300 data-[state=open]:bg-cyan-400/20 data-[state=open]:text-cyan-950
           dark:hover:bg-gray-700 dark:data-[state=open]:bg-cyan-900 dark:data-[state=open]:text-cyan-200"
         >
           <div>
             <BookIcon className="mr-2 inline-block" />
-            <EditableItemContent {...props} />
+            <EditableLabel
+              id={id}
+              initialLabel={label}
+              editable={editable}
+              onRename={onRename}
+              onReset={onReset}
+            />
           </div>
           <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
         </Accordion.Trigger>
       </Accordion.Header>
 
       <Accordion.Content className="ml-2">
-        <SidebarItemList items={props.items} />
+        <SidebarItemList items={items} />
       </Accordion.Content>
     </Accordion.Item>
   );
 }
 
-export function Link(props: LinkProps) {
-  const isActive = usePathname() === props.href;
+export function Link({
+  href,
+  label,
+  id,
+  onRename,
+  onReset,
+  editable,
+}: LinkProps) {
+  const isActive = usePathname() === href;
   return (
-    //@ts-expect-error Next.js links also have a "as" prop
+    /* @ts-expect-error Next.js links also have a "as" prop */
     <Typography
       as={NextLink}
-      href={props.href}
+      href={href}
       aria-current={isActive ? "page" : undefined}
       className={clsx(
         // isEmpty && "outline outline-1 -outline-offset-1 dark:outline-red-400",
@@ -151,8 +237,15 @@ export function Link(props: LinkProps) {
         "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700",
       )}
       variant="body1"
+      data-testid="sidebar-item"
     >
-      <EditableItemContent {...props} />
+      <EditableLabel
+        id={id}
+        initialLabel={label}
+        editable={editable}
+        onRename={onRename}
+        onReset={onReset}
+      />
     </Typography>
   );
 }
@@ -173,35 +266,32 @@ function Divider() {
   return <hr className="h-0.5 w-full border-gray-300 dark:border-slate-700" />;
 }
 
-function EditableItemContent(props: ItemProps) {
-  const { label: initialLabel, isEditing, id} = props;
+function EditableLabel({
+  initialLabel,
+  editable,
+  onRename,
+  onReset,
+}: EditableLabelProps) {
   const [label, setLabel] = useState(initialLabel);
   const inputRef = useRef<HTMLInputElement>(null);
   const isLabelEmpty = label.trim().length === 0;
-  const dispatch = useSidebarDispatch();
 
-  const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") rename();
-
-    // Prevent category from opening when the users presses space bar
-    if (e.key === " ") e.preventDefault();
+  const handleReset = () => {
+    setLabel(initialLabel);
+    onReset?.();
   };
 
-  const rename = () => {
-    // Both initial label and current label are empty this must be a new item
-    if (isLabelEmpty && initialLabel.length === 0) {
-      dispatch({ type: "delete", id });
-    }
-    else if (isLabelEmpty) {
-      setLabel(initialLabel); // Reset label
-    }
-    else {
-      dispatch({
-        type: "rename",
-        id,
-        newLabel: label,
-      });
-    }
+  const handleRename = () => {
+    onRename?.(label);
+  };
+
+  const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+    if (e.key === "Enter") {
+      if (isLabelEmpty) handleReset();
+      else handleRename();
+    } else if (e.key === "Escape") handleReset();
   };
 
   useEffect(() => {
@@ -215,9 +305,9 @@ function EditableItemContent(props: ItemProps) {
       inputRef.current?.select();
     }, 200);
     return () => clearTimeout(timeout);
-  }, [isEditing]);
+  }, [editable]);
 
-  if (!isEditing) {
+  if (!editable) {
     return <span>{initialLabel}</span>;
   }
 
@@ -228,9 +318,10 @@ function EditableItemContent(props: ItemProps) {
       value={label}
       spellCheck={false}
       ref={inputRef}
-      onBlur={rename}
+      onBlur={handleRename}
       onChange={(e) => setLabel(e.target.value)}
       onKeyUp={handleKeyUp}
+      placeholder="new note name..."
     />
   );
 }
