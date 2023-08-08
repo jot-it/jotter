@@ -1,12 +1,11 @@
-import useToggle from "@/hooks/useToggle";
 import * as Accordion from "@radix-ui/react-accordion";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Dispatch,
   KeyboardEvent,
   PropsWithChildren,
-  memo,
   useEffect,
   useRef,
   useState,
@@ -17,23 +16,29 @@ import {
 } from "react-icons/ri";
 import ContextMenu from "../ContextMenu";
 import Typography from "../Typography";
-import { useSidebarDispatch, useSidebarItems } from "./SidebarContextProvider";
+import { MenuAction, InsertItemAction } from "./menu-actions";
+import { Action, useSidebarReducer } from "./state";
+
 import {
-  DeleteItemAction,
-  InsertItemAction,
-  RenameAction,
-  SidebarActions,
-} from "./menu-actions";
+  CgTrashEmpty as DeleteIcon,
+  CgFile as FileIcon,
+  CgInfo as InfoIcon,
+  CgRename as RenameIcon,
+} from "react-icons/cg";
+import useToggle from "@/hooks/useToggle";
 
 //#region  Typings
+type SidebarDispatch = { dispatch: Dispatch<Action> };
+
 export type SidebarItemListProps = {
   items: Item[];
-};
+} & SidebarDispatch;
 
 type SidebarItemBaseProps = Pick<
   EditableLabelProps,
   "editable" | "onRename" | "onReset"
->;
+> &
+  SidebarDispatch;
 
 export type SidebarProps = PropsWithChildren;
 
@@ -41,6 +46,7 @@ type EditableLabelProps = {
   id: ItemProps["id"];
   editable?: boolean;
   initialLabel: string;
+
   onRename?(label: string): void;
   onReset?(): void;
 };
@@ -79,28 +85,29 @@ function Sidebar({ children }: PropsWithChildren) {
   );
 }
 
-/**
- * Entry point for all sidebar items
- */
-//#region Sidebar Arquitect
-function SidebarItemsRoot() {
-  const items = useSidebarItems();
+function SidebarRoot({ items, dispatch }: SidebarItemListProps) {
   return (
-    <div className="flex-1 overflow-auto">
-      <ContextMenu>
-        <ContextMenu.Trigger>
-          <SidebarItemList items={items} />
-        </ContextMenu.Trigger>
-        <SidebarActions />
-      </ContextMenu>
-    </div>
+    <ContextMenu>
+      <ContextMenu.Trigger>
+        <SidebarItemList items={items} dispatch={dispatch} />
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        <ContextMenu.Option
+          onClick={() => dispatch({ type: "add_item", itemType: "link" })}
+        >
+          New Page
+        </ContextMenu.Option>
+        <ContextMenu.Option
+          onClick={() => dispatch({ type: "add_item", itemType: "category" })}
+        >
+          New Category
+        </ContextMenu.Option>
+      </ContextMenu.Content>
+    </ContextMenu>
   );
 }
 
-// Memoize to prevent re-rendering when the user is renaming an item
-const SidebarItemList = memo(function SidebarItemList({
-  items,
-}: SidebarItemListProps) {
+function SidebarItemList({ items, dispatch }: SidebarItemListProps) {
   return (
     <Accordion.Root
       className="h-full"
@@ -108,72 +115,74 @@ const SidebarItemList = memo(function SidebarItemList({
       data-testid="sidebar-item-list"
     >
       {items.map((props) => (
-        <SidebarItem key={props.id} {...props} />
+        <SidebarItem {...props} key={props.id} dispatch={dispatch} />
       ))}
     </Accordion.Root>
   );
-});
+}
 
 function SidebarItem(props: ItemProps) {
-  const [editable, toggleEditable] = useToggle(props.editable);
-  const dispatch = useSidebarDispatch();
-
-  const handleRename = (label: string) => {
-    dispatch({ type: "rename", id: props.id, newLabel: label });
-    toggleEditable();
-  };
-
-  const handleReset = () => {
-    if (!props.label.length) {
-      dispatch({ type: "delete", id: props.id });
-    }
-    toggleEditable();
-  };
-
   switch (props.type) {
     case "category":
-      return (
-        <ContextMenu>
-          <ContextMenu.Trigger>
-            <Category
-              {...props}
-              onRename={handleRename}
-              onReset={handleReset}
-            />
-          </ContextMenu.Trigger>
-          <ContextMenu.Content>
-            <InsertItemAction id={props.id} actionName="New page" type="link" />
-            <InsertItemAction
-              id={props.id}
-              actionName="New category"
-              type="category"
-            />
-            <ContextMenu.Divider />
-            <RenameAction id={props.id} onClick={toggleEditable} />
-            <DeleteItemAction id={props.id} />
-          </ContextMenu.Content>
-        </ContextMenu>
-      );
+      return <CategoryWithMenu {...props} />;
     case "link":
-      return (
-        <ContextMenu>
-          <ContextMenu.Trigger>
-            <Link
-              {...props}
-              editable={editable}
-              onRename={handleRename}
-              onReset={handleReset}
-            />
-          </ContextMenu.Trigger>
-          <ContextMenu.Content>
-            <RenameAction id={props.id} onClick={toggleEditable} />
-            <DeleteItemAction id={props.id} />
-          </ContextMenu.Content>
-        </ContextMenu>
-      );
+      return <LinkWithMenu {...props} />;
   }
 }
 //#endregion
+
+function CategoryWithMenu({
+  items: initialItems,
+  dispatch: parentDispatch,
+  ...rest
+}: CategoryProps) {
+  const [items, dispatch] = useSidebarReducer(initialItems);
+  const [editable, toggleEditable] = useToggle();
+
+  const handleRename = (label: string) => {
+    parentDispatch({ type: "rename", id: rest.id, label });
+    toggleEditable();
+  };
+
+  return (
+    <ContextMenu>
+      <ContextMenu.Trigger>
+        <Category
+          {...rest}
+          items={items}
+          editable={editable}
+          dispatch={dispatch}
+          onRename={handleRename}
+          onReset={toggleEditable}
+        />
+      </ContextMenu.Trigger>
+
+      <ContextMenu.Content>
+        <MenuAction
+          icon={<FileIcon />}
+          label="new page"
+          onClick={() => dispatch({ type: "add_item", itemType: "link" })}
+        />
+        <MenuAction
+          icon={<BookIcon />}
+          label="new category"
+          onClick={() => dispatch({ type: "add_item", itemType: "category" })}
+        />
+        <ContextMenu.Divider />
+        <MenuAction
+          icon={<RenameIcon />}
+          label="Rename"
+          onClick={toggleEditable}
+        />
+        <MenuAction
+          icon={<DeleteIcon />}
+          label="delete"
+          onClick={() => parentDispatch({ type: "delete", id: rest.id })}
+        />
+      </ContextMenu.Content>
+    </ContextMenu>
+  );
+}
 
 export function Category({
   id,
@@ -183,6 +192,7 @@ export function Category({
   editable,
   onRename,
   onReset,
+  dispatch,
 }: CategoryProps) {
   const router = useRouter();
   return (
@@ -208,11 +218,30 @@ export function Category({
           <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
         </Accordion.Trigger>
       </Accordion.Header>
-
       <Accordion.Content className="ml-2">
-        <SidebarItemList items={items} />
+        <SidebarItemList items={items} dispatch={dispatch} />
       </Accordion.Content>
     </Accordion.Item>
+  );
+}
+
+function LinkWithMenu({ dispatch, ...others }: LinkProps) {
+  return (
+    <ContextMenu>
+      <ContextMenu.Trigger>
+        {/* FIXME Link doesn't use dispatch. It should not receive it as prop */}
+        <Link {...others} dispatch={dispatch} />
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        {/* <RenameAction id={props.id} onClick={toggleEditable} />
+        <DeleteItemAction id={props.id} /> */}
+        <InsertItemAction
+          onClick={() => dispatch({ type: "delete", id: others.id })}
+        >
+          Delete
+        </InsertItemAction>
+      </ContextMenu.Content>
+    </ContextMenu>
   );
 }
 
@@ -327,7 +356,7 @@ function EditableLabel({
 }
 
 Sidebar.Item = SidebarItem;
-Sidebar.Items = SidebarItemsRoot;
+Sidebar.Items = SidebarRoot;
 Sidebar.Button = Button;
 Sidebar.Divider = Divider;
 

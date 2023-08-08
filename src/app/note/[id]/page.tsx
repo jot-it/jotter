@@ -1,5 +1,4 @@
 "use client";
-import { useDBContext } from "@/app/PersistenceProvider";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";

@@ -1,8 +1,18 @@
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
 import clsx from "clsx";
-import { PropsWithChildren, ReactNode, forwardRef } from "react";
+import {
+  Component,
+  ComponentPropsWithoutRef,
+  PropsWithChildren,
+  ReactNode,
+  forwardRef,
+} from "react";
 
 type ContextMenuProps = PropsWithChildren;
+
+type IconProps = PropsWithChildren<{
+  label: string;
+}>;
 
 function ContextMenu({ children }: ContextMenuProps) {
   return <ContextMenuPrimitive.Root>{children}</ContextMenuPrimitive.Root>;
@@ -25,6 +35,15 @@ const Option = forwardRef<HTMLDivElement, ContextMenuPrimitive.MenuItemProps>(
     );
   },
 );
+
+function Icon({ children, label }: IconProps) {
+  return (
+    <span aria-hidden className="mr-3 text-lg">
+      {children}
+      <span className="sr-only">{label}</span>
+    </span>
+  );
+}
 
 function Divider() {
   return (
@@ -51,5 +70,6 @@ export default Object.assign(ContextMenu, {
   Option,
   Content,
   Divider,
+  Icon,
   Trigger: ContextMenuPrimitive.Trigger,
 });

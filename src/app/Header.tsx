@@ -2,25 +2,23 @@
 import Avatar from "@/components/Avatar";
 import Breadcrumbs, { BreadcrumbItem } from "@/components/Breadcrumbs";
 import { Item } from "@/components/Sidebar";
-import { useSidebarItems } from "@/components/Sidebar/SidebarContextProvider";
+// import { useSidebarItems } from "@/components/Sidebar/SidebarContextProvider";
 import Typography from "@/components/Typography";
 import { useParams } from "next/navigation";
-import {
-  RiUserAddLine as UserAddIcon
-} from "react-icons/ri";
+import { RiUserAddLine as UserAddIcon } from "react-icons/ri";
 import MobileNavigation from "./MobileNavigation";
 
 function Header() {
   const { id } = useParams();
-  const items = useSidebarItems();
-  const crumbs = getBreadcrumbs(items, id);
+  // const items = useSidebarItems();
+  // const crumbs = getBreadcrumbs(items, id);
   return (
     <header
       className="sticky top-0 z-10 flex items-center border-b border-gray-200 bg-white/90 p-4 
     shadow-sm backdrop-blur-sm dark:border-gray-700 dark:bg-slate-850/80"
     >
       <MobileNavigation />
-      <Breadcrumbs items={crumbs} />
+      {/* <Breadcrumbs items={crumbs} /> */}
       {/* Current users in this notebook */}
       <div className="ml-auto mr-4 flex -space-x-1 text-white">
         <Avatar className="bg-gray-200 text-gray-700" size="lg">

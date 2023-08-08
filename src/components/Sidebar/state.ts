@@ -1,113 +1,49 @@
-import { Item, ItemProps } from "../Sidebar";
-import { filterSidebar, mapSidebar } from "./utils";
+import { useReducer } from "react";
+import { Item } from "../Sidebar";
 
 export type Action =
   | {
-      type: "set_items";
-      items: Item[];
+      type: "add_item";
+      itemType: Item["type"];
     }
   | {
       type: "rename";
-      id: string;
-      newLabel: string;
+      id: Item["id"];
+      label: Item["label"];
     }
   | {
       type: "delete";
-      id: string;
-    }
-  | {
-      type: "group";
-      id: string;
-    }
-  | {
-      type: "insert";
-      id: string;
-      newItem: DistributiveOmit<ItemProps, "id" | "isEditing" | "href">;
-    }
-  | {
-      type: "create";
-      newItem: DistributiveOmit<ItemProps, "id" | "isEditing" | "href">;
-    }
-  | {
-      type: "toggle_editing";
-      id: string;
+      id: Item["id"];
     };
 
-export function itemsReducer(items: Item[], action: Action): Item[] {
+function itemsReducer(items: Item[], action: Action): Item[] {
   switch (action.type) {
-    case "set_items":
-      return action.items;
+    case "add_item": {
+      return [...items, createItem(action.itemType)];
+    }
     case "rename":
-      return updateItem(items, action.id, {
-        label: action.newLabel,
-        editable: false,
-      });
-
+      if (action.label.length === 0) {
+        return items.filter((item) => item.id !== action.id);
+      }
+      return items.map((item) =>
+        item.id !== action.id ? item : { ...item, label: action.label },
+      );
     case "delete":
-      return deleteItem(items, action.id);
-
-    case "group":
-      throw new Error("Not implemented");
-
-    case "insert": {
-      const id = window.crypto.randomUUID();
-      const href = `/note/${id}`;
-      return insertItem(items, action.id, {
-        ...action.newItem,
-        href,
-        id,
-        editable: true,
-      });
-    }
-
-    case "create": {
-      const id = window.crypto.randomUUID();
-      const href = `/note/${id}`;
-      return createItem(items, {
-        ...action.newItem,
-        editable: true,
-        id,
-        href,
-      });
-    }
-    case "toggle_editing":
-      return updateItem(items, action.id, {
-        editable: true,
-      });
+      return items.filter((item) => item.id !== action.id);
   }
 }
 
-//#region REDUCER ACTIONS
-function updateItem(items: Item[], id: string, newItem: Partial<ItemProps>) {
-  return mapSidebar(items, (item) => {
-    if (item.id === id) return Object.assign(item, newItem);
-    return item;
-  });
+function createItem(type: Item["type"]): Item {
+  const id = window.crypto.randomUUID();
+  const href = `/note/${id}`;
+  const label = "New note";
+  if (type === "category") {
+    return { type: "category", id, label, href, items: [] };
+  }
+
+  return { type: "link", id, label, href };
 }
 
-function insertItem(items: Item[], id: string, newItem: ItemProps) {
-  return mapSidebar(items, (item) => {
-    if (item.id !== id) {
-      return item;
-    }
-
-    if (item.type === "category") {
-      return {
-        ...item,
-        items: [...item.items, newItem],
-      };
-    }
-
-    return item;
-  });
+export function useSidebarReducer(items: Item[]) {
+  return useReducer(itemsReducer, items);
 }
-
-function createItem(items: Item[], newItem: ItemProps) {
-  items = [...items, newItem];
-  return items;
-}
-
-function deleteItem(items: Item[], id: string) {
-  return filterSidebar(items, (item) => item.id !== id);
-}
-//#endregion
