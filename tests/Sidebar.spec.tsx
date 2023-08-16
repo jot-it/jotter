@@ -25,11 +25,12 @@ test.describe("Sidebar root context menu", () => {
   test("should create a new page", async ({ page }) => {
     await page.getByTestId("sidebar-item-list").click({ button: "right" });
     await page.getByRole("menuitem", { name: "New Page" }).click();
-    const newNote = await page.getByPlaceholder(/new note name/i);
-    await expect(newNote).toBeFocused();
-    await expect(newNote).toBeEditable();
-    await newNote.fill(SIDEBAR_PAGES[0]);
-    await newNote.press("Enter");
+
+    const input = await page.getByPlaceholder(/new note name/i);
+    await expect(input).toBeFocused();
+
+    await input.fill(SIDEBAR_PAGES[0]);
+    await input.press("Enter");
     await expect(
       page.getByRole("link", { name: SIDEBAR_PAGES[0] }),
     ).toBeVisible();
@@ -60,13 +61,44 @@ test.describe("Items context menu", () => {
     await expect(notes).toHaveText(SIDEBAR_PAGES.slice(1));
   });
 
-  test("should allow renaming item", async ({ page }) => {
+  test("should rename item", async ({ page }) => {
     const notes = page.getByTestId("sidebar-item");
-    await notes.nth(1).click({ button: "right" });
+    const secondNote = notes.nth(1);
+    await secondNote.click({ button: "right" });
     await page.getByRole("menuitem", { name: /rename/i }).click();
     await page.locator("input").fill("My Renamed item");
     await page.locator("input").press("Enter");
-    await expect(notes.nth(1)).toHaveText("My Renamed item");
+    await expect(secondNote).toHaveText("My Renamed item");
+  });
+
+  test("should restore initial label when pressing escape", async ({
+    page,
+  }) => {
+    const notes = page.getByTestId("sidebar-item");
+    await notes.nth(0).click({ button: "right" });
+    await page.getByRole("menuitem", { name: /rename/i }).click();
+    const input = page.getByPlaceholder(/new note name/i);
+    await input.fill("My Renamed item");
+    await input.press("Escape");
+
+    await expect(notes.nth(0)).toHaveText(SIDEBAR_PAGES[0]);
+  });
+
+  test("should save new label when focus is lost", async ({ page }) => {
+    const notes = page.getByTestId("sidebar-item");
+
+    const firstNote = notes.nth(0);
+    await firstNote.click({ button: "right" });
+
+    const renameOption = page.getByRole("menuitem", { name: /rename/i });
+    await renameOption.click();
+
+    const input = await page.getByPlaceholder(/new note name/i);
+
+    await input.fill("My Renamed item");
+    const outside = await page.locator("body");
+    await outside.click();
+    await expect(firstNote).toHaveText("My Renamed item");
   });
 });
 
@@ -75,35 +107,37 @@ test.describe("category context menu", () => {
     await createDefaultCategories(page);
   });
 
-  test("should allow creating new pages or sub-categories", async ({
-    page,
-  }) => {
+  test("should allow new page and new category options", async ({ page }) => {
     const items = page.getByTestId("sidebar-item");
     await items.nth(1).click({ button: "right" });
-    await expect(page.getByRole("menu")).toContainText([
-      /new page/i,
-      /new category/i,
-    ]);
+    const menuItems = page.getByRole("menuitem");
+    await expect(menuItems).toContainText([/new page/i, /new category/i]);
   });
 
-  test("should open when an item is created", async ({ page }) => {
+  test("should expand when an item is created", async ({ page }) => {
     const items = page.getByTestId("sidebar-item");
     await items.nth(0).click({ button: "right" });
     await page.getByRole("menuitem", { name: /new page/i }).click();
-    await expect(page.getByPlaceholder(/new note name/i)).toBeVisible();
+
+    const input = page.getByPlaceholder(/new note name/i);
+    await expect(input).toBeVisible();
   });
 
   test("should add a nested new page", async ({ page }) => {
     const items = page.getByTestId("sidebar-item");
     await items.nth(1).click({ button: "right" });
     await page.getByRole("menuitem", { name: /new page/i }).click();
+
     const input = page.getByPlaceholder(/new note name/i);
-    await expect(input).toBeVisible();
-    await input.fill(SIDEBAR_PAGES[1]);
+    await expect(input).toBeFocused();
+    await input.fill(SIDEBAR_PAGES[2]);
     await input.press("Enter");
-    await expect(items.nth(1).getByTestId("sidebar-item-list")).toHaveText(
-      SIDEBAR_PAGES[1],
-    );
+
+    const itemLists = page.getByTestId("sidebar-item-list");
+    const newPage = itemLists
+      .nth(1)
+      .getByRole("link", { name: SIDEBAR_PAGES[2] });
+    await expect(newPage).toBeVisible();
   });
 });
 

@@ -1,47 +1,45 @@
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
 import clsx from "clsx";
-import {
-  Component,
-  ComponentPropsWithoutRef,
-  PropsWithChildren,
-  ReactNode,
-  forwardRef,
-} from "react";
+import React, { PropsWithChildren, forwardRef } from "react";
 
-type ContextMenuProps = PropsWithChildren;
-
-type IconProps = PropsWithChildren<{
-  label: string;
-}>;
+export type ContextMenuProps = PropsWithChildren;
+export type IconProps = PropsWithChildren<{ label?: string }>;
+export type OptionProps = ContextMenuPrimitive.MenuItemProps;
 
 function ContextMenu({ children }: ContextMenuProps) {
   return <ContextMenuPrimitive.Root>{children}</ContextMenuPrimitive.Root>;
 }
 
-const Option = forwardRef<HTMLDivElement, ContextMenuPrimitive.MenuItemProps>(
-  function Option({ children, className, ...props }, ref) {
-    return (
-      <ContextMenuPrimitive.Item
-        ref={ref}
-        {...props}
-        className={clsx(
-          className,
-          "flex select-none items-center rounded-md px-2 py-1 data-[highlighted]:bg-gray-200/75",
-          "dark:data-[highlighted]:bg-slate-800 dark:data-[highlighted]:text-cyan-300",
-        )}
-      >
-        {children}
-      </ContextMenuPrimitive.Item>
-    );
-  },
-);
+const Option = forwardRef<HTMLDivElement, OptionProps>(function Option(
+  { children, className, ...props },
+  ref,
+) {
+  return (
+    <ContextMenuPrimitive.Item
+      ref={ref}
+      {...props}
+      className={clsx(
+        className,
+        "flex select-none items-center rounded-md px-2 py-1 data-[highlighted]:bg-gray-200/75",
+        "dark:data-[highlighted]:bg-slate-800 dark:data-[highlighted]:text-cyan-300",
+      )}
+    >
+      {children}
+    </ContextMenuPrimitive.Item>
+  );
+});
 
 function Icon({ children, label }: IconProps) {
+  const Child = React.Children.only(children);
   return (
-    <span aria-hidden className="mr-3 text-lg">
-      {children}
-      <span className="sr-only">{label}</span>
-    </span>
+    <>
+      {React.cloneElement(Child as React.ReactElement, {
+        className: "mr-3 text-lg",
+        "aria-hidden": true,
+        focusable: false,
+      })}
+      {label && <span className="sr-only">{label}</span>}
+    </>
   );
 }
 
