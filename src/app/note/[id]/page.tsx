@@ -1,5 +1,6 @@
 "use client";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
+import TreeViewPlugin from "@/plugins/TreeViewPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -20,7 +21,13 @@ import { $getRoot, LexicalEditor } from "lexical";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
+import AutoLinkPlugin from "../../../plugins/AutolinkPlugin/index";
 import theme from "./theme";
+
+const ComponentPickerPlugin = dynamic(
+  () => import("@/plugins/CommandPickerPlugin"),
+  { ssr: false },
+);
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
@@ -70,7 +77,7 @@ function Editor() {
 
   return (
     <div
-      className="prose relative mx-auto my-12 max-w-3xl px-4 dark:prose-invert pb-7 lg:pb-0"
+      className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert lg:pb-0"
       ref={onRef}
     >
       <LexicalComposer initialConfig={editorConfig}>
@@ -78,24 +85,44 @@ function Editor() {
           contentEditable={<ContentEditable className="focus:outline-none" />}
           placeholder={
             <p className="absolute left-4 top-0 m-0 dark:text-gray-400">
-              Begin your story...
+              Press{" "}
+              <span className="rounded bg-gray-200 px-2 py-1 dark:bg-slate-800">
+                /
+              </span>{" "}
+              for commands...
             </p>
           }
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
+        <AutoLinkPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <HistoryPlugin />
 
         {editorContainer ? (
-          <ToolbarPlugin container={editorContainer} />
+          <>
+            <ToolbarPlugin container={editorContainer} />
+            <ComponentPickerPlugin container={editorContainer} />
+          </>
         ) : (
           <></>
         )}
-        {/* {params.id && (
-          <CollaborationPlugin
-            id={params.id}
-            providerFactory={providerFactory}
+
+        {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
+
+        {/* <CollaborationPlugin
+            id="yjs-plugin"
+            providerFactory={(id, yjsDocMap) => {
+              const doc = new Y.Doc();
+              yjsDocMap.set(id, doc);
+
+              const provider = new WebsocketProvider(
+                "ws://localhost:1234",
+                id,
+                doc
+              );
+              return provider;
+            }}
             // Optional initial editor state in case collaborative Y.Doc won't
             // have any existing data on server. Then it'll user this value to populate editor.
             // It accepts same type of values as LexicalComposer editorState
