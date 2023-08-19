@@ -27,23 +27,23 @@ import { formatSelectionAs } from "../ToolbarPlugin/utils";
 import { $getTextNodeForSeach } from "./utils";
 
 export const INSERT_HEADING_COMMAND: LexicalCommand<string> = createCommand(
-  "INSERT_HEADING_COMMAND"
+  "INSERT_HEADING_COMMAND",
 );
 
 export const INSERT_BLOCKQUOTE_COMMAND: LexicalCommand<void> = createCommand(
-  "INSERT_BLOCKQUOTE_COMMAND"
+  "INSERT_BLOCKQUOTE_COMMAND",
 );
 
-export const REMOVE_CARECT_COMMAND: LexicalCommand<void> = createCommand(
-  "REMOVE_CARECT_COMMAND"
+export const REMOVE_CARET_COMMAND: LexicalCommand<void> = createCommand(
+  "REMOVE_CARET_COMMAND",
 );
 
 export const CLEAR_FORMAT_TEXT_COMMAND: LexicalCommand<void> = createCommand(
-  "CLEAR_FORMAT_TEXT_COMMAND"
+  "CLEAR_FORMAT_TEXT_COMMAND",
 );
 
 export const FORMAT_PARAGRAPH_COMMAND: LexicalCommand<void> = createCommand(
-  "FORMAT_PARAGRAPH_COMMAND"
+  "FORMAT_PARAGRAPH_COMMAND",
 );
 
 export function useListCommand(editor: LexicalEditor) {
@@ -55,7 +55,7 @@ export function useListCommand(editor: LexicalEditor) {
           insertList(editor, "number");
           return true;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         INSERT_UNORDERED_LIST_COMMAND,
@@ -63,7 +63,7 @@ export function useListCommand(editor: LexicalEditor) {
           insertList(editor, "bullet");
           return true;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         REMOVE_LIST_COMMAND,
@@ -71,8 +71,8 @@ export function useListCommand(editor: LexicalEditor) {
           removeList(editor);
           return true;
         },
-        COMMAND_PRIORITY_LOW
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [editor]);
 }
@@ -88,14 +88,14 @@ export function useHeadingCommand(editor: LexicalEditor) {
       });
       return false;
     },
-    [editor]
+    [editor],
   );
 
   useEffect(() => {
     return editor.registerCommand(
       INSERT_HEADING_COMMAND,
       formatHeading,
-      COMMAND_PRIORITY_LOW
+      COMMAND_PRIORITY_LOW,
     );
   }, [editor, formatHeading]);
 }
@@ -117,10 +117,10 @@ export function useRemoveCaretCommand(editor: LexicalEditor) {
   }, [editor]);
 
   useEffect(() => {
-    editor.registerCommand(
-      REMOVE_CARECT_COMMAND,
+    return editor.registerCommand(
+      REMOVE_CARET_COMMAND,
       handleRemoveCommandString,
-      COMMAND_PRIORITY_LOW
+      COMMAND_PRIORITY_LOW,
     );
   }, [editor, handleRemoveCommandString]);
 }
@@ -140,7 +140,7 @@ export function useBlockQuoteCommand(editor: LexicalEditor) {
     return editor.registerCommand(
       INSERT_BLOCKQUOTE_COMMAND,
       InsertBLockQuote,
-      COMMAND_PRIORITY_LOW
+      COMMAND_PRIORITY_LOW,
     );
   }, [editor, InsertBLockQuote]);
 }
@@ -155,7 +155,7 @@ export function useParagraph(editor: LexicalEditor) {
     return editor.registerCommand(
       FORMAT_PARAGRAPH_COMMAND,
       handleInsert,
-      COMMAND_PRIORITY_LOW
+      COMMAND_PRIORITY_LOW,
     );
   }, [editor, handleInsert]);
 }
@@ -196,7 +196,7 @@ export function useClearformatText(editor: LexicalEditor) {
     return editor.registerCommand(
       CLEAR_FORMAT_TEXT_COMMAND,
       handleClearFormat,
-      COMMAND_PRIORITY_LOW
+      COMMAND_PRIORITY_LOW,
     );
   }, [editor, handleClearFormat]);
 }

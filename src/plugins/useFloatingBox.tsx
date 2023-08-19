@@ -13,22 +13,26 @@ type Options = {
    * Horizontal margin between the floating box and the position.
    */
   offsetX?: number;
-    /**
+  /**
    * Vertical margin between the floating box and the position.
    */
   offsetY?: number;
 };
 
-function useFloatingBox({ position, anchor, offsetX = 0, offsetY = 0 }: Options) {
-
-  const toolbarRef = useRef<HTMLDivElement>(null);
+function useFloatingBox({
+  position,
+  anchor,
+  offsetX = 0,
+  offsetY = 0,
+}: Options) {
+  const toolbarRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const toolbar = toolbarRef.current;
     if (!toolbar || !position) {
       return;
     }
-    const {x, y, height} = position;
+    const { x, y, height } = position;
     const anchorRect = anchor.getBoundingClientRect();
     const toolbarRect = toolbar.getBoundingClientRect();
 
@@ -49,7 +53,7 @@ function useFloatingBox({ position, anchor, offsetX = 0, offsetY = 0 }: Options)
     toolbar.style.transform = `translate(${left}px, ${top}px)`;
   }, [anchor, position, offsetX, offsetY]);
 
-  return {ref: toolbarRef}
+  return { ref: toolbarRef };
 }
 
 const useEffect =
