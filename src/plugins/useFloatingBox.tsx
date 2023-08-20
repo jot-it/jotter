@@ -1,4 +1,4 @@
-import React, { useDebugValue, useRef } from "react";
+import React, { useRef } from "react";
 
 type Options = {
   /**

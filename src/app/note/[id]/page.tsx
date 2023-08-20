@@ -1,5 +1,4 @@
 "use client";
-import NoSSR from "@/components/NoSSR";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import TreeViewPlugin from "@/plugins/TreeViewPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
@@ -13,32 +12,27 @@ import {
 } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import ErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { $createHeadingNode, HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import {
-  $createParagraphNode,
-  $createTextNode,
-  $getRoot,
-  LexicalEditor,
-} from "lexical";
+import { $getRoot, LexicalEditor } from "lexical";
 import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import theme from "./theme";
 import AutoLinkPlugin from "../../../plugins/AutolinkPlugin/index";
+import theme from "./theme";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
-  { ssr: false }
+  { ssr: false },
 );
 
 function initialEditorState(editor: LexicalEditor): void {
   const root = $getRoot();
-  const paragraph = $createParagraphNode();
-  const text = $createTextNode("Welcome to collab!");
-  paragraph.append(text);
-  root.append(paragraph);
+  const headingPlaceholder = $createHeadingNode("h1");
+  root.append(headingPlaceholder);
 }
 
 const editorConfig: InitialConfigType = {
@@ -63,8 +57,17 @@ const editorConfig: InitialConfigType = {
   ],
 };
 
+const CollaborationPlugin = dynamic(
+  () =>
+    import("@lexical/react/LexicalCollaborationPlugin").then(
+      (module) => module.CollaborationPlugin,
+    ),
+  { ssr: false },
+);
+
 function Editor() {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
+  const params = useParams();
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
     if (node !== null) {
@@ -94,23 +97,20 @@ function Editor() {
         <AutoFocusPlugin />
         <AutoLinkPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        <HistoryPlugin />
 
         {editorContainer ? (
-          <ToolbarPlugin container={editorContainer} />
-        ) : (
-          <></>
-        )}
-
-        {editorContainer ? (
-          <ComponentPickerPlugin container={editorContainer} />
+          <>
+            <ToolbarPlugin container={editorContainer} />
+            <ComponentPickerPlugin container={editorContainer} />
+          </>
         ) : (
           <></>
         )}
 
         {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
-        
-        <NoSSR>
-          {/* <CollaborationPlugin
+
+        {/* <CollaborationPlugin
             id="yjs-plugin"
             providerFactory={(id, yjsDocMap) => {
               const doc = new Y.Doc();
@@ -128,9 +128,9 @@ function Editor() {
             // It accepts same type of values as LexicalComposer editorState
             // prop (json string, state object, or a function)
             initialEditorState={initialEditorState}
-            shouldBootstrap={true}
-          /> */}
-        </NoSSR>
+            shouldBootstrap={false}
+          />
+        )} */}
       </LexicalComposer>
     </div>
   );

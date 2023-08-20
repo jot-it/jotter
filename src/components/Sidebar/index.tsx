@@ -3,57 +3,92 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  KeyboardEvent,
+  Dispatch,
   PropsWithChildren,
-  memo,
-  useEffect,
-  useRef,
+  createContext,
+  useContext,
+  useMemo,
   useState,
 } from "react";
+import {
+  CgTrashEmpty as DeleteIcon,
+  CgFile as FileIcon,
+  CgRename as RenameIcon,
+} from "react-icons/cg";
 import {
   RiBook2Line as BookIcon,
   RiArrowDownSLine as Chevron,
 } from "react-icons/ri";
 import ContextMenu from "../ContextMenu";
 import Typography from "../Typography";
-import { useSidebarDispatch, useSidebarItems } from "./SidebarContextProvider";
-import { CategoryActions, LinkActions, SidebarActions } from "./menu-actions";
+import EditableLabel, { EditableLabelProps } from "./EditableLabel";
+import { MenuAction } from "./MenuAction";
+import { Action, useSidebarReducer } from "./state";
+import { BreadcrumbItem } from "../Breadcrumbs";
 
 //#region  Typings
-export type SidebarItemListProps = {
-  items: Item[];
+type SidebarItemBaseProps = Pick<
+  EditableLabelProps,
+  "editable" | "onRename" | "onReset"
+>;
+
+type EventHandlers = {
+  /**
+   * Callback when an item is selected (clicked)
+   */
+  onSelected?: (item: Item) => void;
 };
 
-type SidebarItemBaseProps = {
-  isEditing?: boolean;
+type ItemBase = {
+  href: string;
+  /**
+   * Label to display
+   */
+  label: string;
+  /**
+   * Unique identifier
+   */
+  id: string;
+  /**
+   * Enasble editing of the label
+   */
+  editable?: boolean;
+  /**
+   * Path to this item relative to the root of the sidebar
+   */
+  crumbs: BreadcrumbItem[];
 };
 
-export type SidebarProps = PropsWithChildren;
-
-export type LinkItem = {
+export type LinkItem = ItemBase & {
   type: "link";
-  href: string;
-  label: string;
-  id: string;
 };
 
-export type CategoryItem = {
+export type CategoryItem = ItemBase & {
   type: "category";
-  href: string;
-  label: string;
   items: Item[];
-  id: string;
 };
 
-export type LinkProps = LinkItem & SidebarItemBaseProps;
-export type CategoryProps = CategoryItem & SidebarItemBaseProps;
-export type ButtonProps = React.ComponentPropsWithoutRef<"button">;
 export type Item = CategoryItem | LinkItem;
-export type ItemProps = CategoryProps | LinkProps;
-
 //#endregion
 
-function Sidebar({ children }: PropsWithChildren) {
+const itemVariant = {
+  root: "rounded-lg p-3 text-left",
+  active:
+    "dark:bg-cyan-900 bg-cyan-400/20  dark:text-cyan-200 text-cyan-950 dark:hover:bg-cyan-800\
+     hover:bg-gray-300 hover:bg-cyan-400/30",
+  inactive:
+    "hover:bg-gray-300 dark:hover:bg-slate-700\
+    focus-within:dark:bg-slate-700 focus-within:bg-gray-300",
+} as const;
+
+// Default to empty dispatch when there is not an immediate parent
+const noop = () => {};
+const DispatchContext = createContext<Dispatch<Action>>(noop);
+
+const EventHandlersContext = createContext<EventHandlers | null>(null);
+
+export type SidebarProps = PropsWithChildren;
+function Sidebar({ children }: SidebarProps) {
   return (
     <nav
       className="sticky top-0 z-20 flex h-screen flex-col justify-between space-y-1 
@@ -64,98 +99,267 @@ function Sidebar({ children }: PropsWithChildren) {
   );
 }
 
-/**
- * Entry point for all sidebar items
- */
-//#region Sidebar Arquitect
-function SidebarItemsRoot() {
-  const items = useSidebarItems();
+export type SidebarRootProps = SidebarItemListProps &
+  EventHandlers & {
+    /**
+     * dispatch from useSidebarReducer()
+     */
+    dispatch: Dispatch<Action>;
+  };
+
+function SidebarRoot({ items, dispatch, onSelected }: SidebarRootProps) {
+  const eventHandlers = useMemo(() => {
+    return { onSelected };
+  }, [onSelected]);
   return (
-    <div className="flex-1 overflow-auto">
-      <ContextMenu trigger={<SidebarItemList items={items} />}>
-        <SidebarActions />
-      </ContextMenu>
-    </div>
+    <ContextMenu>
+      <ContextMenu.Trigger>
+        <DispatchContext.Provider value={dispatch}>
+          <EventHandlersContext.Provider value={eventHandlers}>
+            <SidebarItemList items={items} />
+          </EventHandlersContext.Provider>
+        </DispatchContext.Provider>
+      </ContextMenu.Trigger>
+
+      <ContextMenu.Content>
+        <MenuAction
+          icon={<FileIcon />}
+          label="new page"
+          onClick={() => dispatch({ type: "add_item", itemType: "link" })}
+        />
+        <MenuAction
+          icon={<BookIcon />}
+          label="new category"
+          onClick={() => dispatch({ type: "add_item", itemType: "category" })}
+        />
+      </ContextMenu.Content>
+    </ContextMenu>
   );
 }
 
-// Memoize to prevent re-rendering when the user is renaming an item
-const SidebarItemList = memo(function SidebarItemList({
-  items,
-}: SidebarItemListProps) {
+export type SidebarItemListProps = {
+  items: Item[];
+};
+
+function SidebarItemList({ items }: SidebarItemListProps) {
+  const [value, setValue] = useState<string[]>([]);
+  const setOpen = (id: string) => {
+    setValue((prev) => [...prev, id]);
+  };
+
   return (
-    <Accordion.Root className="h-full" type="single" collapsible>
-      {items.map((props) => (
-        <SidebarItem key={props.id} {...props} />
-      ))}
+    <Accordion.Root
+      className="h-full"
+      type="multiple"
+      value={value}
+      onValueChange={(values) => setValue(values)}
+      data-testid="sidebar-item-list"
+    >
+      {items.map((props) => {
+        switch (props.type) {
+          case "category":
+            return <CategoryWithMenu {...props} setOpen={setOpen} />;
+          case "link":
+            return <LinkWithMenu {...props} />;
+        }
+      })}
     </Accordion.Root>
   );
-});
-
-function SidebarItem(props: ItemProps) {
-  const id = props.id;
-  switch (props.type) {
-    case "category":
-      return (
-        <ContextMenu trigger={<Category {...props} />}>
-          <CategoryActions id={id} />
-        </ContextMenu>
-      );
-    case "link":
-      return (
-        <ContextMenu trigger={<Link {...props} />}>
-          <LinkActions id={id} />
-        </ContextMenu>
-      );
-  }
 }
-//#endregion
 
-export function Category(props: CategoryProps) {
+export type CategoryMenuProps = CategoryProps & {
+  /**
+   * Open the accordion item with the given id
+   */
+  setOpen: (id: string) => void;
+};
+
+function CategoryWithMenu({
+  items: initialItems,
+  editable: editable,
+  setOpen,
+  ...rest
+}: CategoryMenuProps) {
+  const parentDispatch = useContext(DispatchContext);
+  const [items, dispatch] = useSidebarReducer(initialItems);
+
+  const withExpand = (fn: () => void) => {
+    return () => {
+      fn();
+      setOpen(rest.id);
+    };
+  };
+
+  return (
+    <DispatchContext.Provider value={dispatch}>
+      <ContextMenu>
+        <ContextMenu.Trigger>
+          <Category
+            {...rest}
+            items={items}
+            editable={editable}
+            onRename={(label) =>
+              parentDispatch({ type: "rename", id: rest.id, label })
+            }
+            onReset={() =>
+              dispatch({ type: "edit_mode", id: rest.id, value: false })
+            }
+          />
+        </ContextMenu.Trigger>
+        <ContextMenu.Content>
+          <MenuAction
+            icon={<FileIcon />}
+            label="new page"
+            onClick={withExpand(() =>
+              dispatch({ type: "add_item", itemType: "link" }),
+            )}
+          />
+          <MenuAction
+            icon={<BookIcon />}
+            label="new category"
+            onClick={withExpand(() =>
+              dispatch({ type: "add_item", itemType: "category" }),
+            )}
+          />
+          <ContextMenu.Divider />
+          <MenuAction
+            icon={<RenameIcon />}
+            label="rename"
+            onClick={() =>
+              parentDispatch({ type: "edit_mode", id: rest.id, value: true })
+            }
+          />
+          <MenuAction
+            icon={<DeleteIcon />}
+            label="delete"
+            onClick={() => parentDispatch({ type: "delete", id: rest.id })}
+          />
+        </ContextMenu.Content>
+      </ContextMenu>
+    </DispatchContext.Provider>
+  );
+}
+
+export type CategoryProps = CategoryItem & SidebarItemBaseProps;
+
+function Category(props: CategoryProps) {
   const router = useRouter();
+  const eventHandlers = useContext(EventHandlersContext);
+  const isActive = usePathname() === props.href;
+
+  const itemsWithBreadcrumbs = props.items.map((item) => {
+    const ownBreadcrumbs = props.crumbs;
+    return {
+      ...item,
+      crumbs: ownBreadcrumbs.concat(item.crumbs),
+    };
+  });
+
+  const handleClick = () => {
+    eventHandlers?.onSelected?.(props);
+    router.push(props.href);
+  };
+
   return (
     <Accordion.Item value={props.id}>
       <Accordion.Header className="p-0.5">
         <Accordion.Trigger
-          onClick={() => router.push(props.href)}
-          className="group flex w-full items-center justify-between rounded-lg p-3 text-left 
-          hover:bg-gray-300 data-[state=open]:bg-cyan-400/20 data-[state=open]:text-cyan-950
-          dark:hover:bg-gray-700 dark:data-[state=open]:bg-cyan-900 dark:data-[state=open]:text-cyan-200"
+          data-testid="sidebar-item"
+          onClick={handleClick}
+          className={clsx(
+            itemVariant.root,
+            isActive ? itemVariant.active : itemVariant.inactive,
+            "group flex w-full items-center justify-between",
+          )}
         >
           <div>
             <BookIcon className="mr-2 inline-block" />
-            <ItemContent {...props} />
+            <EditableLabel
+              initialLabel={props.label}
+              editable={props.editable}
+              onRename={props.onRename}
+              onReset={props.onReset}
+            />
           </div>
           <Chevron className="group-data-[state=open]:rotate-180" aria-hidden />
         </Accordion.Trigger>
       </Accordion.Header>
-
       <Accordion.Content className="ml-2">
-        <SidebarItemList items={props.items} />
+        <SidebarItemList items={itemsWithBreadcrumbs} />
       </Accordion.Content>
     </Accordion.Item>
   );
 }
 
-export function Link(props: LinkProps) {
-  const isActive = usePathname() === props.href;
+function LinkWithMenu(props: LinkProps) {
+  const dispatch = useContext(DispatchContext);
   return (
-    //@ts-expect-error Next.js links also have a "as" prop
+    <ContextMenu>
+      <ContextMenu.Trigger>
+        {/* FIXME Link doesn't use dispatch. It should not receive it as prop */}
+        <Link
+          {...props}
+          onRename={(label) =>
+            dispatch({ type: "rename", id: props.id, label })
+          }
+          onReset={() =>
+            dispatch({ type: "edit_mode", id: props.id, value: false })
+          }
+        />
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        <MenuAction
+          icon={<RenameIcon />}
+          label="Rename"
+          onClick={() =>
+            dispatch({ type: "edit_mode", id: props.id, value: true })
+          }
+        />
+        <MenuAction
+          icon={<DeleteIcon />}
+          label="delete"
+          onClick={() => dispatch({ type: "delete", id: props.id })}
+        />
+      </ContextMenu.Content>
+    </ContextMenu>
+  );
+}
+
+export type LinkProps = LinkItem & SidebarItemBaseProps;
+
+function Link(props: LinkProps) {
+  const eventHandlers = useContext(EventHandlersContext);
+  const isActive = usePathname() === props.href;
+
+  const handleClick = () => {
+    eventHandlers?.onSelected?.(props);
+  };
+  return (
+    /* @ts-expect-error Next.js links also have a "as" prop */
     <Typography
       as={NextLink}
+      variant="body1"
       href={props.href}
       aria-current={isActive ? "page" : undefined}
+      onClick={handleClick}
+      data-testid="sidebar-item"
       className={clsx(
-        // isEmpty && "outline outline-1 -outline-offset-1 dark:outline-red-400",
-        isActive && "bg-gray-300 dark:bg-slate-700",
-        "block rounded-lg px-2 py-3 hover:bg-gray-300 focus-within:bg-gray-300 focus-within:dark:bg-slate-700 dark:hover:bg-slate-700"
+        "block",
+        itemVariant.root,
+        isActive ? itemVariant.active : itemVariant.inactive,
       )}
-      variant="body1"
     >
-      <ItemContent {...props} />
+      <EditableLabel
+        initialLabel={props.label}
+        editable={props.editable}
+        onRename={props.onRename}
+        onReset={props.onReset}
+      />
     </Typography>
   );
 }
+
+export type ButtonProps = React.ComponentPropsWithoutRef<"button">;
 
 function Button({ children, ...props }: ButtonProps) {
   return (
@@ -173,75 +377,7 @@ function Divider() {
   return <hr className="h-0.5 w-full border-gray-300 dark:border-slate-700" />;
 }
 
-//#region Items Content
-function ItemContent(props: ItemProps) {
-  const { label: initialLabel, isEditing, id, type } = props;
-  const [label, setLabel] = useState(initialLabel);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const isLabelEmpty = label.trim().length === 0;
-  const dispatch = useSidebarDispatch();
-
-  const handleRename = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      rename();
-    }
-    // Prevent category from opening when the users presses space bar
-    if (e.key === " ") {
-      e.preventDefault();
-    }
-  };
-
-  const rename = () => {
-    // Both initial label and current label are empty this must be a new item
-    if (isLabelEmpty && initialLabel.length === 0) {
-      dispatch({ type: "delete", id });
-      return;
-    }
-
-    if (isLabelEmpty) {
-      setLabel(initialLabel); // Reset label
-    }
-
-    dispatch({
-      type: "rename",
-      id,
-      newLabel: isLabelEmpty ? initialLabel : label,
-    });
-  };
-
-  useEffect(() => {
-    // HACK Use a timeout to prevent race condition between any active focus and this one
-    const timeout = setTimeout(() => {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    }, 200);
-    return () => clearTimeout(timeout);
-  }, [isEditing]);
-
-  if (!isEditing) {
-    return <span>{label}</span>;
-  }
-
-  return (
-    <input
-      className={clsx(
-        type === "link" && "w-full",
-        "cursor-text bg-transparent outline-none"
-      )}
-      autoComplete="off"
-      value={label}
-      spellCheck={false}
-      ref={inputRef}
-      onBlur={rename}
-      onChange={(e) => setLabel(e.target.value)}
-      onKeyUp={handleRename}
-    />
-  );
-}
-//#endregion
-
-Sidebar.Item = SidebarItem;
-Sidebar.Items = SidebarItemsRoot;
+Sidebar.Items = SidebarRoot;
 Sidebar.Button = Button;
 Sidebar.Divider = Divider;
 
