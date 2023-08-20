@@ -2,11 +2,14 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import {
   COMMAND_PRIORITY_LOW,
   FORMAT_TEXT_COMMAND,
+  KEY_ARROW_DOWN_COMMAND,
+  KEY_ARROW_UP_COMMAND,
+  KEY_ENTER_COMMAND,
   KEY_ESCAPE_COMMAND,
-  SELECTION_CHANGE_COMMAND,
+  SELECTION_CHANGE_COMMAND
 } from "lexical";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import {
   RiBold as BoldIcon,
   RiText as ClearFormatTextIcon,
@@ -23,7 +26,7 @@ import {
   FORMAT_PARAGRAPH_COMMAND,
   INSERT_BLOCKQUOTE_COMMAND,
   INSERT_HEADING_COMMAND,
-  REMOVE_CARECT_COMMAND,
+  REMOVE_CARET_COMMAND,
   useBlockQuoteCommand,
   useClearformatText,
   useHeadingCommand,
@@ -45,6 +48,7 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
 import { createContext } from "react";
+import useLexicalCommand from "../useLexicalCommand";
 
 export const CommandPickeContext = createContext("");
 
@@ -55,15 +59,16 @@ export type ComponentPickerMenuPluginProps = {
   container: HTMLDivElement;
 };
 
+const COMMAND_PICKER_REGEX = /(?<=\s|\B)\/([a-zA-Z]*\d*)$/;
+
 export default function ComponentPickerMenuPlugin({
   container,
 }: ComponentPickerMenuPluginProps) {
   const [editor] = useLexicalComposerContext();
-
   const [command, setCommand] = useState("");
   const [show, setShow] = useState(false);
-
   const [_isPending, startTransition] = useTransition();
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   useListCommand(editor);
   useHeadingCommand(editor);
@@ -73,16 +78,18 @@ export default function ComponentPickerMenuPlugin({
   useRemoveCaretCommand(editor);
 
   const withHideCaret = (fn: () => void) => {
-    fn();
-    editor.dispatchCommand(REMOVE_CARECT_COMMAND, undefined);
+    return () => {
+      fn();
+      editor.dispatchCommand(REMOVE_CARET_COMMAND, undefined);
+    };
   };
 
-  const handleSelectionChanged = useCallback(() => {
+  const handleSelectionChanged = () => {
     editor.getEditorState().read(() => {
       const queryText = $getQueryTextForSearch();
       const selectionString = queryText ?? "";
 
-      const matcher = /(?<=\s|\B)\/([a-zA-Z]*\d*)$/;
+      const matcher = COMMAND_PICKER_REGEX;
       const foundMatch = matcher.exec(selectionString);
       const canShow = Boolean(foundMatch?.[0]);
       const command = foundMatch?.[1].toLowerCase() ?? "";
@@ -96,183 +103,188 @@ export default function ComponentPickerMenuPlugin({
     });
 
     return false;
-  }, [editor]);
+  };
 
-  useEffect(() => {
-    editor.registerCommand(
-      SELECTION_CHANGE_COMMAND,
-      handleSelectionChanged,
-      COMMAND_PRIORITY_LOW
-    );
-  }, [editor, handleSelectionChanged]);
+  const forwardCommandMenuEvent = (oldEvent: KeyboardEvent | null) => {
+    const commandMenu = menuRef.current;
+    if (oldEvent && commandMenu) {
+      const newEvent = new KeyboardEvent(oldEvent.type, oldEvent);
+      commandMenu.dispatchEvent(newEvent);
+      oldEvent.preventDefault();
+      oldEvent.stopImmediatePropagation();
+    }
+    return true;
+  };
 
-  // Close Commponet Picker
-  useEffect(() => {
-    editor.registerCommand<KeyboardEvent>(
-      KEY_ESCAPE_COMMAND,
-      () => {
-        setShow(false);
-        return true;
-      },
-      COMMAND_PRIORITY_LOW
-    );
-  }, [editor]);
+  useLexicalCommand(
+    SELECTION_CHANGE_COMMAND,
+    handleSelectionChanged,
+    COMMAND_PRIORITY_LOW,
+  );
+
+  useLexicalCommand(
+    KEY_ESCAPE_COMMAND,
+    () => {
+      setShow(false);
+      return true;
+    },
+    COMMAND_PRIORITY_LOW,
+  );
+
+  useLexicalCommand(
+    KEY_ENTER_COMMAND,
+    forwardCommandMenuEvent,
+    COMMAND_PRIORITY_LOW,
+  );
+
+  useLexicalCommand(
+    KEY_ARROW_DOWN_COMMAND,
+    forwardCommandMenuEvent,
+    COMMAND_PRIORITY_LOW,
+  );
+
+  useLexicalCommand(
+    KEY_ARROW_UP_COMMAND,
+    forwardCommandMenuEvent,
+    COMMAND_PRIORITY_LOW,
+  );
+
+  if (!show) {
+    return null;
+  }
 
   return (
-    <CommandPicker container={container} query={command} show={show}>
+    <CommandPicker ref={menuRef} container={container} query={command}>
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(FORMAT_PARAGRAPH_COMMAND, undefined)
-          )
-        }
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(FORMAT_PARAGRAPH_COMMAND, undefined),
+        )}
         keywords="normal text clear unformat paragraph"
       >
         <ParagraphIcon />
-        {"Paragraph"}
+        Paragraph
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(INSERT_HEADING_COMMAND, "H1")
-          )
-        }
-        keywords="heading h1 header tittle"
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(INSERT_HEADING_COMMAND, "H1"),
+        )}
+        keywords="heading h1 header title"
       >
         <HeadingIcon />
-        {"Heading 1"}
+        Heading 1
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(INSERT_HEADING_COMMAND, "h2")
-          )
-        }
-        keywords="heading h2 header tittle subtittle"
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(INSERT_HEADING_COMMAND, "h2"),
+        )}
+        keywords="heading h2 header title subtittle"
       >
         <HeadingIcon />
-        {"Heading 2"}
+        Heading 2
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(INSERT_HEADING_COMMAND, "h3")
-          )
-        }
-        keywords="heading h3 header tittle subtittle"
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(INSERT_HEADING_COMMAND, "h3"),
+        )}
+        keywords="heading h3 header title subtittle"
       >
         <HeadingIcon />
-        {"Heading 3"}
+        Heading 3
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
-          )
-        }
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined),
+        )}
         keywords="list bullet unordered ul"
       >
         <ListIcon />
-        {"List"}
+        List
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
-          )
-        }
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined),
+        )}
         keywords="list numbered ordered ol"
       >
         <OrderedListIcon />
-        {"Ordered List"}
+        Ordered List
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
-          )
-        }
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code"),
+        )}
         keywords="code codeblock javascript python js"
       >
         <CodeIcon />
-        {"Code"}
+        Code
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(INSERT_BLOCKQUOTE_COMMAND, undefined)
-          )
-        }
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(INSERT_BLOCKQUOTE_COMMAND, undefined),
+        )}
         keywords="quote block blockquote"
       >
         <QuoteIcon />
-        {"Quote"}
+        Quote
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(CLEAR_FORMAT_TEXT_COMMAND, undefined)
-          )
-        }
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(CLEAR_FORMAT_TEXT_COMMAND, undefined),
+        )}
         keywords="normal text clear unformat"
       >
         <ClearFormatTextIcon />
-        {"Normal"}
+        Normal
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() => {
+        onSelect={withHideCaret(() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-          editor.dispatchCommand(REMOVE_CARECT_COMMAND, undefined);
-        }}
+        })}
         keywords="bold strong"
       >
         <BoldIcon />
-        {"Bold"}
+        Bold
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")
-          )
-        }
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic"),
+        )}
         keywords="italic oblique"
       >
         <ItalicIcon />
-        {"Italic"}
+        Italic
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
+        onSelect={() =>
           withHideCaret(() =>
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline"),
           )
         }
         keywords="underline underscore mark"
       >
         <UnderlineIcon />
-        {"Underline"}
+        Underline
       </CommandPicker.Command>
 
       <CommandPicker.Command
-        onClick={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")
-          )
-        }
+        onSelect={withHideCaret(() =>
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough"),
+        )}
         keywords="strikethrough cross out"
       >
         <StrikethroughIcon />
-        {"Strikethrough"}
+        Strikethrough
       </CommandPicker.Command>
     </CommandPicker>
   );
