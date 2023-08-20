@@ -81,7 +81,7 @@ const SelectItem = forwardRef<HTMLDivElement, RadixSelect.SelectItemProps>(
         className="select-none px-3 py-2 data-[highlighted]:bg-gray-200 
         data-[highlighted]:outline-none  dark:data-[highlighted]:bg-cyan-900 dark:data-[highlighted]:text-cyan-200"
       >
-        <RadixSelect.ItemText asChild>
+        <RadixSelect.ItemText>
           <Typography variant="body1">{children}</Typography>
         </RadixSelect.ItemText>
       </RadixSelect.Item>

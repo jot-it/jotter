@@ -1,6 +1,5 @@
-import { PolymorphicProps, RefForwardingComponent } from "@/types/as-prop";
 import clsx from "clsx";
-import { forwardRef } from "react";
+import { ComponentPropsWithoutRef } from "react";
 
 export const textVariants = {
   h1: "text-8xl font-light",
@@ -30,15 +29,15 @@ const gutterVariants: Record<keyof typeof textVariants, string> = {
   overline: "mb-4",
 };
 
-interface TypographyProps extends PolymorphicProps {
+type TypographyProps<As extends React.ElementType = "span"> = {
+  as?: As;
   variant?: keyof typeof textVariants;
   gutterBottom?: boolean;
-}
+} & ComponentPropsWithoutRef<As>
 
-const Typography: RefForwardingComponent<"span", TypographyProps> = forwardRef<
-  HTMLElement,
-  TypographyProps
->(function Typography(props, ref) {
+function Typography <As extends React.ElementType = "span">(
+  props: TypographyProps<As>,
+) {
   const {
     as: Component = "span",
     className,
@@ -53,14 +52,13 @@ const Typography: RefForwardingComponent<"span", TypographyProps> = forwardRef<
       className={clsx(
         className,
         gutterBottom && gutterVariants[variant],
-        variant && textVariants[variant]
+        variant && textVariants[variant],
       )}
       {...others}
-      ref={ref}
     >
       {children}
     </Component>
   );
-});
+};
 
 export default Typography;

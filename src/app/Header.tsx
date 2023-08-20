@@ -1,19 +1,16 @@
 "use client";
 import Avatar from "@/components/Avatar";
 import Breadcrumbs, { BreadcrumbItem } from "@/components/Breadcrumbs";
-import { Item } from "@/components/Sidebar";
-import { useSidebarItems } from "@/components/Sidebar/SidebarContextProvider";
+// import { useSidebarItems } from "@/components/Sidebar/SidebarContextProvider";
 import Typography from "@/components/Typography";
-import { useParams } from "next/navigation";
-import {
-  RiUserAddLine as UserAddIcon
-} from "react-icons/ri";
+import { atom, useAtomValue } from "jotai";
+import { RiUserAddLine as UserAddIcon } from "react-icons/ri";
 import MobileNavigation from "./MobileNavigation";
 
+export const breadcrumbsAtom = atom<BreadcrumbItem[]>([]);
+
 function Header() {
-  const { id } = useParams();
-  const items = useSidebarItems();
-  const crumbs = getBreadcrumbs(items, id);
+  const crumbs = useAtomValue(breadcrumbsAtom);
   return (
     <header
       className="sticky top-0 z-10 flex items-center border-b border-gray-200 bg-white/90 p-4 
@@ -50,31 +47,6 @@ function Header() {
       </Typography>
     </header>
   );
-}
-
-function getBreadcrumbs(items: Item[], id: string) {
-  const crumbs: BreadcrumbItem[] = [];
-  for (const item of items) {
-    crumbs.push({
-      href: item.href,
-      label: item.label,
-    });
-
-    if (item.id === id) {
-      break;
-    }
-
-    if (item.type === "category") {
-      const path = getBreadcrumbs(item.items, id);
-      const pathContainsId = path.length > 0;
-      if (pathContainsId) {
-        crumbs.push(...path);
-        break;
-      }
-    }
-    crumbs.pop();
-  }
-  return crumbs;
 }
 
 export default Header;
