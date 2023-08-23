@@ -26,11 +26,12 @@ import {
 import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
 import theme from "./theme";
-import AutoLinkPlugin from "../../../plugins/AutolinkPlugin/index";
+import AutoLinkPlugin from "@/plugins/AutolinkPlugin";
+import { ListEndPlugin } from "@/plugins/ListPlugin";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
-  { ssr: false }
+  { ssr: false },
 );
 
 function initialEditorState(editor: LexicalEditor): void {
@@ -94,6 +95,7 @@ function Editor() {
         <AutoFocusPlugin />
         <AutoLinkPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        <ListEndPlugin />
 
         {editorContainer ? (
           <ToolbarPlugin container={editorContainer} />
@@ -108,7 +110,7 @@ function Editor() {
         )}
 
         {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
-        
+
         <NoSSR>
           {/* <CollaborationPlugin
             id="yjs-plugin"
