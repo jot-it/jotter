@@ -28,6 +28,7 @@ import { useCallback, useState } from "react";
 import theme from "./theme";
 import AutoLinkPlugin from "@/plugins/AutolinkPlugin";
 import { ListEndPlugin } from "@/plugins/ListPlugin";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -96,6 +97,7 @@ function Editor() {
         <AutoLinkPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <ListEndPlugin />
+        <TabIndentationPlugin />
 
         {editorContainer ? (
           <ToolbarPlugin container={editorContainer} />
