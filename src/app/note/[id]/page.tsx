@@ -21,8 +21,9 @@ import { $getRoot, LexicalEditor } from "lexical";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import AutoLinkPlugin from "../../../plugins/AutolinkPlugin/index";
 import theme from "./theme";
+import AutoLinkPlugin from "@/plugins/AutolinkPlugin";
+import { ListEndPlugin } from "@/plugins/ListPlugin";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -98,6 +99,7 @@ function Editor() {
         <AutoLinkPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <HistoryPlugin />
+        <ListEndPlugin />
 
         {editorContainer ? (
           <>
