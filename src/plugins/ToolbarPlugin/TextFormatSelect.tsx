@@ -59,7 +59,7 @@ function TextFormatSelect({ editor }: TextFormatSelectProps) {
   }, [editor, handleSelectionChanged]);
 
   return (
-    <ToolbarButton asChild>
+    <ToolbarButton ref={(element) => element?.focus()} asChild>
       <Select
         defaultValue="p"
         value={headingStyle}
