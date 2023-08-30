@@ -1,13 +1,11 @@
 "use client";
-import { atom, useAtomValue } from "jotai";
 import { useEffect } from "react";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 
-export const documentAtom = atom<Y.Doc>(new Y.Doc());
+export const rootDocument = new Y.Doc();
 
 function CollaborationProvider() {
-  const rootDocument = useAtomValue(documentAtom);
   useEffect(() => {
     const provider = new WebsocketProvider(
       getCollabServerURL(),
@@ -16,13 +14,9 @@ function CollaborationProvider() {
     );
     provider.connect();
     return () => provider.disconnect();
-  }, [rootDocument]);
+  }, []);
 
   return null;
-}
-
-export function useRootDocument() {
-  return useAtomValue(documentAtom);
 }
 
 function getCollabServerURL() {
