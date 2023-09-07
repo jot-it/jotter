@@ -1,51 +1,55 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $setBlocksType } from "@lexical/selection";
 import {
   $createParagraphNode,
   $getSelection,
   $isRangeSelection,
-  COMMAND_PRIORITY_CRITICAL,
+  COMMAND_PRIORITY_LOW,
   KEY_ENTER_COMMAND,
 } from "lexical";
 import { useCallback, useEffect } from "react";
 
-// TODO: List Depth
-// INDENT_CONTENT_COMMAND,
-// COMMAND_PRIORITY_CRITICAL
-
 export function ListEndPlugin() {
   const [editor] = useLexicalComposerContext();
 
-  const handlePressEnter = useCallback(() => {
-    editor.update(() => {
-      const paragraph = $createParagraphNode();
-      const selection = $getSelection();
+  const handlePressEnter = useCallback(
+    (oldEvent: KeyboardEvent) => {
+      editor.update(() => {
+        const selection = $getSelection();
 
-      if (!$isRangeSelection(selection)) {
-        return;
-      }
-      const node = selection.getNodes()[0];
+        if (!$isRangeSelection(selection)) {
+          return;
+        }
 
-      if (node.getType() !== "listitem") {
-        return;
-      }
-      const content = node.getTextContent();
+        const node = selection.getNodes()[0];
+        if (node.getType() !== "listitem") {
+          return;
+        }
 
-      if (content) {
-        return;
-      }
+        const content = node.getTextContent();
 
-      node.insertBefore(paragraph);
-      node.remove();
-    });
+        if (content) {
+          return;
+        }
 
-    return true;
-  }, [editor]);
+        $setBlocksType(selection, () => {
+          const newParagph = $createParagraphNode();
+          newParagph.select();
+          return newParagph;
+        });
+
+        oldEvent.preventDefault();
+      });
+      return true;
+    },
+    [editor],
+  );
 
   useEffect(() => {
     return editor.registerCommand(
       KEY_ENTER_COMMAND,
       handlePressEnter,
-      COMMAND_PRIORITY_CRITICAL,
+      COMMAND_PRIORITY_LOW,
     );
   }, [editor, handlePressEnter]);
   return null;
