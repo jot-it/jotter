@@ -11,7 +11,7 @@ const barlow = Barlow({
   variable: "--font-barlow",
 });
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" className="dark">
       <body

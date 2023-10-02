@@ -1,3 +1,4 @@
+"use client";
 import useMatchMedia from "@/hooks/useMatchMedia";
 import * as Dialog from "@radix-ui/react-dialog";
 import { BiMenuAltLeft as MenuIcon } from "react-icons/bi";

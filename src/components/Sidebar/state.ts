@@ -1,7 +1,8 @@
-import { rootDocument } from "@/app/CollaborationContext";
 import { Item } from "../Sidebar";
 import { bind } from "valtio-yjs";
 import { proxy } from "valtio";
+import { nanoid } from "nanoid";
+import { rootDocument } from "@/lib/collaboration";
 
 // Valtio proxy state for sidebar items, all state here will be immediately
 // available to all clients connected to the same Yjs document.
@@ -16,7 +17,7 @@ bind(sidebarState, rootDocument.getArray("sidebar"));
  * @param fromCrumbs breadcrumbs path to this item
  */
 function createItem(type: Item["type"], fromCrumbs: Item["crumbs"]): Item {
-  const id = window.crypto.randomUUID();
+  const id = nanoid();
   const href = `/note/${id}`;
   const label = "New note";
   const crumbs = fromCrumbs.concat([{ label, href }]);

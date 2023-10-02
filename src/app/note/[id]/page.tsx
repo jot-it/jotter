@@ -1,4 +1,5 @@
 "use client";
+import { userAtom } from "@/app/Providers";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import TreeViewPlugin from "@/plugins/TreeViewPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
@@ -15,9 +16,9 @@ import ErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { $createHeadingNode, HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import { $getRoot, LexicalEditor } from "lexical";
+import { useAtomValue } from "jotai";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -28,12 +29,10 @@ const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
   { ssr: false },
 );
-
-function initialEditorState(editor: LexicalEditor): void {
-  const root = $getRoot();
-  const headingPlaceholder = $createHeadingNode("h1");
-  root.append(headingPlaceholder);
-}
+const CollaborationPlugin = dynamic(
+  () => import("@/plugins/CollaborationPlugin"),
+  { ssr: false },
+);
 
 const editorConfig: InitialConfigType = {
   editorState: null,
@@ -57,17 +56,10 @@ const editorConfig: InitialConfigType = {
   ],
 };
 
-const CollaborationPlugin = dynamic(
-  () =>
-    import("@lexical/react/LexicalCollaborationPlugin").then(
-      (module) => module.CollaborationPlugin,
-    ),
-  { ssr: false },
-);
-
 function Editor() {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
-  const params = useParams();
+  const documentId = useParams().id as string;
+  const user = useAtomValue(userAtom);
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
     if (node !== null) {
@@ -109,28 +101,11 @@ function Editor() {
         )}
 
         {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
-
-        {/* <CollaborationPlugin
-            id="yjs-plugin"
-            providerFactory={(id, yjsDocMap) => {
-              const doc = new Y.Doc();
-              yjsDocMap.set(id, doc);
-
-              const provider = new WebsocketProvider(
-                "ws://localhost:1234",
-                id,
-                doc
-              );
-              return provider;
-            }}
-            // Optional initial editor state in case collaborative Y.Doc won't
-            // have any existing data on server. Then it'll user this value to populate editor.
-            // It accepts same type of values as LexicalComposer editorState
-            // prop (json string, state object, or a function)
-            initialEditorState={initialEditorState}
-            shouldBootstrap={false}
-          />
-        )} */}
+        <CollaborationPlugin
+          id={documentId}
+          username={user?.name}
+          cursorColor={user?.color}
+        />
       </LexicalComposer>
     </div>
   );

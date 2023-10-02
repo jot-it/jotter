@@ -284,7 +284,6 @@ function LinkWithMenu({ link, parent }: LinkMenuProps) {
   return (
     <ContextMenu>
       <ContextMenu.Trigger>
-        {/* FIXME Link doesn't use dispatch. It should not receive it as prop */}
         <Link link={link} />
       </ContextMenu.Trigger>
       <ContextMenu.Content>
@@ -313,6 +312,7 @@ function Link({ link }: LinkProps) {
   const handleClick = () => {
     eventHandlers.onSelected?.(snap);
   };
+
   return (
     /* @ts-expect-error Next.js links also have a "as" prop */
     <Typography

@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+import useLayoutEffect from "@/hooks/useLayoutEffect";
+import { useRef } from "react";
 
 type Options = {
   /**
@@ -27,7 +28,7 @@ function useFloatingBox({
 }: Options) {
   const toolbarRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const toolbar = toolbarRef.current;
     if (!toolbar || !position) {
       return;
@@ -55,8 +56,5 @@ function useFloatingBox({
 
   return { ref: toolbarRef };
 }
-
-const useEffect =
-  typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
 
 export default useFloatingBox;

@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import useFloatingBox from "../useFloatingBox";
+import useLayoutEffect from "@/hooks/useLayoutEffect";
 
 export type CommandItemProps = Omit<
   ComponentPropsWithoutRef<typeof Command.Item>,
@@ -41,7 +42,7 @@ const CommandPicker = forwardRef<HTMLDivElement, CommandPickerProps>(
       offsetY: 10,
     });
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       const nativeSelection = window.getSelection();
       if (nativeSelection) {
         setSelectionRect(nativeSelection.getRangeAt(0).getBoundingClientRect());
