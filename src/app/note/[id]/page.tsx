@@ -28,6 +28,7 @@ const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
   { ssr: false },
 );
+
 const CollaborationPlugin = dynamic(
   () => import("@/plugins/CollaborationPlugin"),
   { ssr: false },
