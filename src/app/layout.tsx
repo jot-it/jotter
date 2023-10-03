@@ -1,9 +1,10 @@
 import { Barlow } from "next/font/google";
 import { PropsWithChildren } from "react";
 import Header from "./Header";
-import Providers from "./Providers";
 import SideNavigation from "./SideNavigation";
 import "./globals.css";
+import { Provider } from "./Provider";
+import { StartCollaboration } from "@/lib/collaboration";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -13,11 +14,12 @@ const barlow = Barlow({
 
 export default async function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
-      >
-        <Providers>
+    <Provider>
+      <StartCollaboration />
+      <html lang="en" className="dark">
+        <body
+          className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
+        >
           <div className="grid lg:grid-cols-[20rem_auto]">
             <aside className="hidden lg:block">
               <SideNavigation />
@@ -27,8 +29,8 @@ export default async function RootLayout({ children }: PropsWithChildren) {
               {children}
             </div>
           </div>
-        </Providers>
-      </body>
-    </html>
+        </body>
+      </html>
+    </Provider>
   );
 }

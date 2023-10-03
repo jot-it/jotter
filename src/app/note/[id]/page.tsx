@@ -1,5 +1,5 @@
 "use client";
-import { userAtom } from "@/app/Providers";
+import { useSelf } from "@/lib/userStore";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import TreeViewPlugin from "@/plugins/TreeViewPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
@@ -18,7 +18,6 @@ import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPl
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import { useAtomValue } from "jotai";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -29,6 +28,7 @@ const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
   { ssr: false },
 );
+
 const CollaborationPlugin = dynamic(
   () => import("@/plugins/CollaborationPlugin"),
   { ssr: false },
@@ -59,7 +59,7 @@ const editorConfig: InitialConfigType = {
 function Editor() {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
   const documentId = useParams().id as string;
-  const user = useAtomValue(userAtom);
+  const user = useSelf();
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
     if (node !== null) {
