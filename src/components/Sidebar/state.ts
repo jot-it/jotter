@@ -1,4 +1,4 @@
-import { Item } from "../Sidebar";
+import { Item } from "./Item";
 import { bind } from "valtio-yjs";
 import { proxy } from "valtio";
 import { nanoid } from "nanoid";
@@ -29,11 +29,11 @@ function createItem(type: Item["type"], fromCrumbs: Item["crumbs"]): Item {
       href,
       crumbs,
       items: [],
-      editable: true,
+      isNew: true,
     };
   }
 
-  return { type: "link", id, label, href, crumbs, editable: true };
+  return { type: "link", id, label, href, crumbs, isNew: true };
 }
 
 export function newPage(items: Item[], crumbs: Item["crumbs"] = []) {
@@ -44,8 +44,8 @@ export function newCategory(items: Item[], crumbs: Item["crumbs"] = []) {
   items.push(createItem("category", crumbs));
 }
 
-export function setEditMode(item: Item, value: boolean) {
-  item.editable = value;
+export function setIsNewItem(item: Item, value: boolean) {
+  item.isNew = value;
 }
 
 export function removeItem(items: Item[], i: Item) {
@@ -55,7 +55,7 @@ export function removeItem(items: Item[], i: Item) {
 
 export function setLabel(item: Item, label: string) {
   item.label = label;
-  item.editable = false;
+  item.isNew = false;
 
   // Last crumb is the item itself
   const crumb = item.crumbs[item.crumbs.length - 1];
