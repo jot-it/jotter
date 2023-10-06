@@ -7,7 +7,8 @@ import {
   COMMAND_PRIORITY_LOW,
   KEY_ENTER_COMMAND,
 } from "lexical";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
+import useLexicalCommand from "../useLexicalCommand";
 
 export function ListEndPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -22,35 +23,23 @@ export function ListEndPlugin() {
         }
 
         const node = selection.getNodes()[0];
-        if (node.getType() !== "listitem") {
-          return;
-        }
-
+        const isListitem = node.getType() === "listitem";
         const content = node.getTextContent();
 
-        if (content) {
-          return;
+        if (isListitem && !content) {
+          $setBlocksType(selection, () => {
+            const newParagph = $createParagraphNode();
+            newParagph.select();
+            return newParagph;
+          });
+          oldEvent.preventDefault();
         }
-
-        $setBlocksType(selection, () => {
-          const newParagph = $createParagraphNode();
-          newParagph.select();
-          return newParagph;
-        });
-
-        oldEvent.preventDefault();
       });
-      return true;
+      return false;
     },
     [editor],
   );
 
-  useEffect(() => {
-    return editor.registerCommand(
-      KEY_ENTER_COMMAND,
-      handlePressEnter,
-      COMMAND_PRIORITY_LOW,
-    );
-  }, [editor, handlePressEnter]);
+  useLexicalCommand(KEY_ENTER_COMMAND, handlePressEnter, COMMAND_PRIORITY_LOW);
   return null;
 }

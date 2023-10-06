@@ -1,4 +1,6 @@
 "use client";
+import AutoLinkPlugin from "@/plugins/AutolinkPlugin";
+import { ListEndPlugin } from "@/plugins/ListPlugin";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import TreeViewPlugin from "@/plugins/TreeViewPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
@@ -22,8 +24,6 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import theme from "./theme";
-import AutoLinkPlugin from "@/plugins/AutolinkPlugin";
-import { ListEndPlugin } from "@/plugins/ListPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 
 const ComponentPickerPlugin = dynamic(
@@ -102,7 +102,6 @@ function Editor() {
         <HistoryPlugin />
         <ListEndPlugin />
         <TabIndentationPlugin />
-
         {editorContainer ? (
           <>
             <ToolbarPlugin container={editorContainer} />
