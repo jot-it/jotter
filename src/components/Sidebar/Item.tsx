@@ -88,7 +88,9 @@ function SidebarItem({ item, parent, setOpen }: SidebarItemProps) {
 
   const handleRename: SidebarItemBaseProps["onRename"] = (item, newLabel) => {
     setLabel(item, newLabel);
-    setIsNewItem(item, false);
+    if (item.isNew) {
+      setIsNewItem(item, false);
+    }
   };
 
   // Update the document title to the name of this note
