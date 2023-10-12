@@ -1,5 +1,6 @@
 "use client";
 import Avatar from "@/components/Avatar";
+import Tooltip from "@/components/Tooltip";
 import { useOthers, useSelf } from "@/lib/userStore";
 
 const MAX_ACTIVE_USERS = 5;
@@ -16,18 +17,17 @@ function ActiveUsers() {
         </Avatar>
       )}
       {self ? (
-        <Avatar style={{ background: self.color }} alt={self.name} />
+        <Tooltip title={self.name}>
+          <Avatar style={{ background: self.color }} alt={self.name} />
+        </Tooltip>
       ) : (
         <AvatarSkeleton />
       )}
 
-      {others.slice(0, MAX_ACTIVE_USERS).map((u) => (
-        <Avatar
-          key={u.name}
-          style={{ background: u.color }}
-          src={u.image}
-          alt={u.name}
-        />
+      {others.slice(0, MAX_ACTIVE_USERS).map((u, i) => (
+        <Tooltip key={u.name + i} title={u.name}>
+          <Avatar style={{ background: u.color }} src={u.image} alt={u.name} />
+        </Tooltip>
       ))}
     </div>
   );
