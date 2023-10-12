@@ -23,7 +23,7 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
         ref={ref}
         className={clsx(
           className,
-          "flex items-center justify-center rounded-full font-medium",
+          "flex cursor-default items-center justify-center rounded-full font-medium",
           textVariants["body1"],
           {
             "h-6 w-6": size === "sm",
