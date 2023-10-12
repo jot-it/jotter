@@ -1,8 +1,10 @@
+"use client";
 import clsx from "clsx";
 import Link from "next/link";
 import { Fragment, ReactNode } from "react";
 import { MdNavigateNext as NextIcon } from "react-icons/md";
 import Typography from "./Typography";
+import { atom, useAtomValue } from "jotai";
 
 export type BreadcrumbItem = {
   icon?: ReactNode;
@@ -14,7 +16,10 @@ export type BreadcrumbsProps = {
   items: BreadcrumbItem[];
 };
 
-function Breadcrumbs({ items }: BreadcrumbsProps) {
+export const breadcrumbsAtom = atom<BreadcrumbItem[]>([]);
+
+function Breadcrumbs() {
+  const items = useAtomValue(breadcrumbsAtom);
   const lastIndex = items.length - 1;
   return (
     <nav>
@@ -28,7 +33,7 @@ function Breadcrumbs({ items }: BreadcrumbsProps) {
               <Link
                 className={clsx(
                   "rounded-md p-2 hover:bg-gray-200 dark:hover:bg-gray-700",
-                  index === lastIndex && "text-gray-800 dark:text-gray-100"
+                  index === lastIndex && "text-gray-800 dark:text-gray-100",
                 )}
                 href={href}
                 aria-current={index === lastIndex ? "page" : undefined}

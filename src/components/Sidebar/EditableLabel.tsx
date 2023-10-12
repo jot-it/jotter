@@ -24,16 +24,18 @@ function EditableLabel({
   };
 
   const handleRename = () => {
-    onRename?.(label);
+    if (isLabelEmpty) handleReset();
+    else onRename?.(label);
   };
 
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     e.preventDefault();
 
     if (e.key === "Enter") {
-      if (isLabelEmpty) handleReset();
-      else handleRename();
-    } else if (e.key === "Escape") handleReset();
+      handleRename();
+    } else if (e.key === "Escape") {
+      handleReset();
+    }
   };
 
   useEffect(() => {

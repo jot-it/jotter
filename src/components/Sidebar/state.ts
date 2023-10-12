@@ -1,69 +1,26 @@
-import { useReducer } from "react";
-import { Item } from "../Sidebar";
+import { Item } from "./Item";
+import { bind } from "valtio-yjs";
+import { proxy } from "valtio";
+import { nanoid } from "nanoid";
+import { rootDocument } from "@/lib/collaboration";
 
-export type Action =
-  | {
-      type: "add_item";
-      itemType: Item["type"];
-    }
-  | {
-      type: "rename";
-      id: Item["id"];
-      label: Item["label"];
-    }
-  | {
-      type: "delete";
-      id: Item["id"];
-    }
-  | {
-      type: "edit_mode";
-      id: Item["id"];
-      value?: boolean;
-    };
+// Valtio proxy state for sidebar items, all state here will be immediately
+// available to all clients connected to the same Yjs document.
+// For local state, use useState instead.
+export const sidebarState = proxy<Item[]>([]);
 
-function itemsReducer(items: Item[], action: Action): Item[] {
-  switch (action.type) {
-    case "add_item": {
-      return [...items, createItem(action.itemType)];
-    }
+// Synchorize Yjs shared-types with valtio proxy state
+bind(sidebarState, rootDocument.getArray("sidebar"));
 
-    case "rename":
-      if (action.label.length === 0) {
-        return items.filter((item) => item.id !== action.id);
-      }
-      return items.map((item) => {
-        if (item.id !== action.id) {
-          return item;
-        }
-        const crumbs = [...item.crumbs];
-        const last = crumbs.pop();
-        if (last) {
-          last.label = action.label;
-          crumbs.push({ ...last });
-        }
-        return {
-          ...item,
-          crumbs,
-          label: action.label,
-          editable: false,
-        };
-      });
-
-    case "delete":
-      return items.filter((item) => item.id !== action.id);
-
-    case "edit_mode":
-      return items.map((item) =>
-        item.id !== action.id ? item : { ...item, editable: action.value },
-      );
-  }
-}
-
-function createItem(type: Item["type"]): Item {
-  const id = window.crypto.randomUUID();
+/**
+ * @param type Type of item to create
+ * @param fromCrumbs breadcrumbs path to this item
+ */
+function createItem(type: Item["type"], fromCrumbs: Item["crumbs"]): Item {
+  const id = nanoid();
   const href = `/note/${id}`;
   const label = "New note";
-  const crumbs = [{ label, href }];
+  const crumbs = fromCrumbs.concat([{ label, href }]);
   if (type === "category") {
     return {
       type: "category",
@@ -72,13 +29,35 @@ function createItem(type: Item["type"]): Item {
       href,
       crumbs,
       items: [],
-      editable: true,
+      isNew: true,
     };
   }
 
-  return { type: "link", id, label, href, crumbs, editable: true };
+  return { type: "link", id, label, href, crumbs, isNew: true };
 }
 
-export function useSidebarReducer(items: Item[]) {
-  return useReducer(itemsReducer, items);
+export function newPage(items: Item[], crumbs: Item["crumbs"] = []) {
+  items.push(createItem("link", crumbs));
+}
+
+export function newCategory(items: Item[], crumbs: Item["crumbs"] = []) {
+  items.push(createItem("category", crumbs));
+}
+
+export function setIsNewItem(item: Item, value: boolean) {
+  item.isNew = value;
+}
+
+export function removeItem(items: Item[], i: Item) {
+  const position = items.findIndex((item) => item.id === i.id);
+  items.splice(position, 1);
+}
+
+export function setLabel(item: Item, label: string) {
+  item.label = label;
+  item.isNew = false;
+
+  // Last crumb is the item itself
+  const crumb = item.crumbs[item.crumbs.length - 1];
+  crumb.label = label;
 }

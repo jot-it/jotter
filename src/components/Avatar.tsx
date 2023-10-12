@@ -28,17 +28,12 @@ function Avatar(props: AvatarProps) {
           "h-8 w-8": size === "md",
           "h-10 w-10": size === "lg",
           "h-12 w-12": size === "xl",
-        }
+        },
       )}
+      {...rest}
     >
       {!error && src && (
-        <Image
-          fill
-          {...rest}
-          src={src}
-          alt={alt ?? ""}
-          onError={() => setError(true)}
-        />
+        <Image fill src={src} alt={alt ?? ""} onError={() => setError(true)} />
       )}
       <Fallback show={error || !src} initials={alt?.[0]}>
         {children}
