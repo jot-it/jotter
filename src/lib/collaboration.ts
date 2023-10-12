@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 import { User } from "./userStore";
+import { IndexeddbPersistence } from "y-indexeddb";
 
 /**
  * Collaborative state that is synced between all clients
@@ -22,11 +23,22 @@ type Awareness = Map<number, SharedState>;
  */
 export const rootDocument = new Y.Doc();
 
-export const rootProvider = createProvider(rootDocument, "root", {
-  connect: false,
-});
+export const rootConnectionProvider = createConnectionProvider(
+  rootDocument,
+  "root",
+  {
+    connect: false,
+  },
+);
 
-export function createProvider(
+/**
+ * Persist all changes to IndexedDB
+ *
+ * @see https://docs.yjs.dev/ecosystem/database-provider/y-indexeddb
+ */
+const persistenceProvider = new IndexeddbPersistence("root", rootDocument);
+
+export function createConnectionProvider(
   document: Y.Doc,
   roomName: string,
   opts: ConstructorParameters<typeof WebsocketProvider>[3],
@@ -45,20 +57,20 @@ export function createProvider(
  */
 export function StartCollaboration() {
   useEffect(() => {
-    rootProvider.connect();
-    return () => rootProvider.disconnect();
+    rootConnectionProvider.connect();
+    return () => rootConnectionProvider.disconnect();
   }, []);
 
   return null;
 }
 
 function getAwarenessSnapshot() {
-  return rootProvider.awareness.getStates() as Awareness;
+  return rootConnectionProvider.awareness.getStates() as Awareness;
 }
 
 function subscribeToAwareness(callback: () => void) {
-  rootProvider.awareness.on("change", callback);
-  return () => rootProvider.awareness.off("change", callback);
+  rootConnectionProvider.awareness.on("change", callback);
+  return () => rootConnectionProvider.awareness.off("change", callback);
 }
 
 export function useAwareness() {
