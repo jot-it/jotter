@@ -27,7 +27,7 @@ function CollaborationPlugin({
     <LexicalCollaborationPlugin
       id={id}
       username={username}
-      // cursorColor={cursorColor}
+      cursorColor={cursorColor}
       providerFactory={providerFactory}
       initialEditorState={initialEditorState}
       shouldBootstrap={true}
