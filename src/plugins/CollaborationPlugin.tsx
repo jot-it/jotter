@@ -1,4 +1,7 @@
-import { createProvider } from "@/lib/collaboration";
+import {
+  createConnectionProvider,
+  createPersistenceProvider,
+} from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { $createHeadingNode } from "@lexical/rich-text";
 import { Provider } from "@lexical/yjs";
@@ -24,7 +27,7 @@ function CollaborationPlugin({
     <LexicalCollaborationPlugin
       id={id}
       username={username}
-      cursorColor={cursorColor}
+      // cursorColor={cursorColor}
       providerFactory={providerFactory}
       initialEditorState={initialEditorState}
       shouldBootstrap={true}
@@ -47,7 +50,12 @@ function providerFactory(id: string, yjsDocMap: Map<string, Doc>): Provider {
     doc.load();
   }
   //@ts-ignore Awareness type mismatch, we can ignore this
-  return createProvider(doc, id);
+  const provider: Provider = createConnectionProvider(doc, id);
+
+  // Persist individual documents to Database
+  createPersistenceProvider(doc, id);
+
+  return provider;
 }
 
 export default CollaborationPlugin;

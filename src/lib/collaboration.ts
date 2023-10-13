@@ -36,7 +36,11 @@ export const rootConnectionProvider = createConnectionProvider(
  *
  * @see https://docs.yjs.dev/ecosystem/database-provider/y-indexeddb
  */
-const persistenceProvider = new IndexeddbPersistence("root", rootDocument);
+const persistenceProvider = createPersistenceProvider(rootDocument, "root");
+
+export function createPersistenceProvider(doc: Y.Doc, docName: string) {
+  return new IndexeddbPersistence(docName, doc);
+}
 
 export function createConnectionProvider(
   document: Y.Doc,
