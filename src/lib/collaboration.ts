@@ -4,6 +4,7 @@ import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 import { User } from "./userStore";
 import { IndexeddbPersistence } from "y-indexeddb";
+import { IS_BROWSER } from "@/utils";
 
 /**
  * Collaborative state that is synced between all clients
@@ -26,9 +27,7 @@ export const rootDocument = new Y.Doc();
 export const rootConnectionProvider = createConnectionProvider(
   rootDocument,
   "root",
-  {
-    connect: false,
-  },
+  { connect: false },
 );
 
 /**
@@ -39,7 +38,9 @@ export const rootConnectionProvider = createConnectionProvider(
 const persistenceProvider = createPersistenceProvider(rootDocument, "root");
 
 export function createPersistenceProvider(doc: Y.Doc, docName: string) {
-  return new IndexeddbPersistence(docName, doc);
+  if (IS_BROWSER) {
+    return new IndexeddbPersistence(docName, doc);
+  }
 }
 
 export function createConnectionProvider(

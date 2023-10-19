@@ -1,7 +1,9 @@
 "use client";
 import Avatar from "@/components/Avatar";
-import Tooltip from "@/components/Tooltip";
 import { useOthers, useSelf } from "@/lib/userStore";
+import { Suspense, lazy } from "react";
+
+const Tooltip = lazy(() => import("@/components/Tooltip"));
 
 const MAX_ACTIVE_USERS = 5;
 
@@ -16,19 +18,25 @@ function ActiveUsers() {
           +{others.length - MAX_ACTIVE_USERS}
         </Avatar>
       )}
-      {self ? (
-        <Tooltip title={self.name}>
-          <Avatar style={{ background: self.color }} alt={self.name} />
-        </Tooltip>
-      ) : (
-        <AvatarSkeleton />
-      )}
+      <Suspense>
+        {self ? (
+          <Tooltip title={self.name}>
+            <Avatar style={{ background: self.color }} alt={self.name} />
+          </Tooltip>
+        ) : (
+          <AvatarSkeleton />
+        )}
 
-      {others.slice(0, MAX_ACTIVE_USERS).map((u, i) => (
-        <Tooltip key={u.name + i} title={u.name}>
-          <Avatar style={{ background: u.color }} src={u.image} alt={u.name} />
-        </Tooltip>
-      ))}
+        {others.slice(0, MAX_ACTIVE_USERS).map((u, i) => (
+          <Tooltip key={u.name + i} title={u.name}>
+            <Avatar
+              style={{ background: u.color }}
+              src={u.image}
+              alt={u.name}
+            />
+          </Tooltip>
+        ))}
+      </Suspense>
     </div>
   );
 }
