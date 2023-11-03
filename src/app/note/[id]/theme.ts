@@ -5,6 +5,7 @@ const theme: EditorThemeClasses = {
     strikethrough: "line-through",
     underline: "underline",
     underlineStrikethrough: "underline-through",
+    italic: "italic",
   },
   link: "dark:text-cyan-400 dark:visited:text-indigo-400 text-cyan-600 cursor-pointer",
 };
