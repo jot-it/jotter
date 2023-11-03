@@ -9,8 +9,9 @@ import {
   setIsNewItem,
   setLabel,
 } from "./state";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSnapshot } from "valtio";
+import { persistenceProvider } from "@/lib/collaboration";
 
 export type ItemBase = {
   href: string;
@@ -73,6 +74,7 @@ export const itemVariant = {
 function SidebarItem({ item, parent, setOpen }: SidebarItemProps) {
   const snap = useSnapshot(item);
   const isActive = usePathname() === snap.href;
+  const router = useRouter();
 
   const handleNewPage: CategoryMenuProps["onNewPage"] = (category) => {
     newPage(category.items, category.crumbs);
@@ -80,6 +82,13 @@ function SidebarItem({ item, parent, setOpen }: SidebarItemProps) {
 
   const handleDelete: SidebarItemBaseProps["onDelete"] = (parent, item) => {
     removeItem(parent, item);
+
+    // Also delete the item from the database
+    persistenceProvider?.del(item.id);
+
+    if (isActive) {
+      router.replace("/");
+    }
   };
 
   const handleNewCategory: CategoryMenuProps["onNewCategory"] = (category) => {
