@@ -36,6 +36,7 @@
     "eslint-config-next": "^13.4.1",
     "jotai": "^2.2.2",
     "lexical": "^0.11.1",
+    "lucide-react": "^0.291.0",
     "nanoid": "^4.0.2",
     "next": "^13.4.1",
     "react": "18.2.0",
