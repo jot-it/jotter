@@ -1,11 +1,11 @@
+import { TooltipProvider } from "@/components/Tooltip";
+import { StartCollaboration } from "@/lib/collaboration";
 import { Barlow } from "next/font/google";
 import { PropsWithChildren } from "react";
 import Header from "./Header";
+import { Provider } from "./Provider";
 import SideNavigation from "./SideNavigation";
 import "./globals.css";
-import { Provider } from "./Provider";
-import { StartCollaboration } from "@/lib/collaboration";
-import { TooltipProvider } from "@/components/Tooltip";
 
 const barlow = Barlow({
   subsets: ["latin"],

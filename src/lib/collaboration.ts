@@ -30,13 +30,6 @@ export const rootConnectionProvider = createConnectionProvider(
   { connect: false },
 );
 
-/**
- * Persist all changes to IndexedDB
- *
- * @see https://docs.yjs.dev/ecosystem/database-provider/y-indexeddb
- */
-const persistenceProvider = createPersistenceProvider(rootDocument, "root");
-
 export function createPersistenceProvider(doc: Y.Doc, docName: string) {
   if (IS_BROWSER) {
     return new IndexeddbPersistence(docName, doc);
@@ -54,6 +47,8 @@ export function createConnectionProvider(
       "NEXT_PUBLIC_COLLAB_SERVER_URL is not set in environment variables",
     );
   }
+
+  createPersistenceProvider(document, roomName);
   return new WebsocketProvider(url, roomName, document, opts);
 }
 

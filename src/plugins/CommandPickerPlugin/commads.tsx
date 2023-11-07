@@ -16,10 +16,10 @@ import {
   $createParagraphNode,
   $getSelection,
   $isRangeSelection,
+  COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_LOW,
   LexicalCommand,
   LexicalEditor,
-  TextFormatType,
   createCommand,
 } from "lexical";
 import { useCallback, useEffect } from "react";
@@ -120,7 +120,7 @@ export function useRemoveCaretCommand(editor: LexicalEditor) {
     return editor.registerCommand(
       REMOVE_CARET_COMMAND,
       handleRemoveCommandString,
-      COMMAND_PRIORITY_LOW,
+      COMMAND_PRIORITY_EDITOR,
     );
   }, [editor, handleRemoveCommandString]);
 }
@@ -158,45 +158,4 @@ export function useParagraph(editor: LexicalEditor) {
       COMMAND_PRIORITY_LOW,
     );
   }, [editor, handleInsert]);
-}
-
-export function useClearformatText(editor: LexicalEditor) {
-  const handleClearFormat = useCallback(() => {
-    editor.update(() => {
-      const selection = $getSelection();
-      const node = $getTextNodeForSeach();
-
-      const styles: TextFormatType[] = [
-        "bold",
-        "italic",
-        "highlight",
-        "strikethrough",
-        "code",
-        "underline",
-      ];
-
-      if (!$isRangeSelection(selection)) {
-        return false;
-      }
-
-      if (!node) {
-        return false;
-      }
-
-      styles.map((style) => {
-        if (node.hasFormat(style)) {
-          selection.toggleFormat(style);
-        }
-      });
-    });
-    return true;
-  }, [editor]);
-
-  useEffect(() => {
-    return editor.registerCommand(
-      CLEAR_FORMAT_TEXT_COMMAND,
-      handleClearFormat,
-      COMMAND_PRIORITY_LOW,
-    );
-  }, [editor, handleClearFormat]);
 }

@@ -1,23 +1,31 @@
+import useLayoutEffect from "@/hooks/useLayoutEffect";
 import { mergeRefs } from "@/utils";
 import { Command } from "cmdk";
 import {
   ComponentPropsWithoutRef,
   PropsWithChildren,
   forwardRef,
-  useEffect,
   useState,
 } from "react";
 import useFloatingBox from "../useFloatingBox";
-import useLayoutEffect from "@/hooks/useLayoutEffect";
 
-export type CommandItemProps = Omit<
-  ComponentPropsWithoutRef<typeof Command.Item>,
-  "value"
-> & {
+export type CommandItemProps = {
   /**
-   * String separate by space use to filter by `queryString`
+   * Space separated keywords to match against the query.
    */
   keywords: string;
+  /**
+   * The icon to display.
+   */
+  icon: React.ReactNode;
+  /**
+   * The label to display.
+   */
+  label: string;
+  /**
+   * Called when the item is selected.
+   */
+  onSelect: ComponentPropsWithoutRef<typeof Command.Item>["onSelect"];
 };
 
 export type CommandPickerProps = PropsWithChildren<{
@@ -70,8 +78,8 @@ const CommandPicker = forwardRef<HTMLDivElement, CommandPickerProps>(
   },
 );
 
-const CommandItem = forwardRef<HTMLDivElement, CommandItemProps>(
-  function CommandItem({ children, keywords, ...rest }, ref) {
+const CommandPickerItem = forwardRef<HTMLDivElement, CommandItemProps>(
+  function CommandPickerItem({ keywords, icon, label, ...rest }, ref) {
     return (
       <Command.Item
         {...rest}
@@ -82,11 +90,13 @@ const CommandItem = forwardRef<HTMLDivElement, CommandItemProps>(
       "
       >
         <span className="inline-flex w-full items-center gap-2">
-          {children}
+          {icon}
+          {label}
         </span>
       </Command.Item>
     );
   },
 );
 
-export default Object.assign(CommandPicker, { Command: CommandItem });
+export default CommandPicker;
+export { CommandPickerItem };

@@ -6,7 +6,13 @@ import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/reac
 import { $createHeadingNode } from "@lexical/rich-text";
 import { Provider } from "@lexical/yjs";
 import { $getRoot, LexicalEditor } from "lexical";
-import { ComponentPropsWithoutRef } from "react";
+import {
+  ComponentPropsWithoutRef,
+  use,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { Doc } from "yjs";
 
 type LexicalCollaborationPluginProps = ComponentPropsWithoutRef<
@@ -26,6 +32,7 @@ function CollaborationPlugin({
   return (
     <LexicalCollaborationPlugin
       id={id}
+      key={id}
       username={username}
       cursorColor={cursorColor}
       providerFactory={providerFactory}
@@ -51,9 +58,6 @@ function providerFactory(id: string, yjsDocMap: Map<string, Doc>): Provider {
   }
   //@ts-ignore Awareness type mismatch, we can ignore this
   const provider: Provider = createConnectionProvider(doc, id);
-
-  // Persist individual documents to Database
-  createPersistenceProvider(doc, id);
 
   return provider;
 }

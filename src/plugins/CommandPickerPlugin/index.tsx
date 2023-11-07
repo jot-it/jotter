@@ -6,13 +6,13 @@ import {
   KEY_ARROW_UP_COMMAND,
   KEY_ENTER_COMMAND,
   KEY_ESCAPE_COMMAND,
-  SELECTION_CHANGE_COMMAND
+  LexicalCommand,
+  SELECTION_CHANGE_COMMAND,
 } from "lexical";
 
 import { useRef, useState, useTransition } from "react";
 import {
   RiBold as BoldIcon,
-  RiText as ClearFormatTextIcon,
   RiCodeSSlashLine as CodeIcon,
   RiHeading as HeadingIcon,
   RiItalic as ItalicIcon,
@@ -20,15 +20,13 @@ import {
   RiStrikethrough as StrikethroughIcon,
   RiUnderline as UnderlineIcon,
 } from "react-icons/ri";
-import CommandPicker from "./CommandPicker";
+import CommandPicker, { CommandPickerItem } from "./CommandPicker";
 import {
-  CLEAR_FORMAT_TEXT_COMMAND,
   FORMAT_PARAGRAPH_COMMAND,
   INSERT_BLOCKQUOTE_COMMAND,
   INSERT_HEADING_COMMAND,
   REMOVE_CARET_COMMAND,
   useBlockQuoteCommand,
-  useClearformatText,
   useHeadingCommand,
   useListCommand,
   useParagraph,
@@ -47,10 +45,7 @@ import {
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
-import { createContext } from "react";
 import useLexicalCommand from "../useLexicalCommand";
-
-export const CommandPickeContext = createContext("");
 
 export type ComponentPickerMenuPluginProps = {
   /**
@@ -59,6 +54,7 @@ export type ComponentPickerMenuPluginProps = {
   container: HTMLDivElement;
 };
 
+// Matches a slash followed by any characteres
 const COMMAND_PICKER_REGEX = /(?<=\s|\B)\/([a-zA-Z]*\d*)$/;
 
 export default function ComponentPickerMenuPlugin({
@@ -72,34 +68,32 @@ export default function ComponentPickerMenuPlugin({
 
   useListCommand(editor);
   useHeadingCommand(editor);
-  useClearformatText(editor);
   useParagraph(editor);
   useBlockQuoteCommand(editor);
   useRemoveCaretCommand(editor);
 
-  const withHideCaret = (fn: () => void) => {
-    return () => {
-      fn();
-      editor.dispatchCommand(REMOVE_CARET_COMMAND, undefined);
-    };
-  };
+  function dispatch<T>(command: LexicalCommand<T>, payload: T) {
+    // Remove the search query before dispatching the command
+    editor.dispatchCommand(REMOVE_CARET_COMMAND, undefined);
+    setShow(false);
+
+    editor.dispatchCommand(command, payload);
+  }
 
   const handleSelectionChanged = () => {
     editor.getEditorState().read(() => {
       const queryText = $getQueryTextForSearch();
       const selectionString = queryText ?? "";
 
-      const matcher = COMMAND_PICKER_REGEX;
-      const foundMatch = matcher.exec(selectionString);
-      const canShow = Boolean(foundMatch?.[0]);
-      const command = foundMatch?.[1].toLowerCase() ?? "";
+      const match = COMMAND_PICKER_REGEX.exec(selectionString);
+      const command = match?.[1].toLowerCase() ?? "";
 
       // Optimization
       startTransition(() => {
         setCommand(command);
       });
 
-      setShow(canShow);
+      setShow(!!match);
     });
 
     return false;
@@ -155,137 +149,85 @@ export default function ComponentPickerMenuPlugin({
 
   return (
     <CommandPicker ref={menuRef} container={container} query={command}>
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(FORMAT_PARAGRAPH_COMMAND, undefined),
-        )}
+      <CommandPickerItem
+        icon={<ParagraphIcon />}
+        onSelect={() => dispatch(FORMAT_PARAGRAPH_COMMAND, undefined)}
+        label="Paragraph"
         keywords="normal text clear unformat paragraph"
-      >
-        <ParagraphIcon />
-        Paragraph
-      </CommandPicker.Command>
-
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(INSERT_HEADING_COMMAND, "H1"),
-        )}
+      />
+      <CommandPickerItem
+        onSelect={() => dispatch(INSERT_HEADING_COMMAND, "H1")}
         keywords="heading h1 header title"
-      >
-        <HeadingIcon />
-        Heading 1
-      </CommandPicker.Command>
+        label="Heading 1"
+        icon={<HeadingIcon />}
+      />
+      <CommandPickerItem
+        onSelect={() => dispatch(INSERT_HEADING_COMMAND, "h2")}
+        keywords="heading h2 header title subtitle"
+        icon={<HeadingIcon />}
+        label="Heading 2"
+      />
+      <CommandPickerItem
+        onSelect={() => dispatch(INSERT_HEADING_COMMAND, "h3")}
+        keywords="heading h3 header title subtitle"
+        icon={<HeadingIcon />}
+        label="Heading 3"
+      />
 
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(INSERT_HEADING_COMMAND, "h2"),
-        )}
-        keywords="heading h2 header title subtittle"
-      >
-        <HeadingIcon />
-        Heading 2
-      </CommandPicker.Command>
-
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(INSERT_HEADING_COMMAND, "h3"),
-        )}
-        keywords="heading h3 header title subtittle"
-      >
-        <HeadingIcon />
-        Heading 3
-      </CommandPicker.Command>
-
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined),
-        )}
+      <CommandPickerItem
+        onSelect={() => dispatch(INSERT_UNORDERED_LIST_COMMAND, undefined)}
         keywords="list bullet unordered ul"
-      >
-        <ListIcon />
-        List
-      </CommandPicker.Command>
+        icon={<ListIcon />}
+        label="List"
+      />
 
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined),
-        )}
+      <CommandPickerItem
+        onSelect={() => dispatch(INSERT_ORDERED_LIST_COMMAND, undefined)}
         keywords="list numbered ordered ol"
-      >
-        <OrderedListIcon />
-        Ordered List
-      </CommandPicker.Command>
+        icon={<OrderedListIcon />}
+        label="Ordered List"
+      />
 
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code"),
-        )}
+      <CommandPickerItem
+        onSelect={() => dispatch(FORMAT_TEXT_COMMAND, "code")}
         keywords="code codeblock javascript python js"
-      >
-        <CodeIcon />
-        Code
-      </CommandPicker.Command>
-
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(INSERT_BLOCKQUOTE_COMMAND, undefined),
-        )}
+        icon={<CodeIcon />}
+        label="Code"
+      />
+      <CommandPickerItem
+        onSelect={() => dispatch(INSERT_BLOCKQUOTE_COMMAND, undefined)}
         keywords="quote block blockquote"
-      >
-        <QuoteIcon />
-        Quote
-      </CommandPicker.Command>
+        icon={<QuoteIcon />}
+        label="Quote"
+      />
 
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(CLEAR_FORMAT_TEXT_COMMAND, undefined),
-        )}
-        keywords="normal text clear unformat"
-      >
-        <ClearFormatTextIcon />
-        Normal
-      </CommandPicker.Command>
-
-      <CommandPicker.Command
-        onSelect={withHideCaret(() => {
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-        })}
+      <CommandPickerItem
+        onSelect={() => dispatch(FORMAT_TEXT_COMMAND, "bold")}
         keywords="bold strong"
-      >
-        <BoldIcon />
-        Bold
-      </CommandPicker.Command>
+        icon={<BoldIcon />}
+        label="Bold"
+      />
 
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic"),
-        )}
-        keywords="italic oblique"
-      >
-        <ItalicIcon />
-        Italic
-      </CommandPicker.Command>
+      <CommandPickerItem
+        onSelect={() => dispatch(FORMAT_TEXT_COMMAND, "italic")}
+        keywords="italics"
+        icon={<ItalicIcon />}
+        label="Italic"
+      />
 
-      <CommandPicker.Command
-        onSelect={() =>
-          withHideCaret(() =>
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline"),
-          )
-        }
+      <CommandPickerItem
+        onSelect={() => dispatch(FORMAT_TEXT_COMMAND, "underline")}
         keywords="underline underscore mark"
-      >
-        <UnderlineIcon />
-        Underline
-      </CommandPicker.Command>
+        label="Underline"
+        icon={<UnderlineIcon />}
+      />
 
-      <CommandPicker.Command
-        onSelect={withHideCaret(() =>
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough"),
-        )}
+      <CommandPickerItem
+        onSelect={() => dispatch(FORMAT_TEXT_COMMAND, "strikethrough")}
         keywords="strikethrough cross out"
-      >
-        <StrikethroughIcon />
-        Strikethrough
-      </CommandPicker.Command>
+        label="Strikethrough"
+        icon={<StrikethroughIcon />}
+      />
     </CommandPicker>
   );
 }

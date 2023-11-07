@@ -98,7 +98,7 @@ function TextFormatToolbar({
 
   return (
     <Toolbar.Root
-      ref={!fixedBottom ? boxProps.ref: undefined} // Do not float the toolbar if it is fixed to the bottom
+      ref={!fixedBottom ? boxProps.ref : undefined} // Do not float the toolbar if it is fixed to the bottom
       className={clsx(
         "flex rounded-lg border bg-white p-3",
         "text-gray-700  shadow-md animate-fade-in",
@@ -167,7 +167,7 @@ const ToolbarToggleItem = forwardRef<
       value={value}
       className="rounded-md p-2 hover:bg-gray-200 focus:outline-none focus:ring-2 
       focus:ring-gray-300 data-[state=on]:bg-gray-200 dark:hover:bg-slate-600
-      dark:data-[state=on]:bg-cyan-900 dark:data-[state=on]:text-cyan-200
+      dark:data-[state=on]:bg-cyan-900 dark:data-[state=on]:text-cyan-200 
       "
       ref={forwardedRef}
     >
