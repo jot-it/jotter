@@ -19,7 +19,7 @@ bind(sidebarState, rootDocument.getArray("sidebar"));
 function createItem(type: Item["type"], fromCrumbs: Item["crumbs"]): Item {
   const id = nanoid();
   const href = `/note/${id}`;
-  const label = "New note";
+  const label = "";
   const crumbs = fromCrumbs.concat([{ label, href }]);
   if (type === "category") {
     return {
@@ -37,11 +37,15 @@ function createItem(type: Item["type"], fromCrumbs: Item["crumbs"]): Item {
 }
 
 export function newPage(items: Item[], crumbs: Item["crumbs"] = []) {
-  items.push(createItem("link", crumbs));
+  const item = createItem("link", crumbs);
+  items.push(item);
+  return item;
 }
 
 export function newCategory(items: Item[], crumbs: Item["crumbs"] = []) {
-  items.push(createItem("category", crumbs));
+  const item = createItem("category", crumbs);
+  items.push(item);
+  return item;
 }
 
 export function setIsNewItem(item: Item, value: boolean) {

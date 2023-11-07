@@ -104,7 +104,7 @@ function Category({ category, editable, onRename, onReset }: CategoryProps) {
   const isActive = usePathname() === snap.href;
 
   const handleClick = () => {
-    eventHandlers.onSelected?.(snap);
+    eventHandlers.onSelected?.(category);
     router.push(snap.href);
   };
 

@@ -64,7 +64,7 @@ function Link({ link, onRename, onReset, editable }: LinkProps) {
   const isActive = usePathname() === snap.href;
 
   const handleClick = () => {
-    eventHandlers.onSelected?.(snap);
+    eventHandlers.onSelected?.(link);
   };
 
   return (
