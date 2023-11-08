@@ -1,7 +1,7 @@
 "use client";
 import { useSelf } from "@/lib/userStore";
+import LexicalAutoLinkPlugin from "@/plugins/AutolinkPlugin";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
-import TreeViewPlugin from "@/plugins/TreeViewPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -18,11 +18,13 @@ import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPl
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
-import { useCallback, useState } from "react";
-import AutoLinkPlugin from "../../../plugins/AutolinkPlugin/index";
+import { lazy, useCallback, useState } from "react";
 import theme from "./theme";
+import dynamic from "next/dynamic";
+import CodeHighlightPlugin from "@/plugins/CodeHighlightPlugin";
+
+import "./code-highlight.css";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -33,6 +35,7 @@ const CollaborationPlugin = dynamic(
   () => import("@/plugins/CollaborationPlugin"),
   { ssr: false },
 );
+const TreeViewPlugin = lazy(() => import("@/plugins/TreeViewPlugin"));
 
 const editorConfig: InitialConfigType = {
   editorState: null,
@@ -87,8 +90,9 @@ function Editor() {
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
-        <AutoLinkPlugin />
+        <LexicalAutoLinkPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        <CodeHighlightPlugin />
         <HistoryPlugin />
 
         {editorContainer ? (
@@ -99,7 +103,6 @@ function Editor() {
         ) : (
           <></>
         )}
-
         {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
         <CollaborationPlugin
           id={documentId}
