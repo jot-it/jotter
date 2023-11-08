@@ -1,6 +1,7 @@
 "use client";
 import { useSelf } from "@/lib/userStore";
 import LexicalAutoLinkPlugin from "@/plugins/AutolinkPlugin";
+import CodeHighlightPlugin from "@/plugins/CodeHighlightPlugin";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
@@ -18,13 +19,9 @@ import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPl
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import { useParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import { lazy, useCallback, useState } from "react";
 import theme from "./theme";
-import dynamic from "next/dynamic";
-import CodeHighlightPlugin from "@/plugins/CodeHighlightPlugin";
-
-import "./code-highlight.css";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -59,9 +56,9 @@ const editorConfig: InitialConfigType = {
   ],
 };
 
-function Editor() {
+function Editor({ params }: { params: { id: string } }) {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
-  const documentId = useParams().id as string;
+  const documentId = params.id;
   const user = useSelf();
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
