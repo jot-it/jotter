@@ -1,7 +1,7 @@
-import Breadcrumbs from "@/components/Breadcrumbs";
 import Typography from "@/components/Typography";
 import { RiUserAddLine as UserAddIcon } from "react-icons/ri";
 import ActiveUsers from "./ActiveUsers";
+import BreadcrumbsShell from "./BreadcrumbsShell";
 import MobileNavigation from "./MobileNavigation";
 
 function Header() {
@@ -11,7 +11,7 @@ function Header() {
     shadow-sm backdrop-blur-sm dark:border-gray-700 dark:bg-slate-850/80"
     >
       <MobileNavigation />
-      <Breadcrumbs />
+      <BreadcrumbsShell />
       <ActiveUsers />
       <Typography
         as="button"

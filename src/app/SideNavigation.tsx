@@ -1,21 +1,48 @@
 "use client";
-import { useSetAtom } from "jotai";
-import { RiAddLine as AddIcon } from "react-icons/ri";
-import { newPage, sidebarState } from "@/components/Sidebar/state";
-import { breadcrumbsAtom } from "@/components/Breadcrumbs";
 import {
   Sidebar,
   SidebarButton,
   SidebarDivider,
   SidebarItems,
 } from "@/components/Sidebar";
+import { Item } from "@/components/Sidebar/Item";
+import { newPage, sidebarState } from "@/components/Sidebar/state";
+import { atom, useAtom } from "jotai";
+import { useRouter } from "next/navigation";
+import { RiAddLine as AddIcon } from "react-icons/ri";
+
+export const activeItemAtom = atom<Item | null>(null);
 
 function SideNavigation() {
-  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  const router = useRouter();
+  const [activeItem, setActiveItem] = useAtom(activeItemAtom);
+  const updateActiveItem = (item: Item) => {
+      setActiveItem({ ...item });
+  };
+
+  const handleDelete = (item: Item) => {
+    // TODO: Refactor this to its own domain
+    window.indexedDB.deleteDatabase(item.id);
+
+    if (item.id === activeItem?.id) {
+      // Redirect users to home page to avoid editing a document that no longer exists
+      router.push("/");
+      setActiveItem(null);
+    }
+  };
+
+  const handleRename = (item: Item) => {
+    if (item.id === activeItem?.id) {
+      setActiveItem({ ...item });
+    }
+  }
 
   return (
-    // @ts-ignore
-    <Sidebar onSelected={(item) => setBreadcrumbs(item.crumbs)}>
+    <Sidebar
+      onSelected={updateActiveItem}
+      onRename={handleRename}
+      onDelete={handleDelete}
+    >
       <div className="flex-1 overflow-auto">
         <SidebarItems />
       </div>

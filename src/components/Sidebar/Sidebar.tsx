@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useMemo } from "react";
+import { PropsWithChildren, createContext, useContext, useMemo } from "react";
 import { CgFile as FileIcon } from "react-icons/cg";
 import { RiBook2Line as BookIcon } from "react-icons/ri";
 import ContextMenu from "../ContextMenu";
@@ -12,24 +12,25 @@ type EventHandlers = {
   /**
    * Callback when an item is selected (clicked)
    */
-  onSelected?: (item: DeepReadonly<Item>) => void;
+  onSelected?: (item: Item) => void;
+  onNewPage?: (item: Item) => void;
+  onNewCategory?: (item: Item) => void;
+  onRename?: (item: Item) => void;
+  onDelete?: (item: Item) => void;
 };
 
 export const EventHandlersContext = createContext<EventHandlers>({});
 
 export type SidebarProps = PropsWithChildren<EventHandlers>;
 
-function Sidebar({ children, onSelected }: SidebarProps) {
-  const eventHandlers = useMemo(() => {
-    return { onSelected };
-  }, [onSelected]);
-
+function Sidebar({ children, ...eventHandlers }: SidebarProps) {
+  const handlers = useMemo(() => eventHandlers, [eventHandlers]);
   return (
     <nav
       className="sticky top-0 z-20 flex h-screen flex-col justify-between space-y-1 
           bg-gray-200 px-4 py-12 font-medium text-gray-800 dark:bg-slate-800 dark:text-inherit"
     >
-      <EventHandlersContext.Provider value={eventHandlers}>
+      <EventHandlersContext.Provider value={handlers}>
         {children}
       </EventHandlersContext.Provider>
     </nav>
@@ -37,6 +38,18 @@ function Sidebar({ children, onSelected }: SidebarProps) {
 }
 
 export function SidebarRoot() {
+  const eventHandlers = useContext(EventHandlersContext);
+
+  const handleNewPage = () => {
+    const page = newPage(sidebarState);
+    eventHandlers.onNewPage?.(page);
+  };
+
+  const handleNewCategory = () => {
+    const category = newCategory(sidebarState);
+    eventHandlers.onNewCategory?.(category);
+  };
+
   return (
     <ContextMenu>
       <ContextMenu.Trigger>
@@ -47,12 +60,12 @@ export function SidebarRoot() {
         <MenuAction
           icon={<FileIcon />}
           label="new page"
-          onClick={() => newPage(sidebarState)}
+          onClick={handleNewPage}
         />
         <MenuAction
           icon={<BookIcon />}
           label="new category"
-          onClick={() => newCategory(sidebarState)}
+          onClick={handleNewCategory}
         />
       </ContextMenu.Content>
     </ContextMenu>
