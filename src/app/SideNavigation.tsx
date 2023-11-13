@@ -17,11 +17,7 @@ function SideNavigation() {
   const router = useRouter();
   const [activeItem, setActiveItem] = useAtom(activeItemAtom);
   const updateActiveItem = (item: Item) => {
-    setActiveItem({ ...item });
-  };
-
-  const handleNewItem = (item: Item) => {
-    router.push(item.href);
+      setActiveItem({ ...item });
   };
 
   const handleDelete = (item: Item) => {
@@ -35,12 +31,16 @@ function SideNavigation() {
     }
   };
 
+  const handleRename = (item: Item) => {
+    if (item.id === activeItem?.id) {
+      setActiveItem({ ...item });
+    }
+  }
+
   return (
     <Sidebar
       onSelected={updateActiveItem}
-      onRename={updateActiveItem}
-      onNewCategory={handleNewItem}
-      onNewPage={handleNewItem}
+      onRename={handleRename}
       onDelete={handleDelete}
     >
       <div className="flex-1 overflow-auto">
