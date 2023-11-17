@@ -53,8 +53,8 @@ const CommandPicker = forwardRef<HTMLDivElement, CommandPickerProps>(
       <Command
         ref={mergeRefs(forwardedRef, boxProps.ref)}
         label="Command Menu"
-        className="absolute left-0 top-0 z-20 max-h-[30vh] min-w-[180px] flex-1 overflow-auto rounded-lg border
-       bg-white p-1 text-gray-700  shadow-md  data-[state=hidden]:animate-fade-out data-[state=visible]:animate-fade-in
+        className="absolute left-[var(--box-position-left)] top-[var(--box-position-top)] z-20 max-h-[30vh] min-w-[180px]
+        flex-1 overflow-auto rounded-lg border bg-white p-1 text-gray-700 animate-in fade-in-0 duration-200 zoom-in-95 shadow-md
         dark:border-slate-600 dark:bg-slate-700 dark:text-inherit"
       >
         <Command.List>

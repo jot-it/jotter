@@ -17,11 +17,11 @@ function MobileNavigation() {
       <Dialog.Portal>
         <Dialog.Overlay
           className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm 
-        data-[state=closed]:animate-fade-out data-[state=open]:animate-fade-in"
+        data-[state=closed]:fade-out data-[state=closed]:animate-out  data-[state=open]:fade-in data-[state=open]:animate-in"
         />
         <Dialog.Content
-          className="fixed left-0 top-0 z-50 w-80
-         data-[state=closed]:animate-slide-out data-[state=open]:animate-slide-in"
+          className="fixed left-0 top-0 z-50 w-80 data-[state=open]:animate-in data-[state=closed]:animate-out
+         data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left"
         >
           <Dialog.Title className="sr-only">Browse your notes</Dialog.Title>
           <Dialog.Close

@@ -46,13 +46,13 @@ const editorConfig: InitialConfigType = {
     ListNode,
     ListItemNode,
     QuoteNode,
-    CodeNode,
     CodeHighlightNode,
     TableNode,
     TableCellNode,
     TableRowNode,
     AutoLinkNode,
     LinkNode,
+    CodeNode,
   ],
 };
 
