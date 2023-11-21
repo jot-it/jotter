@@ -5,7 +5,8 @@
   color: #6a9955;
 }
 
-.token.string {
+.token.string,
+.token.attr-value {
   color: #ce9178;
 }
 
@@ -25,7 +26,6 @@
 }
 
 .token.keyword,
-.token.attr-value,
 .token.tag,
 [data-highlight-language="css"] .token.important,
 [data-highlight-language="css"] .token.atrule {
