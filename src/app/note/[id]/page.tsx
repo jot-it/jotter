@@ -22,6 +22,7 @@ import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import dynamic from "next/dynamic";
 import { lazy, useCallback, useState } from "react";
 import theme from "./theme";
+import CodeActionsPlugin from "@/plugins/CodeActionPlugin/CodeActionPlugin";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -69,7 +70,9 @@ function Editor({ params }: { params: { id: string } }) {
 
   return (
     <div
-      className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert lg:pb-0"
+      className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert 
+      prose-code:block prose-code:rounded-md prose-code:border prose-code:border-slate-700 prose-code:bg-neutral-900
+      prose-code:p-4 prose-code:pt-10 prose-code:before:content-none prose-code:after:content-none lg:pb-0"
       ref={onRef}
     >
       <LexicalComposer initialConfig={editorConfig}>
@@ -106,6 +109,7 @@ function Editor({ params }: { params: { id: string } }) {
           username={user?.name}
           cursorColor={user?.color}
         />
+        <CodeActionsPlugin />
       </LexicalComposer>
     </div>
   );
