@@ -17,6 +17,7 @@ import { CategoryItem, Item, ItemWithParent, itemVariant } from "./Item";
 import SidebarItemList from "./ItemList";
 import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
+import { removeItem } from "./state";
 
 export type CategoryProps = {
   category: CategoryItem;
@@ -60,6 +61,15 @@ function CategoryWithMenu({
     toggleEditable();
   };
 
+  const handleReset = () => {
+    // Delete when empty label
+    if (!snap.label.length) {
+      removeItem(parent, category);
+    } else {
+      toggleEditable();
+    }
+  };
+
   return (
     <ContextMenu>
       <ContextMenu.Trigger>
@@ -67,7 +77,7 @@ function CategoryWithMenu({
           category={category}
           editable={editable}
           onRename={handleRename}
-          onReset={toggleEditable}
+          onReset={handleReset}
         />
       </ContextMenu.Trigger>
       <ContextMenu.Content>
@@ -104,7 +114,7 @@ function Category({ category, editable, onRename, onReset }: CategoryProps) {
   const isActive = usePathname() === snap.href;
 
   const handleClick = () => {
-    eventHandlers.onSelected?.(snap);
+    eventHandlers.onSelected?.(category);
     router.push(snap.href);
   };
 

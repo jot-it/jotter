@@ -18,11 +18,14 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import dynamic from "next/dynamic";
 import { lazy, useCallback, useState } from "react";
 import theme from "./theme";
 import CodeActionsPlugin from "@/plugins/CodeActionPlugin/CodeActionPlugin";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
+import ListMaxIndentLevelPlugin from "@/plugins/ListMaxIndentLevelPlugin";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -110,6 +113,9 @@ function Editor({ params }: { params: { id: string } }) {
           cursorColor={user?.color}
         />
         <CodeActionsPlugin />
+        <ListPlugin />
+        <ListMaxIndentLevelPlugin />
+        <TabIndentationPlugin />
       </LexicalComposer>
     </div>
   );

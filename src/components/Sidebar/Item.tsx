@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useContext, useEffect } from "react";
+import { useSnapshot } from "valtio";
 import { BreadcrumbItem } from "../Breadcrumbs";
 import CategoryWithMenu, { CategoryMenuProps } from "./Category";
 import LinkWithMenu from "./Link";
+import { EventHandlersContext } from "./Sidebar";
 import {
   newCategory,
   newPage,
@@ -9,8 +12,6 @@ import {
   setIsNewItem,
   setLabel,
 } from "./state";
-import { usePathname } from "next/navigation";
-import { useSnapshot } from "valtio";
 
 export type ItemBase = {
   href: string;
@@ -60,6 +61,8 @@ type SidebarItemProps = ItemWithParent<{
   setOpen(id: string): void;
 }>;
 
+const UNTITLED_PAGE_TITLE = "Untitled";
+
 export const itemVariant = {
   root: "rounded-lg p-3 text-left",
   active:
@@ -73,17 +76,21 @@ export const itemVariant = {
 function SidebarItem({ item, parent, setOpen }: SidebarItemProps) {
   const snap = useSnapshot(item);
   const isActive = usePathname() === snap.href;
-
-  const handleNewPage: CategoryMenuProps["onNewPage"] = (category) => {
-    newPage(category.items, category.crumbs);
-  };
+  const handlers = useContext(EventHandlersContext);
 
   const handleDelete: SidebarItemBaseProps["onDelete"] = (parent, item) => {
     removeItem(parent, item);
+    handlers.onDelete?.(item);
+  };
+
+  const handleNewPage: CategoryMenuProps["onNewPage"] = (category) => {
+    const item = newPage(category.items, category.crumbs);
+    handlers.onNewPage?.(item);
   };
 
   const handleNewCategory: CategoryMenuProps["onNewCategory"] = (category) => {
-    newCategory(category.items, category.crumbs);
+    const item = newCategory(category.items, category.crumbs);
+    handlers.onNewCategory?.(item);
   };
 
   const handleRename: SidebarItemBaseProps["onRename"] = (item, newLabel) => {
@@ -91,12 +98,13 @@ function SidebarItem({ item, parent, setOpen }: SidebarItemProps) {
     if (item.isNew) {
       setIsNewItem(item, false);
     }
+    handlers.onRename?.(item);
   };
 
   // Update the document title to the name of this note
   useEffect(() => {
     if (isActive) {
-      document.title = snap.label;
+      document.title = snap.label.length ? snap.label : UNTITLED_PAGE_TITLE;
     }
   }, [isActive, snap.label]);
 
