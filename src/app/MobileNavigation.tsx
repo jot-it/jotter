@@ -2,7 +2,7 @@
 import useMatchMedia from "@/hooks/useMatchMedia";
 import * as Dialog from "@radix-ui/react-dialog";
 import { BiMenuAltLeft as MenuIcon } from "react-icons/bi";
-import { MdOutlineClose as CloseIcon } from "react-icons/md";
+import { CloseIcon } from "@/components/Icons";
 import SideNavigation from "./SideNavigation";
 
 function MobileNavigation() {
