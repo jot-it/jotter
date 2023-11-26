@@ -98,14 +98,14 @@ function TextFormatToolbar({
 
   return (
     <Toolbar.Root
-      ref={!fixedBottom ? boxProps.ref: undefined} // Do not float the toolbar if it is fixed to the bottom
+      ref={!fixedBottom ? boxProps.ref : undefined} // Do not float the toolbar if it is fixed to the bottom
       className={clsx(
         "flex rounded-lg border bg-white p-3",
-        "text-gray-700  shadow-md animate-fade-in",
+        "text-gray-700  shadow-md animate-in fade-in-0 duration-200 zoom-in-95",
         "dark:border-slate-600 dark:bg-slate-700 dark:text-inherit",
         fixedBottom
           ? "fixed bottom-4 left-1/2 -translate-x-1/2"
-          : "absolute left-0 top-0 z-10",
+          : "absolute left-[var(--box-position-left)] top-[var(--box-position-top)] z-10",
       )}
     >
       <TextFormatSelect editor={editor} />

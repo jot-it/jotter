@@ -20,6 +20,16 @@ type Options = {
   offsetY?: number;
 };
 
+/**
+ * Calculates `position` of a element relative to `anchor` element. Resulting position
+ * is adjusted to stay within screen boundaries to maximize visibility.
+ *
+ * The following CSS properties are injected to allow animations and placement:
+ *
+ * `--box-position-left`
+ *
+ * `--box-position-right`
+ */
 function useFloatingBox({
   position,
   anchor,
@@ -51,7 +61,9 @@ function useFloatingBox({
     left -= anchorRect.left;
     top -= anchorRect.top;
 
-    toolbar.style.transform = `translate(${left}px, ${top}px)`;
+    // toolbar.style.transform = `translate(${left}px, ${top}px)`;
+    toolbar.style.setProperty("--box-position-left", `${left}px`);
+    toolbar.style.setProperty("--box-position-top", `${top}px`);
   }, [anchor, position, offsetX, offsetY]);
 
   return { ref: toolbarRef };
