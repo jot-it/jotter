@@ -17,12 +17,15 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import AutoLinkPlugin from "../../../plugins/AutolinkPlugin/index";
 import theme from "./theme";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
+import ListMaxIndentLevelPlugin from "@/plugins/ListMaxIndentLevelPlugin";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -106,6 +109,9 @@ function Editor() {
           username={user?.name}
           cursorColor={user?.color}
         />
+        <ListPlugin />
+        <ListMaxIndentLevelPlugin />
+        <TabIndentationPlugin />
       </LexicalComposer>
     </div>
   );

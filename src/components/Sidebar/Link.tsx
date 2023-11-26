@@ -16,6 +16,7 @@ import {
 } from "./Item";
 import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
+import { removeItem } from "./state";
 
 export type LinkProps = {
   link: LinkItem;
@@ -32,6 +33,15 @@ function LinkWithMenu({ link, parent, onRename, onDelete }: LinkMenuProps) {
     toggleEditable();
   };
 
+  const handleReset = () => {
+    // Delete when empty label
+    if (!snap.label.length) {
+      removeItem(parent, link);
+    } else {
+      toggleEditable();
+    }
+  };
+
   return (
     <ContextMenu>
       <ContextMenu.Trigger>
@@ -39,7 +49,7 @@ function LinkWithMenu({ link, parent, onRename, onDelete }: LinkMenuProps) {
           link={link}
           editable={editable}
           onRename={handleRename}
-          onReset={toggleEditable}
+          onReset={handleReset}
         />
       </ContextMenu.Trigger>
       <ContextMenu.Content>
@@ -64,7 +74,7 @@ function Link({ link, onRename, onReset, editable }: LinkProps) {
   const isActive = usePathname() === snap.href;
 
   const handleClick = () => {
-    eventHandlers.onSelected?.(snap);
+    eventHandlers.onSelected?.(link);
   };
 
   return (

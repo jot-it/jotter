@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Fragment, ReactNode } from "react";
 import { MdNavigateNext as NextIcon } from "react-icons/md";
 import Typography from "./Typography";
-import { atom, useAtomValue } from "jotai";
 
 export type BreadcrumbItem = {
   icon?: ReactNode;
@@ -15,11 +14,7 @@ export type BreadcrumbItem = {
 export type BreadcrumbsProps = {
   items: BreadcrumbItem[];
 };
-
-export const breadcrumbsAtom = atom<BreadcrumbItem[]>([]);
-
-function Breadcrumbs() {
-  const items = useAtomValue(breadcrumbsAtom);
+function Breadcrumbs({ items }: BreadcrumbsProps) {
   const lastIndex = items.length - 1;
   return (
     <nav>

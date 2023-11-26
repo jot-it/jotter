@@ -7,6 +7,11 @@ const theme: EditorThemeClasses = {
     underlineStrikethrough: "underline-through",
     italic: "italic",
   },
+  list: {
+    nested: {
+      listitem: "list-none"
+    }
+  },
   link: "dark:text-cyan-400 dark:visited:text-indigo-400 text-cyan-600 cursor-pointer",
 };
 
