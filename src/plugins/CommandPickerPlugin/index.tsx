@@ -6,7 +6,7 @@ import {
   KEY_ARROW_UP_COMMAND,
   KEY_ENTER_COMMAND,
   KEY_ESCAPE_COMMAND,
-  SELECTION_CHANGE_COMMAND
+  SELECTION_CHANGE_COMMAND,
 } from "lexical";
 
 import { useRef, useState, useTransition } from "react";
@@ -25,10 +25,12 @@ import {
   CLEAR_FORMAT_TEXT_COMMAND,
   FORMAT_PARAGRAPH_COMMAND,
   INSERT_BLOCKQUOTE_COMMAND,
+  INSERT_CODE_NODE_COMMAND,
   INSERT_HEADING_COMMAND,
   REMOVE_CARET_COMMAND,
   useBlockQuoteCommand,
   useClearformatText,
+  useCodeNode,
   useHeadingCommand,
   useListCommand,
   useParagraph,
@@ -76,6 +78,7 @@ export default function ComponentPickerMenuPlugin({
   useParagraph(editor);
   useBlockQuoteCommand(editor);
   useRemoveCaretCommand(editor);
+  useCodeNode(editor);
 
   const withHideCaret = (fn: () => void) => {
     return () => {
@@ -217,7 +220,7 @@ export default function ComponentPickerMenuPlugin({
 
       <CommandPicker.Command
         onSelect={withHideCaret(() =>
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code"),
+          editor.dispatchCommand(INSERT_CODE_NODE_COMMAND, undefined),
         )}
         keywords="code codeblock javascript python js"
       >
