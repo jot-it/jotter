@@ -1,7 +1,8 @@
 "use client";
 import { useSelf } from "@/lib/userStore";
+import LexicalAutoLinkPlugin from "@/plugins/AutolinkPlugin";
+import CodeHighlightPlugin from "@/plugins/CodeHighlightPlugin";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
-import TreeViewPlugin from "@/plugins/TreeViewPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -20,10 +21,9 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
-import { useCallback, useState } from "react";
-import AutoLinkPlugin from "../../../plugins/AutolinkPlugin/index";
+import { lazy, useCallback, useState } from "react";
 import theme from "./theme";
+import CodeActionsPlugin from "@/plugins/CodeActionPlugin/CodeActionPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import ListMaxIndentLevelPlugin from "@/plugins/ListMaxIndentLevelPlugin";
 
@@ -36,6 +36,7 @@ const CollaborationPlugin = dynamic(
   () => import("@/plugins/CollaborationPlugin"),
   { ssr: false },
 );
+const TreeViewPlugin = lazy(() => import("@/plugins/TreeViewPlugin"));
 
 const editorConfig: InitialConfigType = {
   editorState: null,
@@ -49,19 +50,19 @@ const editorConfig: InitialConfigType = {
     ListNode,
     ListItemNode,
     QuoteNode,
-    CodeNode,
     CodeHighlightNode,
     TableNode,
     TableCellNode,
     TableRowNode,
     AutoLinkNode,
     LinkNode,
+    CodeNode,
   ],
 };
 
-function Editor() {
+function Editor({ params }: { params: { id: string } }) {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
-  const documentId = useParams().id as string;
+  const documentId = params.id;
   const user = useSelf();
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
@@ -72,7 +73,9 @@ function Editor() {
 
   return (
     <div
-      className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert lg:pb-0"
+      className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert 
+      prose-code:block prose-code:rounded-md prose-code:border prose-code:border-slate-700 prose-code:bg-neutral-900
+      prose-code:p-4 prose-code:pt-10 prose-code:before:content-none prose-code:after:content-none lg:pb-0"
       ref={onRef}
     >
       <LexicalComposer initialConfig={editorConfig}>
@@ -90,8 +93,9 @@ function Editor() {
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
-        <AutoLinkPlugin />
+        <LexicalAutoLinkPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        <CodeHighlightPlugin />
         <HistoryPlugin />
 
         {editorContainer ? (
@@ -102,13 +106,13 @@ function Editor() {
         ) : (
           <></>
         )}
-
         {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
         <CollaborationPlugin
           id={documentId}
           username={user?.name}
           cursorColor={user?.color}
         />
+        <CodeActionsPlugin />
         <ListPlugin />
         <ListMaxIndentLevelPlugin />
         <TabIndentationPlugin />

@@ -27,6 +27,7 @@ import {
   INSERT_HEADING_COMMAND,
   REMOVE_CARET_COMMAND,
   useBlockQuoteCommand,
+  useCodeNode,
   useHeadingCommand,
   useListCommand,
   useParagraph,
@@ -71,6 +72,7 @@ export default function ComponentPickerMenuPlugin({
   useParagraph(editor);
   useBlockQuoteCommand(editor);
   useRemoveCaretCommand(editor);
+  useCodeNode(editor);
 
   function dispatch<T>(command: LexicalCommand<T>, payload: T) {
     // Remove the search query before dispatching the command

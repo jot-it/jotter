@@ -1,6 +1,12 @@
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/Command";
 import useLayoutEffect from "@/hooks/useLayoutEffect";
 import { mergeRefs } from "@/utils";
-import { Command } from "cmdk";
 import {
   ComponentPropsWithoutRef,
   PropsWithChildren,
@@ -9,7 +15,10 @@ import {
 } from "react";
 import useFloatingBox from "../useFloatingBox";
 
-export type CommandItemProps = {
+export type CommandItemProps = Omit<
+  ComponentPropsWithoutRef<typeof CommandItem>,
+  "value"
+> & {
   /**
    * Space separated keywords to match against the query.
    */
@@ -25,7 +34,7 @@ export type CommandItemProps = {
   /**
    * Called when the item is selected.
    */
-  onSelect: ComponentPropsWithoutRef<typeof Command.Item>["onSelect"];
+  onSelect: ComponentPropsWithoutRef<typeof CommandItem>["onSelect"];
 };
 
 export type CommandPickerProps = PropsWithChildren<{
@@ -61,42 +70,29 @@ const CommandPicker = forwardRef<HTMLDivElement, CommandPickerProps>(
       <Command
         ref={mergeRefs(forwardedRef, boxProps.ref)}
         label="Command Menu"
-        className="absolute left-0 top-0 z-20 max-h-[30vh] min-w-[180px] flex-1 overflow-auto rounded-lg border
-       bg-white p-1 text-gray-700  shadow-md  data-[state=hidden]:animate-fade-out data-[state=visible]:animate-fade-in
-        dark:border-slate-600 dark:bg-slate-700 dark:text-inherit"
+        className="absolute left-[var(--box-position-left)] top-[var(--box-position-top)] z-20 w-48
+      border shadow-md duration-200 animate-in fade-in-0 zoom-in-95 dark:border-slate-600"
       >
-        <Command.List>
+        <CommandList>
           {/* HACK not working with value and onValueChange in Command */}
-          <Command.Input className="hidden" value={query} />
-          <Command.Empty className=" px-2 py-1 text-base">
-            Command not found
-          </Command.Empty>
+          <span className="hidden">
+            <CommandInput value={query} />
+          </span>
+          <CommandEmpty>Command not found</CommandEmpty>
           {children}
-        </Command.List>
+        </CommandList>
       </Command>
     );
   },
 );
 
-const CommandPickerItem = forwardRef<HTMLDivElement, CommandItemProps>(
-  function CommandPickerItem({ keywords, icon, label, ...rest }, ref) {
-    return (
-      <Command.Item
-        {...rest}
-        ref={ref}
-        value={keywords}
-        className="cursor-pointer rounded-md px-2 py-1 text-base aria-[selected=true]:bg-cyan-200
-      dark:aria-[selected=true]:bg-cyan-800 dark:aria-[selected=true]:text-cyan-300
-      "
-      >
-        <span className="inline-flex w-full items-center gap-2">
-          {icon}
-          {label}
-        </span>
-      </Command.Item>
-    );
-  },
-);
+function CommandPickerItem({ children, keywords, ...rest }: CommandItemProps) {
+  return (
+    <CommandItem value={keywords} {...rest}>
+      <span className="inline-flex w-full items-center gap-2">{children}</span>
+    </CommandItem>
+  );
+}
 
 export default CommandPicker;
 export { CommandPickerItem };

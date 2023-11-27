@@ -1,3 +1,4 @@
+import { theme as codeHighlightTheme } from "@/plugins/CodeHighlightPlugin";
 import { EditorThemeClasses } from "lexical";
 
 const theme: EditorThemeClasses = {
@@ -13,6 +14,7 @@ const theme: EditorThemeClasses = {
     }
   },
   link: "dark:text-cyan-400 dark:visited:text-indigo-400 text-cyan-600 cursor-pointer",
+  codeHighlight: codeHighlightTheme,
 };
 
 export default theme;

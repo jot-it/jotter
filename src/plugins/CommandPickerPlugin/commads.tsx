@@ -20,11 +20,13 @@ import {
   COMMAND_PRIORITY_LOW,
   LexicalCommand,
   LexicalEditor,
+  TextFormatType,
   createCommand,
 } from "lexical";
 import { useCallback, useEffect } from "react";
 import { formatSelectionAs } from "../ToolbarPlugin/utils";
 import { $getTextNodeForSeach } from "./utils";
+import { $createCodeNode } from "@lexical/code";
 
 export const INSERT_HEADING_COMMAND: LexicalCommand<string> = createCommand(
   "INSERT_HEADING_COMMAND",
@@ -40,6 +42,10 @@ export const REMOVE_CARET_COMMAND: LexicalCommand<void> = createCommand(
 
 export const CLEAR_FORMAT_TEXT_COMMAND: LexicalCommand<void> = createCommand(
   "CLEAR_FORMAT_TEXT_COMMAND",
+);
+
+export const INSERT_CODE_NODE_COMMAND: LexicalCommand<void> = createCommand(
+  "INSERT_CODE_NODE_COMMAND",
 );
 
 export const FORMAT_PARAGRAPH_COMMAND: LexicalCommand<void> = createCommand(
@@ -158,4 +164,65 @@ export function useParagraph(editor: LexicalEditor) {
       COMMAND_PRIORITY_LOW,
     );
   }, [editor, handleInsert]);
+}
+
+export function useCodeNode(editor: LexicalEditor) {
+  const InsertCodeNode = useCallback(() => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $setBlocksType(selection, () => $createCodeNode("js"));
+      }
+    });
+    return false;
+  }, [editor]);
+
+  useEffect(() => {
+    return editor.registerCommand(
+      INSERT_CODE_NODE_COMMAND,
+      InsertCodeNode,
+      COMMAND_PRIORITY_LOW,
+    );
+  }, [editor, InsertCodeNode]);
+}
+
+export function useClearformatText(editor: LexicalEditor) {
+  const handleClearFormat = useCallback(() => {
+    editor.update(() => {
+      const selection = $getSelection();
+      const node = $getTextNodeForSeach();
+
+      const styles: TextFormatType[] = [
+        "bold",
+        "italic",
+        "highlight",
+        "strikethrough",
+        "code",
+        "underline",
+      ];
+
+      if (!$isRangeSelection(selection)) {
+        return false;
+      }
+
+      if (!node) {
+        return false;
+      }
+
+      styles.map((style) => {
+        if (node.hasFormat(style)) {
+          selection.toggleFormat(style);
+        }
+      });
+    });
+    return true;
+  }, [editor]);
+
+  useEffect(() => {
+    return editor.registerCommand(
+      CLEAR_FORMAT_TEXT_COMMAND,
+      handleClearFormat,
+      COMMAND_PRIORITY_LOW,
+    );
+  }, [editor, handleClearFormat]);
 }
