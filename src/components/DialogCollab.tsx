@@ -44,9 +44,6 @@ export default function DialogCollab() {
   return (
     <Dialog>
       <DialogTrigger>
-        <Button className="mr-1" size="large">
-          Large
-        </Button>
         <Button
           aria-label="Add collaborator"
           onClick={startCollab}
@@ -54,9 +51,6 @@ export default function DialogCollab() {
         >
           <UserAddIcon />
           <span className="ml-1 hidden md:inline">Share</span>
-        </Button>
-        <Button className="ml-1" size="small">
-          Small
         </Button>
       </DialogTrigger>
       <DialogContent>
