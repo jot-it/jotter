@@ -26,4 +26,5 @@ export {
   StopIcon,
   UserAddIcon,
   CloseIcon,
+  SearchIcon,
 };
