@@ -26,6 +26,8 @@ import theme from "./theme";
 import CodeActionsPlugin from "@/plugins/CodeActionPlugin/CodeActionPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import ListMaxIndentLevelPlugin from "@/plugins/ListMaxIndentLevelPlugin";
+import { useAtomValue } from "jotai";
+import { isCollabAtom } from "@/lib/collaboration";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -64,6 +66,7 @@ function Editor({ params }: { params: { id: string } }) {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
   const documentId = params.id;
   const user = useSelf();
+  const isCollab = useAtomValue(isCollabAtom);
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
     if (node !== null) {
@@ -107,15 +110,22 @@ function Editor({ params }: { params: { id: string } }) {
           <></>
         )}
         {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
-        <CollaborationPlugin
-          id={documentId}
-          username={user?.name}
-          cursorColor={user?.color}
-        />
         <CodeActionsPlugin />
         <ListPlugin />
         <ListMaxIndentLevelPlugin />
         <TabIndentationPlugin />
+
+        {isCollab ? (
+          <>
+            <CollaborationPlugin
+              id={documentId}
+              username={user?.name}
+              cursorColor={user?.color}
+            />
+          </>
+        ) : (
+          <></>
+        )}
       </LexicalComposer>
     </div>
   );
