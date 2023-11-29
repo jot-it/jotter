@@ -86,13 +86,18 @@ const CommandPicker = forwardRef<HTMLDivElement, CommandPickerProps>(
   },
 );
 
-function CommandPickerItem({ children, keywords, ...rest }: CommandItemProps) {
-  return (
-    <CommandItem value={keywords} {...rest}>
-      <span className="inline-flex w-full items-center gap-2">{children}</span>
-    </CommandItem>
-  );
-}
+const CommandPickerItem = forwardRef<HTMLDivElement, CommandItemProps>(
+  function CommandPickerItem({ keywords, icon, label, ...rest }, ref) {
+    return (
+      <CommandItem {...rest} ref={ref} value={keywords}>
+        <span className="inline-flex w-full items-center gap-2">
+          {icon}
+          {label}
+        </span>
+      </CommandItem>
+    );
+  },
+);
 
 export default CommandPicker;
 export { CommandPickerItem };
