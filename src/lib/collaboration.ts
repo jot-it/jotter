@@ -1,10 +1,10 @@
 "use client";
+import {
+  HocuspocusProvider,
+  HocuspocusProviderConfiguration,
+} from "@hocuspocus/provider";
 import { useEffect, useState } from "react";
-import { WebsocketProvider } from "y-websocket";
-import * as Y from "yjs";
 import { User } from "./userStore";
-import { IndexeddbPersistence } from "y-indexeddb";
-import { IS_BROWSER } from "@/utils";
 
 /**
  * Collaborative state that is synced between all clients
@@ -18,28 +18,22 @@ type SharedState = {
  */
 type Awareness = Map<number, SharedState>;
 
+/**
+ *  Root connection provider for all collaborative state
+ */
+export const rootConnectionProvider = createProvider({
+  name: "root",
+  connect: false,
+});
+
 /** Yjs root document, all collaborative components should use this as root
  *
  * @see https://docs.yjs.dev/api/subdocuments
  */
-export const rootDocument = new Y.Doc();
+export const rootDocument = rootConnectionProvider.document;
 
-export const rootConnectionProvider = createConnectionProvider(
-  rootDocument,
-  "root",
-  { connect: false },
-);
-
-export function createPersistenceProvider(doc: Y.Doc, docName: string) {
-  if (IS_BROWSER) {
-    return new IndexeddbPersistence(docName, doc);
-  }
-}
-
-export function createConnectionProvider(
-  document: Y.Doc,
-  roomName: string,
-  opts: ConstructorParameters<typeof WebsocketProvider>[3],
+export function createProvider(
+  config: Omit<HocuspocusProviderConfiguration, "url">,
 ) {
   const url = process.env.NEXT_PUBLIC_COLLAB_SERVER_URL;
   if (!url) {
@@ -48,8 +42,10 @@ export function createConnectionProvider(
     );
   }
 
-  createPersistenceProvider(document, roomName);
-  return new WebsocketProvider(url, roomName, document, opts);
+  return new HocuspocusProvider({
+    url,
+    ...config,
+  });
 }
 
 /**
@@ -65,12 +61,12 @@ export function StartCollaboration() {
 }
 
 function getAwarenessSnapshot() {
-  return rootConnectionProvider.awareness.getStates() as Awareness;
+  return rootConnectionProvider.awareness?.getStates() as Awareness;
 }
 
 function subscribeToAwareness(callback: () => void) {
-  rootConnectionProvider.awareness.on("change", callback);
-  return () => rootConnectionProvider.awareness.off("change", callback);
+  rootConnectionProvider.awareness?.on("change", callback);
+  return () => rootConnectionProvider.awareness?.off("change", callback);
 }
 
 export function useAwareness() {
