@@ -1,14 +1,24 @@
 {
   "name": "jotter-monorepo",
-  "version": "0.0.1",
-  "description": "",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
+  "devDependencies": {
+    "@jotter/eslint-config": "*",
+    "@jotter/typescript-config": "*",
+    "prettier": "^3.1.0",
+    "turbo": "^1.10.16"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "npm@10.2.4",
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  "author": "",
-  "license": "MIT"
+  ]
 }
