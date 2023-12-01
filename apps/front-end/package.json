@@ -1,5 +1,5 @@
 {
-  "name": "markit-down",
+  "name": "@jotter/front-end",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -53,6 +53,8 @@
     "@playwright/test": "^1.36.2",
     "@tailwindcss/typography": "^0.5.9",
     "@types/lodash.debounce": "^4.0.7",
+    "@jotter/eslint-config": "*",
+    "@jotter/typescript-config": "*",
     "autoprefixer": "^10.4.13",
     "concurrently": "^8.2.0",
     "postcss": "^8.4.20",
