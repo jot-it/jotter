@@ -12,6 +12,7 @@
   },
   "keywords": [],
   "dependencies": {
+    "@hocuspocus/extension-logger": "^2.8.1",
     "@hocuspocus/extension-sqlite": "^2.8.1",
     "@hocuspocus/server": "^2.8.1"
   },
