@@ -10,7 +10,7 @@ const buttonVariants = cva(
         primary:
           "bg-cyan-200 text-cyan-900 hover:bg-cyan-300 dark:bg-cyan-900 dark:text-cyan-200 dark:hover:bg-cyan-800",
         danger:
-          "text-cyan-900 text-red-400 outline outline-1 -outline-offset-1  outline-red-200 outline-red-400 hover:outline-red-300 dark:text-red-400 dark:outline-red-400  dark:hover:text-red-300 dark:hover:outline-red-300",
+          " text-red-400 outline outline-1 -outline-offset-1  outline-red-200  hover:outline-red-300 dark:text-red-400 dark:outline-red-400  dark:hover:text-red-300 dark:hover:outline-red-300",
         secondary:
           "text-cyan-900 outline outline-1 -outline-offset-1 outline-cyan-200 hover:outline-cyan-200 dark:text-cyan-400 dark:outline-cyan-400 hover:dark:text-cyan-200 dark:hover:outline-cyan-200",
       },
