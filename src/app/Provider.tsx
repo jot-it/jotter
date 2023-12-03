@@ -1,4 +1,13 @@
 "use client";
-import { Provider as AtomProvider } from "jotai";
+import { StartCollaboration, isCollabAtom } from "@/lib/collaboration";
+import { Provider as AtomProvider, useAtomValue } from "jotai";
+import { PropsWithChildren } from "react";
 
-export const Provider = AtomProvider;
+export default function Provider({ children }: PropsWithChildren) {
+  return (
+    <AtomProvider>
+      <StartCollaboration />
+      {children}
+    </AtomProvider>
+  );
+}

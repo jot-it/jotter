@@ -1,8 +1,8 @@
-import Typography from "@/components/Typography";
-import { RiUserAddLine as UserAddIcon } from "react-icons/ri";
+import { lazy } from "react";
 import ActiveUsers from "./ActiveUsers";
 import BreadcrumbsShell from "./BreadcrumbsShell";
 import MobileNavigation from "./MobileNavigation";
+const DialogCollab = lazy(() => import("@/components/DialogCollab"));
 
 function Header() {
   return (
@@ -13,17 +13,8 @@ function Header() {
       <MobileNavigation />
       <BreadcrumbsShell />
       <ActiveUsers />
-      <Typography
-        as="button"
-        variant="button"
-        aria-label="Add collaborator"
-        className="inline-flex items-center rounded-full bg-cyan-200 px-3 py-3 font-medium
-         text-cyan-900 shadow-sm hover:bg-cyan-300 dark:bg-cyan-900 dark:text-cyan-200 
-         dark:hover:bg-cyan-800 md:rounded-md md:px-4 md:py-2"
-      >
-        <UserAddIcon />
-        <span className="ml-2 hidden md:inline">Share</span>
-      </Typography>
+
+      <DialogCollab />
     </header>
   );
 }

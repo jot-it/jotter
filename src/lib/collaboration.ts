@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 import { User } from "./userStore";
+import { atom, useAtomValue } from "jotai";
 
 /**
  * Collaborative state that is synced between all clients
@@ -40,14 +41,19 @@ export function createProvider(
   return new WebsocketProvider(url, roomName, document, opts);
 }
 
+export const isCollabAtom = atom(false);
 /**
  * Connects root document to the collaboration server
  */
 export function StartCollaboration() {
+  const isCollab = useAtomValue(isCollabAtom);
+
   useEffect(() => {
-    rootProvider.connect();
+    if (isCollab) {
+      rootProvider.connect();
+    }
     return () => rootProvider.disconnect();
-  }, []);
+  }, [isCollab]);
 
   return null;
 }
