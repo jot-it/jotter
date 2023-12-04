@@ -15,6 +15,9 @@ module.exports = {
     JSX: true,
   },
   env: {
+    // We can set this to `node`, but it is not smart enough to detect blocks of code
+    // where it is safe to access browser globals. This results on lots of false-positive warnings.
+    browser: true,
     node: true,
   },
   plugins: ["only-warn"],
@@ -31,4 +34,10 @@ module.exports = {
     "node_modules/",
   ],
   overrides: [{ files: ["*.js?(x)", "*.ts?(x)"] }],
+
+  rules: {
+    "turbo/no-undeclared-env-vars": "off",
+    "no-unused-vars": "off",
+    "no-redeclare": "off",
+  },
 };
