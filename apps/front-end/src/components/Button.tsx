@@ -15,7 +15,7 @@ const buttonVariants = cva(
           "text-cyan-900 outline outline-1 -outline-offset-1 outline-cyan-200 hover:outline-cyan-200 dark:text-cyan-400 dark:outline-cyan-400 hover:dark:text-cyan-200 dark:hover:outline-cyan-200",
       },
       size: {
-        medium: "p3",
+        medium: "p-3",
         small: "px-1 py-2 text-sm",
         large: "px-5 py-4 text-2xl",
       },
