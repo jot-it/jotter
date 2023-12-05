@@ -43,7 +43,7 @@ export default function DialogCollab() {
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button
           aria-label="Add collaborator"
           onClick={startCollab}
