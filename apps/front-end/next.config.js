@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  // FIXME Collaboration features not working correctly on React.StrictMode
+  reactStrictMode: false,
 };
 
 module.exports = nextConfig;
