@@ -42,8 +42,8 @@ export function useOthers() {
   const awareness = useAwareness();
   const others: User[] = [];
   awareness.forEach((state, clientId) => {
-    if (clientId === rootConnectionProvider.awareness?.clientID) return;
-    if (state.user) {
+    const isMyself = clientId === rootConnectionProvider.awareness?.clientID;
+    if (!isMyself && state.user) {
       others.push(state.user);
     }
   });
