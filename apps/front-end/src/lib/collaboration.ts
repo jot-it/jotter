@@ -5,6 +5,7 @@ import {
 } from "@hocuspocus/provider";
 import { useEffect, useState } from "react";
 import { User } from "./userStore";
+import { atom, useAtomValue } from "jotai";
 
 /**
  * Collaborative state that is synced between all clients
@@ -48,6 +49,7 @@ export function createProvider(
   });
 }
 
+export const isCollabAtom = atom(false);
 /**
  * Connects root document to the collaboration server
  */

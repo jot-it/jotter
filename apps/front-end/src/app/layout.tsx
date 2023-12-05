@@ -1,9 +1,8 @@
 import { TooltipProvider } from "@/components/Tooltip";
-import { StartCollaboration } from "@/lib/collaboration";
 import { Barlow } from "next/font/google";
 import { PropsWithChildren } from "react";
 import Header from "./Header";
-import { Provider } from "./Provider";
+import Provider from "./Provider";
 import SideNavigation from "./SideNavigation";
 import "./globals.css";
 
@@ -17,7 +16,6 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <TooltipProvider>
       <Provider>
-        <StartCollaboration />
         <html lang="en" className="dark">
           <body
             className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}

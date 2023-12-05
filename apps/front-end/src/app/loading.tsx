@@ -36,7 +36,7 @@ function PageLoadingBar() {
 
   return (
     <div
-      className="fixed left-0 right-0 top-0 z-50 h-1.5 rounded-r-full bg-cyan-800 transition-transform duration-300 ease-in-out"
+      className="fixed left-0 right-0 top-0 z-50 h-1 rounded-r-full bg-cyan-800 transition-transform duration-300 ease-in-out"
       style={{
         transform: `translateX(${-100 + progress}%)`,
       }}
