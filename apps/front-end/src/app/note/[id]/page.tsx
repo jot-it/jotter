@@ -36,11 +36,12 @@ const CollaborationPlugin = dynamic(
   () => import("@/plugins/CollaborationPlugin"),
   { ssr: false },
 );
+
 const TreeViewPlugin = lazy(() => import("@/plugins/TreeViewPlugin"));
 
 const editorConfig: InitialConfigType = {
   editorState: null,
-  namespace: "My Editor",
+  namespace: "jotter",
   theme,
   onError(error, editor) {
     console.log(error);
@@ -93,6 +94,7 @@ function Editor({ params }: { params: { id: string } }) {
           ErrorBoundary={ErrorBoundary}
         />
         <AutoFocusPlugin />
+
         <LexicalAutoLinkPlugin />
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <CodeHighlightPlugin />

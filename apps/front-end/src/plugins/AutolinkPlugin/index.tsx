@@ -1,10 +1,9 @@
+import { AutoLinkNode } from "@lexical/link";
 import {
   AutoLinkPlugin,
   createLinkMatcherWithRegExp,
 } from "@lexical/react/LexicalAutoLinkPlugin";
-import * as React from "react";
 import { NodeEventPlugin } from "@lexical/react/LexicalNodeEventPlugin";
-import { AutoLinkNode, LinkNode } from "@lexical/link";
 
 const URL_REGEX =
   /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;

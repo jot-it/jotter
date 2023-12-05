@@ -40,7 +40,6 @@ function LanguageSelector({ codeNodeKey, editor }: LanguageSelectorProps) {
       <PopoverTrigger asChild>
         <button
           className="group inline-flex items-center rounded px-2 py-0.5 transition-colors hover:bg-slate-700 data-[state=open]:bg-slate-700"
-          // eslint-disable-next-line jsx-a11y/role-has-required-aria-props
           role="combobox"
           aria-expanded={open}
         >

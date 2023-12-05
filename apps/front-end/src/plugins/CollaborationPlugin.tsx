@@ -1,8 +1,6 @@
 import { createProvider } from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
-import { $createHeadingNode } from "@lexical/rich-text";
 import { Provider } from "@lexical/yjs";
-import { $getRoot, LexicalEditor } from "lexical";
 import { ComponentPropsWithoutRef } from "react";
 import { Doc } from "yjs";
 
@@ -23,29 +21,19 @@ function CollaborationPlugin({
   return (
     <LexicalCollaborationPlugin
       id={id}
+      key={id}
       username={username}
       cursorColor={cursorColor}
+      // initialEditorState={initialEditorState}
       providerFactory={providerFactory}
-      initialEditorState={initialEditorState}
       shouldBootstrap={true}
     />
   );
 }
 
-function initialEditorState(editor: LexicalEditor): void {
-  const root = $getRoot();
-  const headingPlaceholder = $createHeadingNode("h1");
-  root.append(headingPlaceholder);
-}
-
 function providerFactory(id: string, yjsDocMap: Map<string, Doc>): Provider {
-  let doc = yjsDocMap.get(id);
-  if (!doc) {
-    doc = new Doc();
-    yjsDocMap.set(id, doc);
-  } else {
-    doc.load();
-  }
+  const doc = new Doc();
+  yjsDocMap.set(id, doc);
 
   //@ts-ignore Awareness type mismatch, we can ignore this
   return createProvider({
