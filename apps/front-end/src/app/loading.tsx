@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 const TICK_SIZE = 25;
 const TICK_INTERVAL_DELAY = 100;
-const INITIAL_SHOW_DELAY = 500;
+const INITIAL_SHOW_DELAY = 250;
 
 function PageLoadingBar() {
   const [progress, setProgress] = useState(0);
@@ -36,7 +36,7 @@ function PageLoadingBar() {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 h-1.5 bg-cyan-800 z-50 rounded-r-full transition-transform duration-300 ease-in-out"
+      className="fixed left-0 right-0 top-0 z-50 h-1.5 rounded-r-full bg-cyan-800 transition-transform duration-300 ease-in-out"
       style={{
         transform: `translateX(${-100 + progress}%)`,
       }}
