@@ -1,0 +1,27 @@
+{
+  "name": "@jotter/collab-server",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
+  },
+  "keywords": [],
+  "dependencies": {
+    "@hocuspocus/extension-logger": "^2.8.1",
+    "@hocuspocus/extension-sqlite": "^2.8.1",
+    "@hocuspocus/server": "^2.8.1"
+  },
+  "devDependencies": {
+    "@jotter/typescript-config": "*",
+    "@types/node": "^20.10.1",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "tsx": "^4.6.1",
+    "typescript": "^5.3.2"
+  }
+}

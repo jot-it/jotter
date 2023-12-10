@@ -1,0 +1,6 @@
+{
+  "extends": "@jotter/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  }
+}
