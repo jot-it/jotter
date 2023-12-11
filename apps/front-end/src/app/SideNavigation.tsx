@@ -21,9 +21,9 @@ function SideNavigation() {
     setActiveItem({ ...item });
   };
 
-  const handleDelete = (item: Item) => {
+  const handleDelete = async (item: Item) => {
     // Remove document from cache (IndexDB)
-    clearDocument(item.id);
+    await clearDocument(item.id);
 
     // TODO: Remove document from backend database, using a REST endpoint or Next's server actions
 
