@@ -10,6 +10,7 @@ import { newPage, sidebarState } from "@/components/Sidebar/state";
 import { atom, useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { RiAddLine as AddIcon } from "react-icons/ri";
+import { clearDocument } from "y-indexeddb";
 
 export const activeItemAtom = atom<Item | null>(null);
 
@@ -17,12 +18,14 @@ function SideNavigation() {
   const router = useRouter();
   const [activeItem, setActiveItem] = useAtom(activeItemAtom);
   const updateActiveItem = (item: Item) => {
-      setActiveItem({ ...item });
+    setActiveItem({ ...item });
   };
 
-  const handleDelete = (item: Item) => {
-    // TODO: Refactor this to its own domain
-    window.indexedDB.deleteDatabase(item.id);
+  const handleDelete = async (item: Item) => {
+    // Remove document from cache (IndexDB)
+    await clearDocument(item.id);
+
+    // TODO: Remove document from backend database, using a REST endpoint or Next's server actions
 
     if (item.id === activeItem?.id) {
       // Redirect users to home page to avoid editing a document that no longer exists
@@ -35,7 +38,7 @@ function SideNavigation() {
     if (item.id === activeItem?.id) {
       setActiveItem({ ...item });
     }
-  }
+  };
 
   return (
     <Sidebar

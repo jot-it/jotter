@@ -1,5 +1,4 @@
 "use client";
-import { isCollabAtom } from "@/lib/collaboration";
 import { useSelf } from "@/lib/userStore";
 import LexicalAutoLinkPlugin from "@/plugins/AutolinkPlugin";
 import CodeActionsPlugin from "@/plugins/CodeActionPlugin/CodeActionPlugin";
@@ -24,7 +23,6 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import { useAtomValue } from "jotai";
 import dynamic from "next/dynamic";
 import { lazy, useCallback, useState } from "react";
 import theme from "./theme";
@@ -68,7 +66,6 @@ function Editor({ params }: { params: { id: string } }) {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
   const documentId = params.id;
   const user = useSelf();
-  const isCollab = useAtomValue(isCollabAtom);
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
     if (node !== null) {
@@ -117,19 +114,12 @@ function Editor({ params }: { params: { id: string } }) {
         <ListPlugin />
         <ListMaxIndentLevelPlugin />
         <TabIndentationPlugin />
-
-        {isCollab ? (
-          <>
-            <CollaborationPlugin
-              id={documentId}
-              username={user?.name}
-              cursorColor={user?.color}
-            />
-          </>
-        ) : (
-          <></>
-        )}
         <ImagePlugin />
+        <CollaborationPlugin
+          id={documentId}
+          username={user?.name}
+          cursorColor={user?.color}
+        />
       </LexicalComposer>
     </div>
   );
