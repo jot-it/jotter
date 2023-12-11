@@ -1,11 +1,15 @@
 "use client";
+import { IS_BROWSER } from "@/utils";
 import {
   HocuspocusProvider,
   HocuspocusProviderConfiguration,
 } from "@hocuspocus/provider";
+import { atom } from "jotai";
 import { useEffect, useState } from "react";
+import { IndexeddbPersistence } from "y-indexeddb";
 import { User } from "./userStore";
-import { atom, useAtomValue } from "jotai";
+import { Doc } from "yjs";
+import { getCollabServerURL } from "./env";
 
 /**
  * Collaborative state that is synced between all clients
@@ -33,23 +37,31 @@ export const rootConnectionProvider = createProvider({
  */
 export const rootDocument = rootConnectionProvider.document;
 
+/**
+ * Create a connection provider that connects to the collaboration server.
+ */
 export function createProvider(
   config: Omit<HocuspocusProviderConfiguration, "url">,
 ) {
-  const url = process.env.NEXT_PUBLIC_COLLAB_SERVER_URL;
-  if (!url) {
-    throw new Error(
-      "NEXT_PUBLIC_COLLAB_SERVER_URL is not set in environment variables",
-    );
-  }
-
-  return new HocuspocusProvider({
-    url,
+  const url = getCollabServerURL();
+  const provider = new HocuspocusProvider({
     ...config,
+    url,
   });
+  createIDBPersistence(config.name, provider.document);
+
+  return provider;
 }
 
+function createIDBPersistence(documentName: string, doc: Doc) {
+  if (IS_BROWSER) {
+    new IndexeddbPersistence(documentName, doc);
+  }
+}
+
+//FIXME: this should be removed
 export const isCollabAtom = atom(false);
+
 /**
  * Connects root document to the collaboration server
  */
