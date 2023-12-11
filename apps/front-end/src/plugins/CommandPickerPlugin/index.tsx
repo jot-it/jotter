@@ -1,3 +1,17 @@
+import {
+  BoldIcon,
+  CodeIcon,
+  HeadingIcon,
+  ItalicIcon,
+  ParagraphIcon,
+  QuoteIcon,
+  StrikethroughIcon,
+  UnderlineIcon,
+} from "@/components/Icons";
+import {
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND,
+} from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   COMMAND_PRIORITY_LOW,
@@ -9,17 +23,13 @@ import {
   LexicalCommand,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-
 import { useRef, useState, useTransition } from "react";
 import {
-  RiBold as BoldIcon,
-  RiCodeSSlashLine as CodeIcon,
-  RiHeading as HeadingIcon,
-  RiItalic as ItalicIcon,
-  RiDoubleQuotesR as QuoteIcon,
-  RiStrikethrough as StrikethroughIcon,
-  RiUnderline as UnderlineIcon,
-} from "react-icons/ri";
+  GoListUnordered as ListIcon,
+  GoListOrdered as OrderedListIcon,
+} from "react-icons/go";
+import { INSERT_IMAGE_COMMAND } from "../ImagePlugin";
+import useLexicalCommand from "../useLexicalCommand";
 import CommandPicker, { CommandPickerItem } from "./CommandPicker";
 import {
   FORMAT_PARAGRAPH_COMMAND,
@@ -34,19 +44,7 @@ import {
   useRemoveCaretCommand,
 } from "./commads";
 import { $getQueryTextForSearch } from "./utils";
-
-import {
-  GoListUnordered as ListIcon,
-  GoListOrdered as OrderedListIcon,
-} from "react-icons/go";
-
-import { BsTextParagraph as ParagraphIcon } from "react-icons/bs";
-
-import {
-  INSERT_ORDERED_LIST_COMMAND,
-  INSERT_UNORDERED_LIST_COMMAND,
-} from "@lexical/list";
-import useLexicalCommand from "../useLexicalCommand";
+import { InsertImageCommand } from "./InsertImageDialog";
 
 export type ComponentPickerMenuPluginProps = {
   /**
@@ -151,6 +149,9 @@ export default function ComponentPickerMenuPlugin({
 
   return (
     <CommandPicker ref={menuRef} container={container} query={command}>
+      <InsertImageCommand
+        onInsert={(src, alt) => dispatch(INSERT_IMAGE_COMMAND, { src, alt })}
+      />
       <CommandPickerItem
         icon={<ParagraphIcon />}
         onSelect={() => dispatch(FORMAT_PARAGRAPH_COMMAND, undefined)}

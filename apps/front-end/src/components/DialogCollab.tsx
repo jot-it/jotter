@@ -47,7 +47,7 @@ export default function DialogCollab() {
         <Button
           aria-label="Add collaborator"
           onClick={startCollab}
-          className="rounded-full"
+          className="max-md:rounded-full"
         >
           <UserAddIcon />
           <span className="ml-1 hidden md:inline">Share</span>

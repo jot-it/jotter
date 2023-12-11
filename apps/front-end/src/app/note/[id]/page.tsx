@@ -1,12 +1,16 @@
 "use client";
+import { isCollabAtom } from "@/lib/collaboration";
 import { useSelf } from "@/lib/userStore";
 import LexicalAutoLinkPlugin from "@/plugins/AutolinkPlugin";
+import CodeActionsPlugin from "@/plugins/CodeActionPlugin/CodeActionPlugin";
 import CodeHighlightPlugin from "@/plugins/CodeHighlightPlugin";
+import { ImageNode, ImagePlugin } from "@/plugins/ImagePlugin";
+import ListMaxIndentLevelPlugin from "@/plugins/ListMaxIndentLevelPlugin";
+import MarkdownShortcutsPlugin from "@/plugins/MarkdownShortcutPlugin";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
-import { TRANSFORMERS } from "@lexical/markdown";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import {
   InitialConfigType,
@@ -15,19 +19,15 @@ import {
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import ErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
+import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
+import { useAtomValue } from "jotai";
 import dynamic from "next/dynamic";
 import { lazy, useCallback, useState } from "react";
 import theme from "./theme";
-import CodeActionsPlugin from "@/plugins/CodeActionPlugin/CodeActionPlugin";
-import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
-import ListMaxIndentLevelPlugin from "@/plugins/ListMaxIndentLevelPlugin";
-import { useAtomValue } from "jotai";
-import { isCollabAtom } from "@/lib/collaboration";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -60,6 +60,7 @@ const editorConfig: InitialConfigType = {
     AutoLinkNode,
     LinkNode,
     CodeNode,
+    ImageNode,
   ],
 };
 
@@ -99,7 +100,7 @@ function Editor({ params }: { params: { id: string } }) {
         <AutoFocusPlugin />
 
         <LexicalAutoLinkPlugin />
-        <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        <MarkdownShortcutsPlugin />
         <CodeHighlightPlugin />
         <HistoryPlugin />
 
@@ -128,6 +129,7 @@ function Editor({ params }: { params: { id: string } }) {
         ) : (
           <></>
         )}
+        <ImagePlugin />
       </LexicalComposer>
     </div>
   );
