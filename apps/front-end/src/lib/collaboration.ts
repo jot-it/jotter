@@ -4,12 +4,11 @@ import {
   HocuspocusProvider,
   HocuspocusProviderConfiguration,
 } from "@hocuspocus/provider";
-import { atom } from "jotai";
 import { useEffect, useState } from "react";
 import { IndexeddbPersistence } from "y-indexeddb";
-import { User } from "./userStore";
 import { Doc } from "yjs";
 import { getCollabServerURL } from "./env";
+import { User } from "./userStore";
 
 /**
  * Collaborative state that is synced between all clients
@@ -58,9 +57,6 @@ function createIDBPersistence(documentName: string, doc: Doc) {
     new IndexeddbPersistence(documentName, doc);
   }
 }
-
-//FIXME: this should be removed
-export const isCollabAtom = atom(false);
 
 /**
  * Connects root document to the collaboration server

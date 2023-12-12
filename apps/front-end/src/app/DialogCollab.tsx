@@ -1,26 +1,21 @@
 "use client";
 
-import { isCollabAtom } from "@/lib/collaboration";
-import { useSetAtom } from "jotai";
 import { nanoid } from "nanoid";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import Button from "../components/Button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../components/Dialog";
-import Button from "../components/Button";
-import { CopyIcon, StopIcon, UserAddIcon } from "../components/Icons";
+import { CopyIcon, UserAddIcon } from "../components/Icons";
 
 export default function DialogCollab() {
-  const setCollab = useSetAtom(isCollabAtom);
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const params = new URLSearchParams(searchParams);
   params.set("room", nanoid(8));
@@ -32,23 +27,10 @@ export default function DialogCollab() {
     navigator.clipboard.writeText(fullUrl);
   };
 
-  const startCollab = () => {
-    setCollab(true);
-    router.push(url);
-  };
-
-  const stopCollab = () => {
-    setCollab(false);
-  };
-
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          aria-label="Add collaborator"
-          onClick={startCollab}
-          className="max-md:rounded-full"
-        >
+        <Button aria-label="Add collaborator" className="max-md:rounded-full">
           <UserAddIcon />
           <span className="ml-1 hidden md:inline">Share</span>
         </Button>
@@ -73,13 +55,6 @@ export default function DialogCollab() {
                 <CopyIcon />
                 Copy link
               </Button>
-
-              <DialogClose asChild>
-                <Button variant="danger" onClick={stopCollab}>
-                  <StopIcon />
-                  Abort
-                </Button>
-              </DialogClose>
             </span>
           </div>
         </DialogHeader>
