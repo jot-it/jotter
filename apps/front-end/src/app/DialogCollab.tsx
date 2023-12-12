@@ -12,9 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./Dialog";
-import Button from "./Button";
-import { CopyIcon, StopIcon, UserAddIcon } from "./Icons";
+} from "../components/Dialog";
+import Button from "../components/Button";
+import { CopyIcon, StopIcon, UserAddIcon } from "../components/Icons";
 
 export default function DialogCollab() {
   const setCollab = useSetAtom(isCollabAtom);
