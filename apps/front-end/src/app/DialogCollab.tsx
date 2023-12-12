@@ -1,7 +1,7 @@
 "use client";
 
-import { nanoid } from "nanoid";
-import { usePathname, useSearchParams } from "next/navigation";
+import { Input } from "@/components/Input";
+import { lazy, useState } from "react";
 import Button from "../components/Button";
 import {
   Dialog,
@@ -11,20 +11,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../components/Dialog";
-import { CopyIcon, UserAddIcon } from "../components/Icons";
+import { CheckIcon, CopyIcon, UserAddIcon } from "../components/Icons";
+
+const Tooltip = lazy(() => import("@/components/Tooltip"));
+
+const ANIMATION_STATE_RESET_DELAY = 1500;
 
 export default function DialogCollab() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const params = new URLSearchParams(searchParams);
-  params.set("room", nanoid(8));
-
-  const url = `${pathname}?${params}`;
-  const fullUrl = getUrlOrigin() + url;
+  const [copied, setCopied] = useState(false);
+  const fullUrl = window?.location.href ?? "";
 
   const copyToClipBoard = () => {
-    navigator.clipboard.writeText(fullUrl);
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      setCopied(true);
+    });
+    setTimeout(() => setCopied(false), ANIMATION_STATE_RESET_DELAY);
   };
 
   return (
@@ -35,35 +36,33 @@ export default function DialogCollab() {
           <span className="ml-1 hidden md:inline">Share</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Start Collaboration</DialogTitle>
+          <DialogTitle>Share Collaboration</DialogTitle>
           <DialogDescription>
-            Copy and share the link to your new collaborative session to get
-            started.
+            Share this link and anyone who have it can calaborate with you.
           </DialogDescription>
-
-          <div className="flex flex-col gap-4 pt-4">
-            <span className="inline-flex gap-2">
-              <input
-                className="w-full text-ellipsis rounded bg-slate-50 px-2 py-1 outline outline-1 -outline-offset-1 outline-slate-300 selection:bg-cyan-700 selection:text-white dark:bg-slate-900 dark:outline-slate-500"
-                defaultValue={fullUrl}
-                readOnly
-              />
-
-              <Button onClick={copyToClipBoard}>
-                <CopyIcon />
-                Copy link
-              </Button>
-            </span>
-          </div>
         </DialogHeader>
+        <div className="flex items-center justify-between gap-4 pt-4">
+          <Input defaultValue={fullUrl} readOnly />
+          <Tooltip title={copied ? "Copied" : "Copy"} open={copied}>
+            <Button className="py-3" onClick={copyToClipBoard}>
+              {!copied ? (
+                <CopyIcon
+                  className="duration-500 animate-in fade-in"
+                  aria-hidden
+                />
+              ) : (
+                <CheckIcon
+                  className="duration-500 animate-in fade-in zoom-in"
+                  aria-hidden
+                />
+              )}
+              <span className="sr-only">Copy link</span>
+            </Button>
+          </Tooltip>
+        </div>
       </DialogContent>
     </Dialog>
   );
-}
-
-function getUrlOrigin() {
-  if (typeof window === "undefined") return "";
-  return window.origin;
 }
