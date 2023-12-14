@@ -9,9 +9,6 @@ import { Item } from "./Item";
 // For local state, use useState instead.
 export const sidebarState = proxy<Item[]>([]);
 
-// Synchorize Yjs shared-types with valtio proxy state
-bind(sidebarState, rootDocument.getArray("sidebar"));
-
 /**
  * @param type Type of item to create
  * @param fromCrumbs breadcrumbs path to this item

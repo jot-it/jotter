@@ -15,14 +15,20 @@ import {
   setLabel,
   sidebarState,
 } from "@/components/Sidebar/state";
+import { getRootDocument } from "@/lib/collaboration";
 import { atom, useAtom } from "jotai";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { RiAddLine as AddIcon } from "react-icons/ri";
+import { bind } from "valtio-yjs";
 import { clearDocument } from "y-indexeddb";
 
 export const activeItemAtom = atom<Item | null>(null);
 
 function SideNavigation() {
+  // Synchorize Yjs shared-types with valtio proxy state
+  useYjs();
+
   const router = useRouter();
   const [activeItem, setActiveItem] = useAtom(activeItemAtom);
   const updateActiveItem = (item: Item) => {
@@ -97,6 +103,16 @@ function SideNavigation() {
       </div>
     </Sidebar>
   );
+}
+
+function useYjs() {
+  useEffect(() => {
+    const yDocument = getRootDocument();
+    if (!yDocument) {
+      return;
+    }
+    return bind(sidebarState, yDocument.getArray("sidebar"));
+  }, []);
 }
 
 export default SideNavigation;

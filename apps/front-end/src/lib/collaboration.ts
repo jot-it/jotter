@@ -4,6 +4,7 @@ import {
   HocuspocusProvider,
   HocuspocusProviderConfiguration,
 } from "@hocuspocus/provider";
+import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { Doc } from "yjs";
@@ -25,16 +26,31 @@ type Awareness = Map<number, SharedState>;
 /**
  *  Root connection provider for all collaborative state
  */
-export const rootConnectionProvider = createProvider({
-  name: "root",
-  connect: false,
-});
+let rootConnectionProvider: HocuspocusProvider | null = null;
+
+export function getRootConnectionProvider() {
+  // if (!rootConnectionProvider) {
+  //   throw new Error("rootConnectionProvider is undefined");
+  // }
+
+  if (rootConnectionProvider) {
+    return rootConnectionProvider;
+  }
+}
+
+function setRootConnectionProvider(p: HocuspocusProvider) {
+  rootConnectionProvider = p;
+}
 
 /** Yjs root document, all collaborative components should use this as root
  *
  * @see https://docs.yjs.dev/api/subdocuments
  */
-export const rootDocument = rootConnectionProvider.document;
+export const rootDocument: Doc | null = null;
+
+export function getRootDocument() {
+  return getRootConnectionProvider()?.document;
+}
 
 /**
  * Create a connection provider that connects to the collaboration server.
@@ -63,20 +79,31 @@ function createIDBPersistence(documentName: string, doc: Doc) {
  */
 export function StartCollaboration() {
   useEffect(() => {
-    rootConnectionProvider.connect();
-    return () => rootConnectionProvider.disconnect();
+    //get workspaceId from localStorage
+
+    // first get from URL
+    // else localStorage
+    // else then create new workspaceId
+    const workspaceId = window.localStorage.getItem("workspaceId") ?? nanoid();
+    window.localStorage.setItem("workspaceId", workspaceId);
+
+    const provider = createProvider({ name: workspaceId });
+    setRootConnectionProvider(provider);
+    return () => provider.disconnect();
   }, []);
 
   return null;
 }
 
 function getAwarenessSnapshot() {
-  return rootConnectionProvider.awareness?.getStates() as Awareness;
+  return getRootConnectionProvider()?.awareness?.getStates() as
+    | Awareness
+    | undefined;
 }
 
 function subscribeToAwareness(callback: () => void) {
-  rootConnectionProvider.awareness?.on("change", callback);
-  return () => rootConnectionProvider.awareness?.off("change", callback);
+  getRootConnectionProvider()?.awareness?.on("change", callback);
+  return () => getRootConnectionProvider()?.awareness?.off("change", callback);
 }
 
 export function useAwareness() {

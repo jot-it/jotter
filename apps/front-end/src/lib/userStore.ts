@@ -1,5 +1,5 @@
 import { atom, useAtomValue } from "jotai";
-import { rootConnectionProvider, useAwareness } from "./collaboration";
+import { getRootConnectionProvider, useAwareness } from "./collaboration";
 
 export type User = {
   name: string;
@@ -41,8 +41,10 @@ export function useSelf() {
 export function useOthers() {
   const awareness = useAwareness();
   const others: User[] = [];
-  awareness.forEach((state, clientId) => {
-    const isMyself = clientId === rootConnectionProvider.awareness?.clientID;
+
+  awareness?.forEach((state, clientId) => {
+    const isMyself =
+      clientId === getRootConnectionProvider()?.awareness?.clientID;
     if (!isMyself && state.user) {
       others.push(state.user);
     }
@@ -56,7 +58,7 @@ function setStoredUser(user: User) {
 }
 
 function setAwarenessUser(user: User) {
-  rootConnectionProvider.awareness?.setLocalStateField("user", user);
+  getRootConnectionProvider()?.awareness?.setLocalStateField("user", user);
 }
 
 function getStoredUser(): User | null {
