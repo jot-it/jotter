@@ -12,9 +12,10 @@ import {
   DialogTrigger,
 } from "../components/Dialog";
 import { UserAddIcon } from "../components/Icons";
+import { IS_BROWSER } from "@/utils";
 
 export default function DialogCollab() {
-  const fullUrl = window?.location.href.toString() ?? "";
+  const fullUrl = getLocation();
 
   const copyToClipBoard = () => {
     navigator.clipboard.writeText(fullUrl);
@@ -42,4 +43,8 @@ export default function DialogCollab() {
       </DialogContent>
     </Dialog>
   );
+}
+
+function getLocation() {
+  return IS_BROWSER ? window.location.href : "";
 }
