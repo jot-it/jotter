@@ -1,14 +1,14 @@
-import { lazy, useState } from "react";
+import { useState } from "react";
 
 import { CheckIcon, CopyIcon } from "./Icons";
 import Button, { ButtonProps } from "./Button";
+import Tooltip from "@/components/Tooltip";
 
 const ANIMATION_STATE_RESET_DELAY = 1500;
-const Tooltip = lazy(() => import("@/components/Tooltip"));
 
 export default function CopyButton(props: ButtonProps) {
   const [copied, setCopied] = useState(false);
-  const { onClick } = props;
+  const { onClick, ...rest } = props;
 
   const copyToClipBoard: ButtonProps["onClick"] = (e) => {
     onClick?.(e);
@@ -18,7 +18,7 @@ export default function CopyButton(props: ButtonProps) {
 
   return (
     <Tooltip title={copied ? "Copied" : "Copy"} open={copied}>
-      <Button className="py-3" onClick={copyToClipBoard} {...props}>
+      <Button className="py-3" onClick={copyToClipBoard} {...rest}>
         {!copied ? (
           <CopyIcon className="duration-500 animate-in fade-in" aria-hidden />
         ) : (
