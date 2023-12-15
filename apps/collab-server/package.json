@@ -7,20 +7,20 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx watch src/index.ts"
+    "start": "NODE_ENV=production dist/index.js",
+    "dev": "NODE_ENV=development tsx watch src/index.ts"
   },
   "keywords": [],
   "dependencies": {
+    "@hocuspocus/extension-database": "^2.8.1",
     "@hocuspocus/extension-logger": "^2.8.1",
     "@hocuspocus/extension-sqlite": "^2.8.1",
-    "@hocuspocus/server": "^2.8.1"
+    "@hocuspocus/server": "^2.8.1",
+    "mysql2": "^3.6.5"
   },
   "devDependencies": {
     "@jotter/typescript-config": "*",
     "@types/node": "^20.10.1",
-    "nodemon": "^3.0.1",
-    "ts-node": "^10.9.1",
     "tsx": "^4.6.1",
     "typescript": "^5.3.2"
   }
