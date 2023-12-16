@@ -7,8 +7,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "NODE_ENV=production dist/index.js",
-    "dev": "NODE_ENV=development tsx watch src/index.ts"
+    "start": "dist/index.js",
+    "dev": "tsx watch src/index.ts"
   },
   "keywords": [],
   "dependencies": {
