@@ -78,7 +78,7 @@ export function SidebarButton({ children, ...props }: SidebarButtonProps) {
   return (
     <button
       type="button"
-      className="flex w-full items-center justify-between rounded-lg p-3 hover:bg-gray-300 dark:hover:bg-gray-700"
+      className="flex w-full items-center justify-between rounded-lg p-3 ring-cyan-600 hover:bg-gray-300 focus-visible:outline-none focus-visible:ring-2 dark:hover:bg-gray-700"
       {...props}
     >
       {children}
