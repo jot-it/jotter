@@ -1,6 +1,7 @@
 import { createProvider } from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { Provider } from "@lexical/yjs";
+import { $createParagraphNode, $getRoot } from "lexical";
 import { ComponentPropsWithoutRef } from "react";
 import { Doc } from "yjs";
 
@@ -24,11 +25,18 @@ function CollaborationPlugin({
       key={id}
       username={username}
       cursorColor={cursorColor}
-      // initialEditorState={initialEditorState}
+      initialEditorState={initialEditorState}
       providerFactory={providerFactory}
       shouldBootstrap={true}
     />
   );
+}
+
+function initialEditorState() {
+  const root = $getRoot();
+  const paragraph = $createParagraphNode();
+  paragraph.select();
+  root.append(paragraph);
 }
 
 function providerFactory(id: string, yjsDocMap: Map<string, Doc>): Provider {
