@@ -21,6 +21,7 @@ services:
       context: .
       dockerfile: ./apps/collab-server/Dockerfile
     environment:
+      - NODE_ENV=development
       - PORT=1234
       - DATABASE_URL=mysql://root:${DATABASE_PASS}@database/${DATABASE_NAME}
     ports:
@@ -30,3 +31,4 @@ services:
         condition: service_healthy
     volumes:
       - "./apps/collab-server/src:/app/apps/collab-server/src"
+      - "./node_modules:/app/node_modules"

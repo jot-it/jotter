@@ -4,9 +4,8 @@ EXPOSE 1234
 FROM base AS dev
 WORKDIR /app
 COPY package*.json .
-RUN npm ci
+RUN npm install
 COPY . .
-USER node
 
 
 FROM base AS prod
