@@ -64,10 +64,10 @@ type SidebarItemProps = ItemWithParent<{
 const UNTITLED_PAGE_TITLE = "Untitled";
 
 export const itemVariant = {
-  root: "rounded-lg p-3 text-left",
+  root: "rounded-lg p-3 text-left break-words ring-cyan-600 focus-visible:outline-none focus-visible:ring-2 ring-inset",
   active:
     "dark:bg-cyan-900 bg-cyan-400/20  dark:text-cyan-200 text-cyan-950 dark:hover:bg-cyan-800\
-     hover:bg-gray-300 hover:bg-cyan-400/30",
+     hover:bg-gray-300 hover:bg-cyan-400/30 ",
   inactive:
     "hover:bg-gray-300 dark:hover:bg-slate-700\
     focus-within:dark:bg-slate-700 focus-within:bg-gray-300",
