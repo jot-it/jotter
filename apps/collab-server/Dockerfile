@@ -8,7 +8,7 @@ RUN npm install
 COPY . .
 
 
-FROM base AS prod
+FROM base AS builder
 RUN apk add --no-cache libc6-compat
 RUN apk update
 # Set working directory
@@ -19,6 +19,7 @@ RUN turbo prune @jotter/collab-server --docker
  
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
+ENV NODE_ENV production
 RUN apk add --no-cache libc6-compat
 RUN apk update
 WORKDIR /app
@@ -26,12 +27,12 @@ WORKDIR /app
 # First install the dependencies (as they change less often)
 COPY --chown=node:node .gitignore .gitignore
 COPY --chown=node:node --from=builder /app/out/json/ .
-RUN npm ci --omit=dev
+RUN npm install
 # Build the project
 COPY --from=builder --chown=node:node /app/out/full/ .
 RUN npm run build
 
-FROM installer as runner
+FROM installer as prod
 WORKDIR /app/apps/collab-server/dist
 # Don't run production as root
 USER node
