@@ -11,6 +11,7 @@ declare global {
 
 const envSchema = z.object({
   NODE_ENV: z.union([z.literal("development"), z.literal("production")]),
+  PORT: z.optional(z.string()),
   DATABASE_USER: z.string(),
   DATABASE_PASS: z.string(),
   DATABASE_HOST: z.string(),
