@@ -1,5 +1,6 @@
 "use client";
 import {
+  ParentItem,
   Sidebar,
   SidebarButton,
   SidebarDivider,
@@ -9,7 +10,6 @@ import { Item } from "@/components/Sidebar/Item";
 import {
   createItem,
   insertItem,
-  newPage,
   removeItem,
   setIsNewItem,
   setLabel,
@@ -55,14 +55,26 @@ function SideNavigation() {
     }
   };
 
-  const handleNewPage = (parent: Item[]) => {
-    const page = createItem("link", sidebarState);
-    insertItem(parent, page);
+  // TODO refactor handleNewPage and handleNewCategory, the code is very
+  // repetitive
+  const handleNewPage = (parent: ParentItem) => {
+    if (Array.isArray(parent)) {
+      const page = createItem("link", []);
+      insertItem(sidebarState, page);
+    } else {
+      const page = createItem("link", parent.crumbs);
+      insertItem(parent.items, page);
+    }
   };
 
-  const handleNewCategory = (parent: Item[]) => {
-    const category = createItem("category", sidebarState);
-    insertItem(parent, category);
+  const handleNewCategory = (parent: ParentItem) => {
+    if (Array.isArray(parent)) {
+      const category = createItem("category", []);
+      insertItem(sidebarState, category);
+    } else {
+      const category = createItem("category", parent.crumbs);
+      insertItem(parent.items, category);
+    }
   };
 
   return (

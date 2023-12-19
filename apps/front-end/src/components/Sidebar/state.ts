@@ -1,9 +1,8 @@
-import { CategoryItem, Item } from "./Item";
-import { bind } from "valtio-yjs";
-import { proxy } from "valtio";
-import { nanoid } from "nanoid";
 import { rootDocument } from "@/lib/collaboration";
-import { BreadcrumbItem } from "../Breadcrumbs";
+import { nanoid } from "nanoid";
+import { proxy } from "valtio";
+import { bind } from "valtio-yjs";
+import { Item } from "./Item";
 
 // Valtio proxy state for sidebar items, all state here will be immediately
 // available to all clients connected to the same Yjs document.

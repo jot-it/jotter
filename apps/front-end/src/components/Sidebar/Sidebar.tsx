@@ -2,10 +2,12 @@ import { PropsWithChildren, createContext, useContext, useMemo } from "react";
 import { CgFile as FileIcon } from "react-icons/cg";
 import { RiBook2Line as BookIcon } from "react-icons/ri";
 import ContextMenu from "../ContextMenu";
-import { Item } from "./Item";
+import { CategoryItem, Item } from "./Item";
 import SidebarItemList from "./ItemList";
 import { MenuAction } from "./MenuAction";
 import { sidebarState as initialItems } from "./state";
+
+export type ParentItem = Item[] | CategoryItem;
 
 //#region  Typings
 type EventHandlers = {
@@ -13,8 +15,8 @@ type EventHandlers = {
    * Callback when an item is selected (clicked)
    */
   onSelected?: (item: Item) => void;
-  onNewPage?: (parent: Item[]) => void;
-  onNewCategory?: (parent: Item[]) => void;
+  onNewPage?: (parent: ParentItem) => void;
+  onNewCategory?: (parent: ParentItem) => void;
   onRename?: (item: Item, newLabel: string) => void;
   onDelete?: (parent: Item[], item: Item) => void;
 };

@@ -25,11 +25,6 @@ export type ItemBase = {
   crumbs: BreadcrumbItem[];
 };
 
-export type SidebarItemBaseProps = {
-  onRename(item: Item, newLabel: string): void;
-  onDelete(parent: Item[], item: Item): void;
-};
-
 export type CategoryItem = ItemBase & {
   type: "category";
   items: Item[];

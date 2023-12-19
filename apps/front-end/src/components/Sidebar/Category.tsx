@@ -71,12 +71,12 @@ function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
         <MenuAction
           icon={<FileIcon />}
           label="new page"
-          onClick={withExpand(() => onNewPage?.(category.items))}
+          onClick={withExpand(() => onNewPage?.(category))}
         />
         <MenuAction
           icon={<BookIcon />}
           label="new category"
-          onClick={withExpand(() => onNewCategory?.(category.items))}
+          onClick={withExpand(() => onNewCategory?.(category))}
         />
         <ContextMenu.Divider />
         <MenuAction
