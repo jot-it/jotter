@@ -5,7 +5,7 @@ import ContextMenu from "../ContextMenu";
 import { Item } from "./Item";
 import SidebarItemList from "./ItemList";
 import { MenuAction } from "./MenuAction";
-import { newCategory, newPage, sidebarState } from "./state";
+import { sidebarState as initialItems } from "./state";
 
 //#region  Typings
 type EventHandlers = {
@@ -13,10 +13,10 @@ type EventHandlers = {
    * Callback when an item is selected (clicked)
    */
   onSelected?: (item: Item) => void;
-  onNewPage?: (item: Item) => void;
-  onNewCategory?: (item: Item) => void;
-  onRename?: (item: Item) => void;
-  onDelete?: (item: Item) => void;
+  onNewPage?: (parent: Item[]) => void;
+  onNewCategory?: (parent: Item[]) => void;
+  onRename?: (item: Item, newLabel: string) => void;
+  onDelete?: (parent: Item[], item: Item) => void;
 };
 
 export const EventHandlersContext = createContext<EventHandlers>({});
@@ -38,34 +38,23 @@ function Sidebar({ children, ...eventHandlers }: SidebarProps) {
 }
 
 export function SidebarRoot() {
-  const eventHandlers = useContext(EventHandlersContext);
-
-  const handleNewPage = () => {
-    const page = newPage(sidebarState);
-    eventHandlers.onNewPage?.(page);
-  };
-
-  const handleNewCategory = () => {
-    const category = newCategory(sidebarState);
-    eventHandlers.onNewCategory?.(category);
-  };
-
+  const { onNewPage, onNewCategory } = useContext(EventHandlersContext);
   return (
     <ContextMenu>
       <ContextMenu.Trigger>
-        <SidebarItemList items={sidebarState} />
+        <SidebarItemList items={initialItems} />
       </ContextMenu.Trigger>
 
       <ContextMenu.Content>
         <MenuAction
           icon={<FileIcon />}
           label="new page"
-          onClick={handleNewPage}
+          onClick={() => onNewPage?.(initialItems)}
         />
         <MenuAction
           icon={<BookIcon />}
           label="new category"
-          onClick={handleNewCategory}
+          onClick={() => onNewCategory?.(initialItems)}
         />
       </ContextMenu.Content>
     </ContextMenu>

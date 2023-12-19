@@ -1,8 +1,9 @@
-import { Item } from "./Item";
+import { CategoryItem, Item } from "./Item";
 import { bind } from "valtio-yjs";
 import { proxy } from "valtio";
 import { nanoid } from "nanoid";
 import { rootDocument } from "@/lib/collaboration";
+import { BreadcrumbItem } from "../Breadcrumbs";
 
 // Valtio proxy state for sidebar items, all state here will be immediately
 // available to all clients connected to the same Yjs document.
@@ -16,7 +17,10 @@ bind(sidebarState, rootDocument.getArray("sidebar"));
  * @param type Type of item to create
  * @param fromCrumbs breadcrumbs path to this item
  */
-function createItem(type: Item["type"], fromCrumbs: Item["crumbs"]): Item {
+export function createItem(
+  type: Item["type"],
+  fromCrumbs: Item["crumbs"],
+): Item {
   const id = nanoid();
   const href = `/note/${id}`;
   const label = "";
@@ -34,6 +38,10 @@ function createItem(type: Item["type"], fromCrumbs: Item["crumbs"]): Item {
   }
 
   return { type: "link", id, label, href, crumbs, isNew: true };
+}
+
+export function insertItem(itemList: Item[], item: Item) {
+  itemList.push(item);
 }
 
 export function newPage(items: Item[], crumbs: Item["crumbs"] = []) {

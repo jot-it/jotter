@@ -8,12 +8,7 @@ import ContextMenu from "../ContextMenu";
 import { DeleteIcon, RenameIcon } from "../Icons";
 import Typography from "../Typography";
 import EditableLabel, { EditableLabelProps } from "./EditableLabel";
-import {
-  ItemWithParent,
-  LinkItem,
-  SidebarItemBaseProps,
-  itemVariant,
-} from "./Item";
+import { ItemWithParent, LinkItem, itemVariant } from "./Item";
 import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
 import { removeItem } from "./state";
@@ -22,14 +17,16 @@ export type LinkProps = {
   link: LinkItem;
 } & Pick<EditableLabelProps, "editable" | "onRename" | "onReset">;
 
-export type LinkMenuProps = ItemWithParent<Pick<LinkProps, "link">> &
-  SidebarItemBaseProps;
+export type LinkMenuProps = ItemWithParent<Pick<LinkProps, "link">>;
 
-function LinkWithMenu({ link, parent, onRename, onDelete }: LinkMenuProps) {
+function LinkWithMenu({ link, parent }: LinkMenuProps) {
   const snap = useSnapshot(link);
   const [editable, toggleEditable] = useToggle(snap.isNew);
+
+  const { onDelete, onRename } = useContext(EventHandlersContext);
+
   const handleRename = (newLabel: string) => {
-    onRename(link, newLabel);
+    onRename?.(link, newLabel);
     toggleEditable();
   };
 
@@ -61,7 +58,7 @@ function LinkWithMenu({ link, parent, onRename, onDelete }: LinkMenuProps) {
         <MenuAction
           icon={<DeleteIcon />}
           label="delete"
-          onClick={() => onDelete(parent, link)}
+          onClick={() => onDelete?.(parent, link)}
         />
       </ContextMenu.Content>
     </ContextMenu>
