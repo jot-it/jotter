@@ -1,17 +1,9 @@
 import { usePathname } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useSnapshot } from "valtio";
 import { BreadcrumbItem } from "../Breadcrumbs";
-import CategoryWithMenu, { CategoryMenuProps } from "./Category";
+import CategoryWithMenu from "./Category";
 import LinkWithMenu from "./Link";
-import { EventHandlersContext } from "./Sidebar";
-import {
-  newCategory,
-  newPage,
-  removeItem,
-  setIsNewItem,
-  setLabel,
-} from "./state";
 
 export type ItemBase = {
   href: string;
@@ -31,11 +23,6 @@ export type ItemBase = {
    * Path to this item relative to the root of the sidebar
    */
   crumbs: BreadcrumbItem[];
-};
-
-export type SidebarItemBaseProps = {
-  onRename(item: Item, newLabel: string): void;
-  onDelete(parent: Item[], item: Item): void;
 };
 
 export type CategoryItem = ItemBase & {
@@ -76,30 +63,6 @@ export const itemVariant = {
 function SidebarItem({ item, parent, setOpen }: SidebarItemProps) {
   const snap = useSnapshot(item);
   const isActive = usePathname() === snap.href;
-  const handlers = useContext(EventHandlersContext);
-
-  const handleDelete: SidebarItemBaseProps["onDelete"] = (parent, item) => {
-    removeItem(parent, item);
-    handlers.onDelete?.(item);
-  };
-
-  const handleNewPage: CategoryMenuProps["onNewPage"] = (category) => {
-    const item = newPage(category.items, category.crumbs);
-    handlers.onNewPage?.(item);
-  };
-
-  const handleNewCategory: CategoryMenuProps["onNewCategory"] = (category) => {
-    const item = newCategory(category.items, category.crumbs);
-    handlers.onNewCategory?.(item);
-  };
-
-  const handleRename: SidebarItemBaseProps["onRename"] = (item, newLabel) => {
-    setLabel(item, newLabel);
-    if (item.isNew) {
-      setIsNewItem(item, false);
-    }
-    handlers.onRename?.(item);
-  };
 
   // Update the document title to the name of this note
   useEffect(() => {
@@ -111,26 +74,10 @@ function SidebarItem({ item, parent, setOpen }: SidebarItemProps) {
   switch (item.type) {
     case "category":
       return (
-        <CategoryWithMenu
-          category={item}
-          parent={parent}
-          setOpen={setOpen}
-          onNewPage={handleNewPage}
-          onNewCategory={handleNewCategory}
-          onDelete={handleDelete}
-          onRename={handleRename}
-        />
+        <CategoryWithMenu category={item} parent={parent} setOpen={setOpen} />
       );
     case "link":
-      return (
-        <LinkWithMenu
-          link={item}
-          parent={parent}
-          key={item.id}
-          onRename={handleRename}
-          onDelete={handleDelete}
-        />
-      );
+      return <LinkWithMenu link={item} parent={parent} key={item.id} />;
   }
 }
 

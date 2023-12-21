@@ -13,7 +13,7 @@ import {
   RenameIcon,
 } from "../Icons";
 import EditableLabel, { EditableLabelProps } from "./EditableLabel";
-import { CategoryItem, Item, ItemWithParent, itemVariant } from "./Item";
+import { CategoryItem, ItemWithParent, itemVariant } from "./Item";
 import SidebarItemList from "./ItemList";
 import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
@@ -24,29 +24,16 @@ export type CategoryProps = {
 } & Pick<EditableLabelProps, "editable" | "onRename" | "onReset">;
 
 export type CategoryMenuProps = ItemWithParent<
-  Pick<CategoryProps, "category"> & {
-    /**
-     * Open the accordion item with the given id
-     */
-    setOpen: (id: string) => void;
+  Pick<CategoryProps, "category">
+> & {
+  setOpen(id: string): void;
+};
 
-    onNewPage(category: CategoryItem): void;
-    onNewCategory(category: CategoryItem): void;
-    onRename(category: CategoryItem, newLabel: string): void;
-    onDelete(parent: Item[], category: CategoryItem): void;
-  }
->;
-
-function CategoryWithMenu({
-  setOpen,
-  category,
-  parent,
-  onNewPage,
-  onDelete,
-  onNewCategory,
-  onRename,
-}: CategoryMenuProps) {
+function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
   const snap = useSnapshot(category);
+  const { onNewPage, onDelete, onNewCategory, onRename } =
+    useContext(EventHandlersContext);
+
   const [editable, toggleEditable] = useToggle(snap.isNew);
 
   const withExpand = (fn: () => void) => {
@@ -57,7 +44,7 @@ function CategoryWithMenu({
   };
 
   const handleRename = (newLabel: string) => {
-    onRename(category, newLabel);
+    onRename?.(category, newLabel);
     toggleEditable();
   };
 
@@ -84,12 +71,12 @@ function CategoryWithMenu({
         <MenuAction
           icon={<FileIcon />}
           label="new page"
-          onClick={withExpand(() => onNewPage(category))}
+          onClick={withExpand(() => onNewPage?.(category))}
         />
         <MenuAction
           icon={<BookIcon />}
           label="new category"
-          onClick={withExpand(() => onNewCategory(category))}
+          onClick={withExpand(() => onNewCategory?.(category))}
         />
         <ContextMenu.Divider />
         <MenuAction
@@ -100,7 +87,7 @@ function CategoryWithMenu({
         <MenuAction
           icon={<DeleteIcon />}
           label="delete"
-          onClick={() => onDelete(parent, category)}
+          onClick={() => onDelete?.(parent, category)}
         />
       </ContextMenu.Content>
     </ContextMenu>
