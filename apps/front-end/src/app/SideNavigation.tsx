@@ -15,6 +15,7 @@ import {
   setLabel,
   sidebarState,
 } from "@/components/Sidebar/state";
+import useWorkspace from "@/hooks/useWorkspace";
 import { getRootDocument } from "@/lib/collaboration";
 import { atom, useAtom } from "jotai";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,8 @@ export const activeItemAtom = atom<Item | null>(null);
 function SideNavigation() {
   // Synchorize Yjs shared-types with valtio proxy state
   useYjs();
+
+  const workspace = useWorkspace();
 
   const router = useRouter();
   const [activeItem, setActiveItem] = useAtom(activeItemAtom);
@@ -65,20 +68,20 @@ function SideNavigation() {
   // repetitive
   const handleNewPage = (parent: ParentItem) => {
     if (Array.isArray(parent)) {
-      const page = createItem("link", []);
+      const page = createItem("link", workspace, []);
       insertItem(sidebarState, page);
     } else {
-      const page = createItem("link", parent.crumbs);
+      const page = createItem("link", workspace, parent.crumbs);
       insertItem(parent.items, page);
     }
   };
 
   const handleNewCategory = (parent: ParentItem) => {
     if (Array.isArray(parent)) {
-      const category = createItem("category", []);
+      const category = createItem("category", workspace, []);
       insertItem(sidebarState, category);
     } else {
-      const category = createItem("category", parent.crumbs);
+      const category = createItem("category", workspace, parent.crumbs);
       insertItem(parent.items, category);
     }
   };
