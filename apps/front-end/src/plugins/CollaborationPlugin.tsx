@@ -1,3 +1,4 @@
+import NoSSR from "@/components/NoSSR";
 import { createProvider } from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { Provider } from "@lexical/yjs";
@@ -20,15 +21,17 @@ function CollaborationPlugin({
   cursorColor,
 }: CollaborationPluginProps) {
   return (
-    <LexicalCollaborationPlugin
-      id={id}
-      key={id}
-      username={username}
-      cursorColor={cursorColor}
-      initialEditorState={initialEditorState}
-      providerFactory={providerFactory}
-      shouldBootstrap={true}
-    />
+    <NoSSR>
+      <LexicalCollaborationPlugin
+        id={id}
+        key={id}
+        username={username}
+        cursorColor={cursorColor}
+        initialEditorState={initialEditorState}
+        providerFactory={providerFactory}
+        shouldBootstrap={true}
+      />
+    </NoSSR>
   );
 }
 
