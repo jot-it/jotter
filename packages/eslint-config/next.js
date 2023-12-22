@@ -14,12 +14,6 @@ module.exports = {
     React: true,
     JSX: true,
   },
-  env: {
-    // We can set this to `node`, but it is not smart enough to detect blocks of code
-    // where it is safe to access browser globals. This results on lots of false-positive warnings.
-    browser: true,
-    node: true,
-  },
   plugins: ["only-warn"],
   settings: {
     "import/resolver": {
