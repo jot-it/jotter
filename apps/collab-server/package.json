@@ -16,7 +16,8 @@
     "@hocuspocus/extension-logger": "^2.8.1",
     "@hocuspocus/extension-sqlite": "^2.8.1",
     "@hocuspocus/server": "^2.8.1",
-    "mysql2": "^3.6.5"
+    "mysql2": "^3.6.5",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@jotter/typescript-config": "*",

@@ -6,3 +6,9 @@
 .env.production.local
 
 **/node_modules
+
+# Required by fly
+fly.toml
+Dockerfile
+.dockerignore
+.git

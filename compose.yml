@@ -22,11 +22,14 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=1234
-      - DATABASE_URL=mysql://root:${DATABASE_PASS}@database/${DATABASE_NAME}
+      - DATABASE_USER=root
+      - DATABASE_HOST=database
+    env_file:
+      - .env
     ports:
       - "1234:1234"
     depends_on:
       database:
         condition: service_healthy
     volumes:
-      - "./apps/collab-server/src:/app/apps/collab-server/src"
+      - ".:/app/"

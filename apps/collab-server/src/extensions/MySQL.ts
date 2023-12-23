@@ -1,6 +1,6 @@
 import { Database } from "@hocuspocus/extension-database";
 import { Extension, fetchPayload, storePayload } from "@hocuspocus/server";
-import * as mysql from "mysql2/promise";
+import mysql, { ConnectionOptions } from "mysql2/promise";
 
 const CREATE_TABLE_SCHEMA = `CREATE TABLE IF NOT EXISTS documents (
     name varchar(255) NOT NULL,
@@ -23,18 +23,18 @@ const SELECT_DOCUMENT_BY_NAME_QUERY = `SELECT name, data
 `;
 
 class MySQL extends Database implements Extension {
-  connectionUri: string;
+  connectionConfig: ConnectionOptions;
 
-  constructor(connectionUri: string) {
+  constructor(config: ConnectionOptions) {
     super({});
-    this.connectionUri = connectionUri;
+    this.connectionConfig = config;
 
     this.configuration.fetch = this.fetch.bind(this);
     this.configuration.store = this.store.bind(this);
   }
 
   async connect(): Promise<mysql.Connection> {
-    return mysql.createConnection(this.connectionUri);
+    return mysql.createConnection(this.connectionConfig);
   }
 
   async onConfigure() {
