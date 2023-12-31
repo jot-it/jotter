@@ -4,19 +4,12 @@ const project = resolve(process.cwd(), "tsconfig.json");
 
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
-  extends: [
-    "eslint:recommended",
-    "prettier",
-    require.resolve("@vercel/style-guide/eslint/next"),
-    "eslint-config-turbo",
-  ],
+  extends: ["next", "eslint:recommended", "prettier", "eslint-config-turbo"],
   globals: {
     React: true,
     JSX: true,
   },
   env: {
-    // We can set this to `node`, but it is not smart enough to detect blocks of code
-    // where it is safe to access browser globals. This results on lots of false-positive warnings.
     browser: true,
     node: true,
   },
@@ -31,6 +24,8 @@ module.exports = {
   ignorePatterns: [
     // Ignore dotfiles
     ".*.js",
+    // Ignore config files
+    "*.config.js",
     "node_modules/",
   ],
   overrides: [{ files: ["*.js?(x)", "*.ts?(x)"] }],
