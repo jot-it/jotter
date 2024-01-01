@@ -9,5 +9,5 @@ export default function page() {
 
   useEffect(() => {
     router.push(`/${workspace}`);
-  }, []);
+  }, [workspace, router]);
 }
