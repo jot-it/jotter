@@ -1,3 +1,4 @@
+"use client";
 import { PropsWithChildren, useEffect, useState } from "react";
 
 function NoSSR({ children }: PropsWithChildren) {
