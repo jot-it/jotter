@@ -5,6 +5,7 @@ import {
   HocuspocusProvider,
   HocuspocusProviderConfiguration,
 } from "@hocuspocus/provider";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { Doc } from "yjs";
@@ -24,38 +25,32 @@ type SharedState = {
 type Awareness = Map<number, SharedState>;
 
 /**
- *  Root connection provider for all collaborative state
+ * The root connection represents the actual websocket connection to the collaborative servers.
  */
-let rootConnectionProvider: HocuspocusProvider | null = null;
+const rootConnectionAtom = atom(
+  createConnection({ name: "default", connect: false }),
+);
 
-export function getRootConnectionProvider() {
-  // if (!rootConnectionProvider) {
-  //   throw new Error("rootConnectionProvider is undefined");
-  // }
+/**
+ * The main Yjs document for the entire application. Shared state should be part of this
+ * document whenever possible.
+ */
+const rootDocumentAtom = atom((get) => {
+  return get(rootConnectionAtom).document;
+});
 
-  if (rootConnectionProvider) {
-    return rootConnectionProvider;
-  }
+export function useConnection() {
+  return useAtomValue(rootConnectionAtom);
 }
 
-function setRootConnectionProvider(p: HocuspocusProvider) {
-  rootConnectionProvider = p;
-}
-
-/** Yjs root document, all collaborative components should use this as root
- *
- * @see https://docs.yjs.dev/api/subdocuments
- */
-export const rootDocument: Doc | null = null;
-
-export function getRootDocument() {
-  return getRootConnectionProvider()?.document;
+export function useRootDocument() {
+  return useAtomValue(rootDocumentAtom);
 }
 
 /**
  * Create a connection provider that connects to the collaboration server.
  */
-export function createProvider(
+export function createConnection(
   config: Omit<HocuspocusProviderConfiguration, "url">,
 ) {
   const url = getCollabServerURL();
@@ -75,36 +70,36 @@ function createIDBPersistence(documentName: string, doc: Doc) {
 }
 
 /**
- * Connects root document to the collaboration server
+ * Connects root document to the collaboration server using the current
+ * workspace as the name of the document.
  */
 export function StartCollaboration() {
   const workspace = useWorkspace();
+  const setConnection = useSetAtom(rootConnectionAtom);
   useEffect(() => {
-    const provider = createProvider({ name: workspace });
-    setRootConnectionProvider(provider);
-    return () => provider.disconnect();
-  }, [workspace]);
+    const connectionProvider = createConnection({ name: workspace });
+    setConnection(connectionProvider);
+    return () => {
+      connectionProvider.disconnect();
+    };
+  }, [workspace, setConnection]);
 
   return null;
 }
 
-function getAwarenessSnapshot() {
-  return getRootConnectionProvider()?.awareness?.getStates() as
-    | Awareness
-    | undefined;
-}
-
-function subscribeToAwareness(callback: () => void) {
-  getRootConnectionProvider()?.awareness?.on("change", callback);
-  return () => getRootConnectionProvider()?.awareness?.off("change", callback);
-}
-
 export function useAwareness() {
-  const [awareness, setAwareness] = useState(getAwarenessSnapshot);
+  const provider = useAtomValue(rootConnectionAtom);
+  //TODO this can be optimized so that there is only 1 global awareness state
+  const [awareness, setAwareness] = useState<Awareness>();
   useEffect(() => {
-    return subscribeToAwareness(() => {
-      setAwareness(new Map(getAwarenessSnapshot()));
-    });
-  }, []);
+    const onAwarenessChange = () => {
+      const newValue = new Map(provider.awareness?.getStates());
+      setAwareness(newValue as Awareness);
+    };
+    provider.awareness?.on("change", onAwarenessChange);
+    return () => {
+      provider.awareness?.off("change", onAwarenessChange);
+    };
+  }, [provider]);
   return awareness;
 }

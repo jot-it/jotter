@@ -1,5 +1,5 @@
 import NoSSR from "@/components/NoSSR";
-import { createProvider } from "@/lib/collaboration";
+import { createConnection } from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { Provider } from "@lexical/yjs";
 import { $createParagraphNode, $getRoot } from "lexical";
@@ -47,7 +47,7 @@ function providerFactory(id: string, yjsDocMap: Map<string, Doc>): Provider {
   yjsDocMap.set(id, doc);
 
   //@ts-ignore Awareness type mismatch, we can ignore this
-  return createProvider({
+  return createConnection({
     document: doc,
     name: id,
   });

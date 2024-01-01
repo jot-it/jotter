@@ -16,7 +16,7 @@ import {
   sidebarState,
 } from "@/components/Sidebar/state";
 import useWorkspace from "@/hooks/useWorkspace";
-import { getRootDocument } from "@/lib/collaboration";
+import { useRootDocument } from "@/lib/collaboration";
 import { atom, useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -109,13 +109,10 @@ function SideNavigation() {
 }
 
 function useYjs() {
+  const rootDocument = useRootDocument();
   useEffect(() => {
-    const yDocument = getRootDocument();
-    if (!yDocument) {
-      return;
-    }
-    return bind(sidebarState, yDocument.getArray("sidebar"));
-  }, []);
+    return bind(sidebarState, rootDocument.getArray("sidebar"));
+  }, [rootDocument]);
 }
 
 export default SideNavigation;
