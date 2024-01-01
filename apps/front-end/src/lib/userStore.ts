@@ -1,5 +1,7 @@
-import { atom, useAtomValue } from "jotai";
-import { getRootConnectionProvider, useAwareness } from "./collaboration";
+import { useAtom } from "jotai";
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import { useEffect } from "react";
+import { useAwareness, useConnection } from "./collaboration";
 
 export type User = {
   name: string;
@@ -9,60 +11,55 @@ export type User = {
 
 const USER_STORAGE_KEY = "user";
 
-export const userAtom = atom<User | null>(null);
+const FAILED_FETCH_ERROR_MSG = "Failed to fetch user information";
 
-userAtom.onMount = (setUserAtom) => {
-  const setUser = (user: User) => {
-    setStoredUser(user);
-    setAwarenessUser(user);
-    setUserAtom(user);
-  };
-
-  const user = getStoredUser();
-  if (user) {
-    setUser(user);
-    return;
-  }
-  // Randomly generate a new user
-  fetch("/api/user")
-    .then((r) => r.json())
-    .then((user) => {
-      setUser(user);
-    });
-};
+// Store on session storage so that users get a new username when they re-open their browser
+const userStorage = createJSONStorage<User | null>(() => window.sessionStorage);
+export const userAtom = atomWithStorage<User | null>(
+  USER_STORAGE_KEY,
+  null,
+  userStorage,
+  {
+    getOnInit: true,
+  },
+);
 
 /**
  * Get the current user
  */
 export function useSelf() {
-  return useAtomValue(userAtom);
+  const [user, setUser] = useAtom(userAtom);
+  const connection = useConnection();
+  useEffect(() => {
+    if (user) {
+      // Let everyone know who you are
+      connection.awareness?.setLocalStateField("user", user);
+      return;
+    }
+    fetchRandomUser().then((user) => setUser(user));
+  }, [user, setUser]);
+  return user;
+}
+
+async function fetchRandomUser() {
+  const response = await fetch("/api/user");
+  if (!response.ok) {
+    throw new Error(FAILED_FETCH_ERROR_MSG);
+  }
+  return await response.json();
 }
 
 export function useOthers() {
   const awareness = useAwareness();
+  const connection = useConnection();
   const others: User[] = [];
 
   awareness?.forEach((state, clientId) => {
-    const isMyself =
-      clientId === getRootConnectionProvider()?.awareness?.clientID;
+    const isMyself = clientId === connection.awareness?.clientID;
     if (!isMyself && state.user) {
       others.push(state.user);
     }
   });
 
   return others;
-}
-
-function setStoredUser(user: User) {
-  sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-}
-
-function setAwarenessUser(user: User) {
-  getRootConnectionProvider()?.awareness?.setLocalStateField("user", user);
-}
-
-function getStoredUser(): User | null {
-  const user = sessionStorage.getItem(USER_STORAGE_KEY);
-  if (!user) return null;
-  return JSON.parse(user);
 }
