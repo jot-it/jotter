@@ -15,7 +15,7 @@ const FAILED_FETCH_ERROR_MSG = "Failed to fetch user information";
 
 // Store on session storage so that users get a new username when they re-open their browser
 const userStorage = createJSONStorage<User | null>(() => window.sessionStorage);
-export const userAtom = atomWithStorage<User | null>(
+const userAtom = atomWithStorage<User | null>(
   USER_STORAGE_KEY,
   null,
   userStorage,
