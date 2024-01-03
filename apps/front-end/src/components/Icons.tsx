@@ -20,7 +20,10 @@ import {
   RiUnderline as UnderlineIcon,
   RiUserAddLine as UserAddIcon,
 } from "react-icons/ri";
-import { IoImageOutline as ImageOutlineIcon } from "react-icons/io5";
+import {
+  IoImageOutline as ImageOutlineIcon,
+  IoCheckmark as CheckIcon,
+} from "react-icons/io5";
 import { BsTextParagraph as ParagraphIcon } from "react-icons/bs";
 import { MdOutlineClose as CloseIcon } from "react-icons/md";
 
@@ -44,4 +47,5 @@ export {
   UnderlineIcon,
   UserAddIcon,
   ImageOutlineIcon,
+  CheckIcon,
 };

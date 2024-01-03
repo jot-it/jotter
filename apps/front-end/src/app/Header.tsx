@@ -2,7 +2,7 @@ import { lazy } from "react";
 import ActiveUsers from "./ActiveUsers";
 import BreadcrumbsShell from "./BreadcrumbsShell";
 import MobileNavigation from "./MobileNavigation";
-const DialogCollab = lazy(() => import("@/components/DialogCollab"));
+const DialogCollab = lazy(() => import("@/app/DialogCollab"));
 
 function Header() {
   return (
