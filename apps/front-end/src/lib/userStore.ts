@@ -1,5 +1,4 @@
-import { useAtom } from "jotai";
-import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
 import { useAwareness, useConnection } from "./collaboration";
 
@@ -9,52 +8,44 @@ export type User = {
   image?: string;
 };
 
-const USER_STORAGE_KEY = "user";
-
+const RANDOM_USER_ENDPOINT = "/api/user";
 const FAILED_FETCH_ERROR_MSG = "Failed to fetch user information";
 
-// Store on session storage so that users get a new username when they re-open their browser
-const userStorage = createJSONStorage<User | null>(() => sessionStorage);
-const userAtom = atomWithStorage<User | null>(
-  USER_STORAGE_KEY,
-  null,
-  userStorage,
-  {
-    getOnInit: true,
-  },
-);
+const userAtom = atom<User | null>(null);
+userAtom.onMount = (set) => {
+  fetchRandomUser().then((user) => set(user));
+};
+
+async function fetchRandomUser() {
+  const response = await fetch(RANDOM_USER_ENDPOINT);
+  if (!response.ok) {
+    throw new Error(FAILED_FETCH_ERROR_MSG);
+  }
+  return response.json();
+}
 
 /**
  * Get the current user
  */
 export function useSelf() {
   const [user, setUser] = useAtom(userAtom);
-  const connection = useConnection();
+  const { awareness } = useConnection();
   useEffect(() => {
     if (user) {
       // Let everyone know who you are
-      connection.awareness?.setLocalStateField("user", user);
+      awareness?.setLocalStateField("user", user);
       return;
     }
-    fetchRandomUser().then((user) => setUser(user));
-  }, [user, setUser]);
+  }, [user, setUser, awareness]);
   return user;
 }
 
-async function fetchRandomUser() {
-  const response = await fetch("/api/user");
-  if (!response.ok) {
-    throw new Error(FAILED_FETCH_ERROR_MSG);
-  }
-  return await response.json();
-}
-
 export function useOthers() {
-  const awareness = useAwareness();
+  const sharedState = useAwareness();
   const connection = useConnection();
   const others: User[] = [];
 
-  awareness?.forEach((state, clientId) => {
+  sharedState?.forEach((state, clientId) => {
     const isMyself = clientId === connection.awareness?.clientID;
     if (!isMyself && state.user) {
       others.push(state.user);
