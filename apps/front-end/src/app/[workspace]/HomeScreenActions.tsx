@@ -1,30 +1,27 @@
 "use client";
+import Button from "@/components/Button";
+import { BookIcon, FileIcon } from "@/components/Icons";
 import { newCategory, newPage, sidebarState } from "@/components/Sidebar/state";
-import Typography from "@/components/Typography";
 import useWorkspace from "@/hooks/useWorkspace";
-import { CgFile as FileIcon } from "react-icons/cg";
 
 function HomeScreenActions() {
   const workspace = useWorkspace();
   return (
     <ul className="space-y-1">
       <li>
-        <button
-          className="inline-flex items-center"
-          onClick={() => newPage(sidebarState, workspace)}
-        >
+        <Button variant="link" onClick={() => newPage(sidebarState, workspace)}>
           <FileIcon className="mr-2" />
-          <Typography variant="body1">New Note</Typography>
-        </button>
+          New Note
+        </Button>
       </li>
       <li>
-        <button
-          className="inline-flex items-center"
+        <Button
+          variant="link"
           onClick={() => newCategory(sidebarState, workspace)}
         >
-          <FileIcon className="mr-2" />
-          <Typography variant="body1">New Chapter</Typography>
-        </button>
+          <BookIcon className="mr-2" />
+          New Category
+        </Button>
       </li>
     </ul>
   );
