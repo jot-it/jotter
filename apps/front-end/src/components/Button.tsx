@@ -13,6 +13,7 @@ const buttonVariants = cva(
           " text-red-400 outline outline-1 -outline-offset-1  outline-red-200  hover:outline-red-300 dark:text-red-400 dark:outline-red-400  dark:hover:text-red-300 dark:hover:outline-red-300",
         secondary:
           "text-cyan-900 outline outline-1 -outline-offset-1 outline-cyan-200 hover:outline-cyan-200 dark:text-cyan-400 dark:outline-cyan-400 hover:dark:text-cyan-200 dark:hover:outline-cyan-200",
+        link: "text-slate-800 hover:text-cyan-800 dark:text-slate-200 hover:dark:text-cyan-400",
       },
       size: {
         medium: "p-3",
