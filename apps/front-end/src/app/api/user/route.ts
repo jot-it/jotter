@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import adjectives from "./adjectives.json";
 import animals from "./animals.json";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const adj = adjectives[randint(0, adjectives.length)];
   const animal = animals[randint(0, animals.length)];
