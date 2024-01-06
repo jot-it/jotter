@@ -4,6 +4,7 @@ import { PropsWithChildren } from "react";
 import Header from "./Header";
 import Provider from "./Provider";
 import SideNavigation from "./SideNavigation";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const barlow = Barlow({
@@ -29,6 +30,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
                 {children}
               </div>
             </div>
+            <Analytics />
           </body>
         </html>
       </Provider>
