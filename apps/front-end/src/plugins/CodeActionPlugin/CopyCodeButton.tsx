@@ -15,7 +15,12 @@ function CopyCodeButton(props: CopyCodeButtonProps) {
     });
   };
 
-  return <CopyButton onClick={handleClick} />;
+  return (
+    <CopyButton
+      className="!bg-transparent !p-2.5 !text-inherit shadow-sm hover:!bg-slate-700"
+      onClick={handleClick}
+    />
+  );
 }
 
 export default CopyCodeButton;
