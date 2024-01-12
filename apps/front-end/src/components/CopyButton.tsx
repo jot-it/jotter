@@ -17,7 +17,7 @@ export default function CopyButton(props: ButtonProps) {
   };
 
   return (
-    <Tooltip title={copied ? "Copied" : "Copy"} open={copied}>
+    <Tooltip title="Copied" open={copied}>
       <Button className="py-3" onClick={copyToClipBoard} {...rest}>
         {!copied ? (
           <CopyIcon className="duration-500 animate-in fade-in" aria-hidden />

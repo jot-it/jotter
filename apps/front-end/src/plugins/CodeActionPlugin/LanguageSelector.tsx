@@ -14,13 +14,11 @@ import {
 import { Command } from "cmdk";
 import { LexicalEditor, $getNodeByKey } from "lexical";
 import { useState } from "react";
+import { WithCodeNode } from "./ActionBar";
 
 const SUPPORTED_LANGUAGES = Object.keys(CODE_LANGUAGE_FRIENDLY_NAME_MAP);
 
-export type LanguageSelectorProps = {
-  editor: LexicalEditor;
-  codeNodeKey: string;
-};
+type LanguageSelectorProps = WithCodeNode;
 
 function LanguageSelector({ codeNodeKey, editor }: LanguageSelectorProps) {
   const [open, setOpen] = useState(false);

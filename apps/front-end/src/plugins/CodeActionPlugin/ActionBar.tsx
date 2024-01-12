@@ -1,19 +1,32 @@
+import { LexicalEditor } from "lexical";
 import { forwardRef } from "react";
-import LanguageSelector, { LanguageSelectorProps } from "./LanguageSelector";
+import CopyCodeButton from "./CopyCodeButton";
+import LanguageSelector from "./LanguageSelector";
 
-type ActionBarProps = LanguageSelectorProps & {
+type ActionBarProps = WithCodeNode<{
   codeDOMNode: HTMLElement;
+}>;
+
+export type WithCodeNode<T = unknown> = T & {
+  editor: LexicalEditor;
+  codeNodeKey: string;
 };
 
 const ActionBar = forwardRef<HTMLDivElement, ActionBarProps>(
   function ActionBar(props, ref) {
-    const { left, top, right } = props.codeDOMNode.getBoundingClientRect();
+    const { left, top, width } = props.codeDOMNode.getBoundingClientRect();
     return (
-      <div className="fixed px-4 py-2" style={{ left, top, right }} ref={ref}>
-        <LanguageSelector
-          editor={props.editor}
-          codeNodeKey={props.codeNodeKey}
-        />
+      <div className="fixed px-4 py-2" style={{ left, top, width }} ref={ref}>
+        <div className="flex w-full justify-between">
+          <LanguageSelector
+            editor={props.editor}
+            codeNodeKey={props.codeNodeKey}
+          />
+          <CopyCodeButton
+            editor={props.editor}
+            codeNodeKey={props.codeNodeKey}
+          />
+        </div>
       </div>
     );
   },
