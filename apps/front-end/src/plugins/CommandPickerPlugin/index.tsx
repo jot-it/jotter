@@ -8,6 +8,7 @@ import {
   StrikethroughIcon,
   UnderlineIcon,
   TextIcon,
+  InlineCodeIcon,
 } from "@/components/Icons";
 import {
   INSERT_ORDERED_LIST_COMMAND,
@@ -36,6 +37,7 @@ import {
   CLEAR_FORMAT_TEXT_COMMAND,
   FORMAT_PARAGRAPH_COMMAND,
   INSERT_BLOCKQUOTE_COMMAND,
+  INSERT_CODE_NODE_COMMAND,
   INSERT_HEADING_COMMAND,
   REMOVE_CARET_COMMAND,
   useBlockQuoteCommand,
@@ -197,10 +199,18 @@ export default function ComponentPickerMenuPlugin({
 
       <CommandPickerItem
         onSelect={() => dispatch(FORMAT_TEXT_COMMAND, "code")}
-        keywords="code codeblock javascript python js"
-        icon={<CodeIcon />}
-        label="Code"
+        keywords="code inline inlinecode "
+        icon={<InlineCodeIcon />}
+        label="Inline Code"
       />
+
+      <CommandPickerItem
+        onSelect={() => dispatch(INSERT_CODE_NODE_COMMAND, undefined)}
+        keywords="code block codeblock javascript python js"
+        icon={<CodeIcon />}
+        label="Code Block"
+      />
+
       <CommandPickerItem
         onSelect={() => dispatch(INSERT_BLOCKQUOTE_COMMAND, undefined)}
         keywords="quote block blockquote"

@@ -27,6 +27,8 @@ import {
 } from "react-icons/io5";
 import { BsTextParagraph as ParagraphIcon } from "react-icons/bs";
 import { MdOutlineClose as CloseIcon } from "react-icons/md";
+import { TbCodeDots as InlineCodeIcon } from "react-icons/tb";
+import { PiCodeBlock as CodeBlockIcon } from "react-icons/pi";
 
 export {
   BoldIcon,
@@ -50,4 +52,6 @@ export {
   ImageOutlineIcon,
   CheckIcon,
   TextIcon,
+  InlineCodeIcon,
+  CodeBlockIcon,
 };
