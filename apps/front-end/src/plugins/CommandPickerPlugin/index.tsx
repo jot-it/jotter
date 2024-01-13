@@ -7,6 +7,7 @@ import {
   QuoteIcon,
   StrikethroughIcon,
   UnderlineIcon,
+  TextIcon,
 } from "@/components/Icons";
 import {
   INSERT_ORDERED_LIST_COMMAND,
@@ -32,11 +33,13 @@ import { INSERT_IMAGE_COMMAND } from "../ImagePlugin";
 import useLexicalCommand from "../useLexicalCommand";
 import CommandPicker, { CommandPickerItem } from "./CommandPicker";
 import {
+  CLEAR_FORMAT_TEXT_COMMAND,
   FORMAT_PARAGRAPH_COMMAND,
   INSERT_BLOCKQUOTE_COMMAND,
   INSERT_HEADING_COMMAND,
   REMOVE_CARET_COMMAND,
   useBlockQuoteCommand,
+  useClearformatText,
   useCodeNode,
   useHeadingCommand,
   useListCommand,
@@ -71,6 +74,7 @@ export default function ComponentPickerMenuPlugin({
   useBlockQuoteCommand(editor);
   useRemoveCaretCommand(editor);
   useCodeNode(editor);
+  useClearformatText(editor);
 
   function dispatch<T>(command: LexicalCommand<T>, payload: T) {
     // Remove the search query before dispatching the command
@@ -156,7 +160,7 @@ export default function ComponentPickerMenuPlugin({
         icon={<ParagraphIcon />}
         onSelect={() => dispatch(FORMAT_PARAGRAPH_COMMAND, undefined)}
         label="Paragraph"
-        keywords="normal text clear unformat paragraph"
+        keywords="normal text paragraph"
       />
       <CommandPickerItem
         onSelect={() => dispatch(INSERT_HEADING_COMMAND, "H1")}
@@ -202,6 +206,13 @@ export default function ComponentPickerMenuPlugin({
         keywords="quote block blockquote"
         icon={<QuoteIcon />}
         label="Quote"
+      />
+
+      <CommandPickerItem
+        icon={<TextIcon />}
+        onSelect={() => dispatch(CLEAR_FORMAT_TEXT_COMMAND, undefined)}
+        label="Normal"
+        keywords="normal text clear unformat"
       />
 
       <CommandPickerItem
