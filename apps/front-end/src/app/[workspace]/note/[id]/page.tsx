@@ -76,8 +76,7 @@ function Editor({ params }: { params: { id: string } }) {
   return (
     <div
       className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert 
-      prose-code:block prose-code:rounded-md prose-code:border prose-code:border-slate-700 prose-code:bg-neutral-900
-      prose-code:p-4 prose-code:pt-10 prose-code:before:content-none prose-code:after:content-none lg:pb-0"
+      prose-code:before:content-none prose-code:after:content-none lg:pb-0"
       ref={onRef}
     >
       <LexicalComposer initialConfig={editorConfig}>
