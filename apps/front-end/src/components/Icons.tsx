@@ -19,6 +19,7 @@ import {
   RiStrikethrough as StrikethroughIcon,
   RiUnderline as UnderlineIcon,
   RiUserAddLine as UserAddIcon,
+  RiText as TextIcon,
 } from "react-icons/ri";
 import {
   IoImageOutline as ImageOutlineIcon,
@@ -48,4 +49,5 @@ export {
   UserAddIcon,
   ImageOutlineIcon,
   CheckIcon,
+  TextIcon,
 };
