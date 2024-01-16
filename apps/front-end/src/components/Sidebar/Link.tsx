@@ -2,7 +2,7 @@ import useToggle from "@/hooks/useToggle";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useSnapshot } from "valtio";
 import ContextMenu from "../ContextMenu";
 import { DeleteIcon, RenameIcon } from "../Icons";
@@ -12,6 +12,7 @@ import { ItemWithParent, LinkItem, itemVariant } from "./Item";
 import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
 import { removeItem } from "./state";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 
 export type LinkProps = {
   link: LinkItem;
@@ -22,7 +23,7 @@ export type LinkMenuProps = ItemWithParent<Pick<LinkProps, "link">>;
 function LinkWithMenu({ link, parent }: LinkMenuProps) {
   const snap = useSnapshot(link);
   const [editable, toggleEditable] = useToggle(snap.isNew);
-
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const { onDelete, onRename } = useContext(EventHandlersContext);
 
   const handleRename = (newLabel: string) => {
@@ -49,6 +50,11 @@ function LinkWithMenu({ link, parent }: LinkMenuProps) {
           onReset={handleReset}
         />
       </ContextMenu.Trigger>
+      <DeleteConfirmationDialog
+        open={isDeleteAlertOpen}
+        onOpenChange={setIsDeleteAlertOpen}
+        onConfirm={() => onDelete?.(parent, link)}
+      />
       <ContextMenu.Content>
         <MenuAction
           icon={<RenameIcon />}
@@ -58,7 +64,7 @@ function LinkWithMenu({ link, parent }: LinkMenuProps) {
         <MenuAction
           icon={<DeleteIcon />}
           label="delete"
-          onClick={() => onDelete?.(parent, link)}
+          onClick={() => setIsDeleteAlertOpen(true)}
         />
       </ContextMenu.Content>
     </ContextMenu>

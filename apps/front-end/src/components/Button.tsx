@@ -2,20 +2,16 @@
 import { VariantProps, cva } from "class-variance-authority";
 import { ComponentPropsWithoutRef, forwardRef } from "react";
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-md  text-center shadow-sm ring-cyan-600 ring-offset-2 " +
-    "ring-offset-slate-900 focus-visible:outline-none focus-visible:ring-2 md:px-4 md:py-2",
+export const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-md text-center shadow-sm ring-cyan-600 ring-offset-2 transition-colors " +
+    "font-medium ring-offset-slate-900 focus-visible:outline-none focus-visible:ring-2 md:px-4 md:py-2",
   {
     variants: {
       variant: {
         primary:
           "bg-cyan-200 text-cyan-900 hover:bg-cyan-300 dark:bg-cyan-900 dark:text-cyan-200 dark:hover:bg-cyan-800",
-        danger:
-          " text-red-400 outline outline-1 -outline-offset-1  outline-red-200  hover:outline-red-300 dark:text-red-400" +
-          "dark:hover:outline-red-30 0 dark:outline-red-400 dark:hover:text-red-300",
-        secondary:
-          "text-cyan-900 outline outline-1 -outline-offset-1 outline-cyan-200 hover:outline-cyan-200 dark:text-cyan-400" +
-          "dark:outline-cyan-400 hover:dark:text-cyan-200 dark:hover:outline-cyan-200",
+        secondary: "border border-slate-700 bg-slate-900 hover:bg-slate-700",
+        destructive: "bg-rose-600 text-white ring-rose-600 hover:bg-rose-500",
         link: "text-slate-800 hover:text-cyan-800 dark:text-slate-200 hover:dark:text-cyan-400",
       },
       size: {
