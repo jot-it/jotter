@@ -11,7 +11,7 @@ export const buttonVariants = cva(
         primary:
           "bg-cyan-200 text-cyan-900 hover:bg-cyan-300 dark:bg-cyan-900 dark:text-cyan-200 dark:hover:bg-cyan-800",
         secondary: "border border-slate-700 bg-slate-900 hover:bg-slate-700",
-        destructive: "bg-rose-600 text-white ring-rose-600",
+        destructive: "bg-rose-600 text-white ring-rose-600 hover:bg-rose-500",
         link: "text-slate-800 hover:text-cyan-800 dark:text-slate-200 hover:dark:text-cyan-400",
       },
       size: {
