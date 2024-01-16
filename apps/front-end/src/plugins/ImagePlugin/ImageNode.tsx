@@ -54,7 +54,7 @@ class ImageNode extends DecoratorNode<ReactNode> {
   }
 
   decorate(): ReactNode {
-    return <Image src={this.src} alt={this.alt} />;
+    return <Image node={this} src={this.src} alt={this.alt} />;
   }
 }
 
