@@ -2,7 +2,7 @@ import useToggle from "@/hooks/useToggle";
 import * as Accordion from "@radix-ui/react-accordion";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useSnapshot } from "valtio";
 import ContextMenu from "../ContextMenu";
 import {
@@ -18,6 +18,7 @@ import SidebarItemList from "./ItemList";
 import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
 import { removeItem } from "./state";
+import DeleteNoteConfirmation from "./DeleteDialog";
 
 export type CategoryProps = {
   category: CategoryItem;
@@ -31,6 +32,7 @@ export type CategoryMenuProps = ItemWithParent<
 
 function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
   const snap = useSnapshot(category);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const { onNewPage, onDelete, onNewCategory, onRename } =
     useContext(EventHandlersContext);
 
@@ -67,6 +69,11 @@ function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
           onReset={handleReset}
         />
       </ContextMenu.Trigger>
+      <DeleteNoteConfirmation
+        open={isDeleteAlertOpen}
+        onOpenChange={setIsDeleteAlertOpen}
+        onConfirm={() => onDelete?.(parent, category)}
+      />
       <ContextMenu.Content>
         <MenuAction
           icon={<FileIcon />}
@@ -87,7 +94,7 @@ function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
         <MenuAction
           icon={<DeleteIcon />}
           label="delete"
-          onClick={() => onDelete?.(parent, category)}
+          onClick={() => setIsDeleteAlertOpen(true)}
         />
       </ContextMenu.Content>
     </ContextMenu>
