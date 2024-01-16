@@ -18,7 +18,7 @@ import SidebarItemList from "./ItemList";
 import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
 import { removeItem } from "./state";
-import DeleteNoteConfirmation from "./DeleteDialog";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 
 export type CategoryProps = {
   category: CategoryItem;
@@ -69,7 +69,7 @@ function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
           onReset={handleReset}
         />
       </ContextMenu.Trigger>
-      <DeleteNoteConfirmation
+      <DeleteConfirmationDialog
         open={isDeleteAlertOpen}
         onOpenChange={setIsDeleteAlertOpen}
         onConfirm={() => onDelete?.(parent, category)}

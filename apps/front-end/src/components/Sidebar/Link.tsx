@@ -12,7 +12,7 @@ import { ItemWithParent, LinkItem, itemVariant } from "./Item";
 import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
 import { removeItem } from "./state";
-import DeleteNoteConfirmation from "./DeleteDialog";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 
 export type LinkProps = {
   link: LinkItem;
@@ -50,7 +50,7 @@ function LinkWithMenu({ link, parent }: LinkMenuProps) {
           onReset={handleReset}
         />
       </ContextMenu.Trigger>
-      <DeleteNoteConfirmation
+      <DeleteConfirmationDialog
         open={isDeleteAlertOpen}
         onOpenChange={setIsDeleteAlertOpen}
         onConfirm={() => onDelete?.(parent, link)}

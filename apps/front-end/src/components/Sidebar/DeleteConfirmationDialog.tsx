@@ -15,7 +15,7 @@ type DeleteConfimationProps = ComponentPropsWithoutRef<typeof AlertDialog> & {
   onConfirm: () => void;
 };
 
-function DeleteNoteConfirmation({
+function DeleteConfirmationDialog({
   children,
   onConfirm,
   ...rest
@@ -44,4 +44,4 @@ function DeleteNoteConfirmation({
   );
 }
 
-export default DeleteNoteConfirmation;
+export default DeleteConfirmationDialog;
