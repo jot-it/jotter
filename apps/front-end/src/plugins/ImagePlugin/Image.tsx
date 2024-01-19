@@ -12,7 +12,7 @@ type ImageProps = ComponentPropsWithoutRef<"img"> & {
 };
 
 function Image(props: ImageProps) {
-  const { node, alt, ...rest } = props;
+  const { node, alt = "", ...rest } = props;
   const [hasFocus, setFocus] = useState(false);
   const [editor] = useLexicalComposerContext();
   const [isSelected, _setSelected, _celearSelection] = useLexicalNodeSelection(
@@ -41,10 +41,11 @@ function Image(props: ImageProps) {
   };
 
   return (
-    <Tooltip title={alt ?? ""}>
+    <Tooltip title={alt}>
       <img
         tabIndex={-1}
         loading="lazy"
+        alt={props.alt}
         onClick={handleClick}
         onKeyUp={handleDelete}
         className={clsx(
