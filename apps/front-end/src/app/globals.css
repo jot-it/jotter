@@ -6,14 +6,6 @@
   .underline-through {
     text-decoration: underline line-through;
   }
-
-  .prose ul ul {
-    list-style-type: circle;
-  }
-
-  .prose ul ul ul {
-    list-style-type: square;
-  }
 }
 
 @layer base {

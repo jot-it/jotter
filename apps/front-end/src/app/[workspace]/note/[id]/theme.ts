@@ -21,6 +21,7 @@ const theme: EditorThemeClasses = {
     nested: {
       listitem: "list-none",
     },
+    ulDepth: ["", "list-[circle]", "list-[square]"],
   },
   link: "dark:text-cyan-400 dark:visited:text-indigo-400 text-cyan-600 cursor-pointer",
   codeHighlight: codeHighlightTheme,
