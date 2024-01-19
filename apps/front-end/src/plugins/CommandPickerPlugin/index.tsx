@@ -11,6 +11,7 @@ import {
   InlineCodeIcon,
 } from "@/components/Icons";
 import {
+  INSERT_CHECK_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
@@ -195,6 +196,13 @@ export default function ComponentPickerMenuPlugin({
         keywords="list numbered ordered ol"
         icon={<OrderedListIcon />}
         label="Ordered List"
+      />
+
+      <CommandPickerItem
+        onSelect={() => dispatch(INSERT_CHECK_LIST_COMMAND, undefined)}
+        keywords="list checklist todo"
+        icon={<OrderedListIcon />}
+        label="Checklist"
       />
 
       <CommandPickerItem

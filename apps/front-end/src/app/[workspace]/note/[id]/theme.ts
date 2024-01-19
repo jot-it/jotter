@@ -11,6 +11,13 @@ const theme: EditorThemeClasses = {
   },
   code: "block rounded-md border border-slate-700 p-4 pt-10 bg-neutral-900",
   list: {
+    listitemChecked:
+      "list-none line-through relative mx-2 px-6 outline-none before:absolute before:top-1.5 before:left-0 before:border " +
+      "before:border-transparent before:rounded before:w-4 before:h-4 before:cursor-pointer before:bg-cyan-600 " +
+      "before:bg-[url('/assets/check.svg')]",
+    listitemUnchecked:
+      "list-none relative mx-2 px-6 outline-none before:absolute before:top-1.5 before:left-0 before:border " +
+      "before:border-slate-600 before:rounded before:w-4 before:h-4 before:cursor-pointer",
     nested: {
       listitem: "list-none",
     },
