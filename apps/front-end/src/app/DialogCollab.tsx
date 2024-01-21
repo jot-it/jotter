@@ -31,9 +31,9 @@ export default function DialogCollab() {
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Share Collaboration</DialogTitle>
+          <DialogTitle>Share your notebook</DialogTitle>
           <DialogDescription>
-            Share this link and anyone who have it can calaborate with you.
+            Anyone with this link will have access to your notes.
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center justify-between gap-4 pt-4">
