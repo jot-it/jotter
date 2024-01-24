@@ -13,9 +13,11 @@ import {
 } from "../components/Dialog";
 import { UserAddIcon } from "../components/Icons";
 import { IS_BROWSER } from "@/utils";
+import { usePathname } from "next/navigation";
 
 export default function DialogCollab() {
-  const fullUrl = getLocation();
+  const pathname = usePathname();
+  const fullUrl = `${getOrigin()}${pathname}`;
 
   const copyToClipBoard = () => {
     navigator.clipboard.writeText(fullUrl);
@@ -45,6 +47,6 @@ export default function DialogCollab() {
   );
 }
 
-function getLocation() {
-  return IS_BROWSER ? window.location.href : "";
+function getOrigin() {
+  return IS_BROWSER ? window.location.origin : "";
 }
