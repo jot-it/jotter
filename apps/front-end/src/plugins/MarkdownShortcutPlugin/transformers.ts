@@ -29,7 +29,7 @@ const IMAGE_TRANFORMER: TextMatchTransformer = {
       return null;
     }
 
-    return `![${node.getAltText()}](${node.getSrc()})`;
+    return `![${node.alt}](${node.src})`;
   },
 };
 
