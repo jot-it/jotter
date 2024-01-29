@@ -1,6 +1,7 @@
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
-import clsx from "clsx";
 import React, { PropsWithChildren, forwardRef } from "react";
+import { contentStyles, itemStyles, menuSeparatorStyles } from "./DropdownMenu";
+import clsx from "clsx";
 
 export type ContextMenuProps = PropsWithChildren;
 export type IconProps = PropsWithChildren<{ label?: string }>;
@@ -18,11 +19,7 @@ const Option = forwardRef<HTMLDivElement, OptionProps>(function Option(
     <ContextMenuPrimitive.Item
       ref={ref}
       {...props}
-      className={clsx(
-        className,
-        "flex select-none items-center rounded-md px-2 py-1 data-[highlighted]:bg-gray-200/75",
-        "dark:data-[highlighted]:bg-slate-800 dark:data-[highlighted]:text-cyan-300",
-      )}
+      className={itemStyles({ className })}
     >
       {children}
     </ContextMenuPrimitive.Item>
@@ -34,7 +31,7 @@ function Icon({ children, label }: IconProps) {
   return (
     <>
       {React.cloneElement(Child as React.ReactElement, {
-        className: "mr-3 text-lg",
+        className: "mr-2 h-4 w-4",
         "aria-hidden": true,
         focusable: false,
       })}
@@ -44,18 +41,16 @@ function Icon({ children, label }: IconProps) {
 }
 
 function Divider() {
-  return (
-    <ContextMenuPrimitive.Separator className="m-1 h-0.5 bg-gray-200 dark:bg-slate-600" />
-  );
+  return <ContextMenuPrimitive.Separator className={menuSeparatorStyles()} />;
 }
 
 const Content = forwardRef<
   HTMLDivElement,
   ContextMenuPrimitive.MenuContentProps
->(function Body({ children, ...props }, ref) {
+>(function Body({ children, className, ...props }, ref) {
   return (
     <ContextMenuPrimitive.Content
-      className="min-w-[220px] overflow-hidden rounded-lg bg-gray-50  p-2 drop-shadow-md data-[disabled]:text-gray-500 dark:bg-slate-700 z-50"
+      className={clsx(contentStyles({ className }), "w-56")}
       ref={ref}
       {...props}
     >
