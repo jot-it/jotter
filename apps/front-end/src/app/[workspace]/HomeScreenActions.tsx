@@ -1,6 +1,5 @@
 "use client";
 import Button from "@/components/Button";
-import { DropdownMenuDemo } from "./TestDropdown";
 import { BookIcon, FileIcon } from "@/components/Icons";
 import { newCategory, newPage, sidebarState } from "@/components/Sidebar/state";
 import useWorkspace from "@/hooks/useWorkspace";
@@ -23,10 +22,6 @@ function HomeScreenActions() {
           <BookIcon className="mr-2" />
           New Category
         </Button>
-      </li>
-
-      <li>
-        <DropdownMenuDemo />
       </li>
     </ul>
   );
