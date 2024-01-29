@@ -1,6 +1,11 @@
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
 import React, { PropsWithChildren, forwardRef } from "react";
-import { contentStyles, itemStyles, menuSeparatorStyles } from "./DropdownMenu";
+import {
+  DropdownMenuShortcut,
+  contentStyles,
+  itemStyles,
+  menuSeparatorStyles,
+} from "./DropdownMenu";
 import clsx from "clsx";
 
 export type ContextMenuProps = PropsWithChildren;
@@ -65,4 +70,5 @@ export default Object.assign(ContextMenu, {
   Divider,
   Icon,
   Trigger: ContextMenuPrimitive.Trigger,
+  Shortcut: DropdownMenuShortcut,
 });
