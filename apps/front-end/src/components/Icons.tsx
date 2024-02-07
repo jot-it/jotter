@@ -24,6 +24,7 @@ import {
 import {
   IoImageOutline as ImageOutlineIcon,
   IoCheckmark as CheckIcon,
+  IoCheckboxOutline as CheckListIcon,
 } from "react-icons/io5";
 import { BsTextParagraph as ParagraphIcon } from "react-icons/bs";
 import { MdOutlineClose as CloseIcon } from "react-icons/md";
@@ -54,4 +55,5 @@ export {
   TextIcon,
   InlineCodeIcon,
   CodeBlockIcon,
+  CheckListIcon,
 };

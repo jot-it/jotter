@@ -1,16 +1,18 @@
 import {
   BoldIcon,
+  CheckListIcon,
   CodeIcon,
   HeadingIcon,
+  InlineCodeIcon,
   ItalicIcon,
   ParagraphIcon,
   QuoteIcon,
   StrikethroughIcon,
-  UnderlineIcon,
   TextIcon,
-  InlineCodeIcon,
+  UnderlineIcon,
 } from "@/components/Icons";
 import {
+  INSERT_CHECK_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
@@ -33,6 +35,7 @@ import {
 import { INSERT_IMAGE_COMMAND } from "../ImagePlugin";
 import useLexicalCommand from "../useLexicalCommand";
 import CommandPicker, { CommandPickerItem } from "./CommandPicker";
+import { InsertImageCommand } from "./InsertImageDialog";
 import {
   CLEAR_FORMAT_TEXT_COMMAND,
   FORMAT_PARAGRAPH_COMMAND,
@@ -49,7 +52,6 @@ import {
   useRemoveCaretCommand,
 } from "./commads";
 import { $getQueryTextForSearch } from "./utils";
-import { InsertImageCommand } from "./InsertImageDialog";
 
 export type ComponentPickerMenuPluginProps = {
   /**
@@ -195,6 +197,13 @@ export default function ComponentPickerMenuPlugin({
         keywords="list numbered ordered ol"
         icon={<OrderedListIcon />}
         label="Ordered List"
+      />
+
+      <CommandPickerItem
+        onSelect={() => dispatch(INSERT_CHECK_LIST_COMMAND, undefined)}
+        keywords="list checklist todo"
+        icon={<CheckListIcon />}
+        label="Check List"
       />
 
       <CommandPickerItem

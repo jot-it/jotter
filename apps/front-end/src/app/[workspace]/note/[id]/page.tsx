@@ -22,6 +22,7 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import dynamic from "next/dynamic";
 import { lazy, useCallback, useState } from "react";
@@ -119,6 +120,7 @@ function Editor({ params }: { params: { id: string } }) {
           username={user?.name}
           cursorColor={user?.color}
         />
+        <CheckListPlugin />
       </LexicalComposer>
     </div>
   );

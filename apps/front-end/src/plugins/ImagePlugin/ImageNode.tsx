@@ -16,8 +16,8 @@ const NODE_VERSION = 1;
 
 class ImageNode extends DecoratorNode<ReactNode> {
   constructor(
-    private src: string,
-    private alt: string = "",
+    public src: string,
+    public alt: string = "",
     key?: NodeKey,
   ) {
     super(key);
@@ -62,7 +62,7 @@ function $createImageNode(src: string, alt?: string) {
   return new ImageNode(src, alt);
 }
 
-function $isImageNode(node: unknown) {
+function $isImageNode(node: unknown): node is ImageNode {
   return node instanceof ImageNode;
 }
 
