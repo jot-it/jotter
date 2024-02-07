@@ -20,7 +20,7 @@ import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
 import { removeItem } from "./state";
 import { withDeleteItemShortcut, withRenameItemShortcut } from "./shorcuts";
-import { registerShortcuts as registerShortcuts } from "@/utils";
+import { registerShortcuts } from "@/lib/hotkeys";
 
 export type CategoryProps = {
   category: CategoryItem;

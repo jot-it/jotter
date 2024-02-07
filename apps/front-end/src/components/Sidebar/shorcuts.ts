@@ -1,4 +1,4 @@
-import { createShortcutHandler } from "@/utils";
+import { createShortcutHandler } from "@/lib/hotkeys";
 
 export const withDeleteItemShortcut = createShortcutHandler({
   key: "Delete",

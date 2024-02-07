@@ -13,7 +13,7 @@ import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
 import { removeItem } from "./state";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
-import { registerShortcuts } from "@/utils";
+import { registerShortcuts } from "@/lib/hotkeys";
 import { withDeleteItemShortcut, withRenameItemShortcut } from "./shorcuts";
 
 export type LinkProps = {
