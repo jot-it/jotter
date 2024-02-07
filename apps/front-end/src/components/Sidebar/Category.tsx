@@ -2,7 +2,7 @@ import useToggle from "@/hooks/useToggle";
 import * as Accordion from "@radix-ui/react-accordion";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { KeyboardEventHandler, useContext, useState } from "react";
 import { useSnapshot } from "valtio";
 import ContextMenu from "../ContextMenu";
 import {
@@ -12,17 +12,21 @@ import {
   FileIcon,
   RenameIcon,
 } from "../Icons";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import EditableLabel, { EditableLabelProps } from "./EditableLabel";
 import { CategoryItem, ItemWithParent, itemVariant } from "./Item";
 import SidebarItemList from "./ItemList";
 import { MenuAction } from "./MenuAction";
 import { EventHandlersContext } from "./Sidebar";
 import { removeItem } from "./state";
-import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
+import { withDeleteItemShortcut, withRenameItemShortcut } from "./shorcuts";
+import { registerShortcuts } from "@/lib/hotkeys";
 
 export type CategoryProps = {
   category: CategoryItem;
-} & Pick<EditableLabelProps, "editable" | "onRename" | "onReset">;
+} & Pick<EditableLabelProps, "editable" | "onRename" | "onReset"> & {
+    onKeyDown?: KeyboardEventHandler;
+  };
 
 export type CategoryMenuProps = ItemWithParent<
   Pick<CategoryProps, "category">
@@ -59,6 +63,10 @@ function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
     }
   };
 
+  const handleDeleteClick = () => {
+    setIsDeleteAlertOpen(true);
+  };
+
   return (
     <ContextMenu>
       <ContextMenu.Trigger>
@@ -67,6 +75,10 @@ function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
           editable={editable}
           onRename={handleRename}
           onReset={handleReset}
+          onKeyDown={registerShortcuts(
+            withDeleteItemShortcut(handleDeleteClick),
+            withRenameItemShortcut(toggleEditable),
+          )}
         />
       </ContextMenu.Trigger>
       <DeleteConfirmationDialog
@@ -88,20 +100,28 @@ function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
         <ContextMenu.Divider />
         <MenuAction
           icon={<RenameIcon />}
-          label="rename"
+          label="rename..."
           onClick={toggleEditable}
+          shortcut="F2"
         />
         <MenuAction
           icon={<DeleteIcon />}
           label="delete"
-          onClick={() => setIsDeleteAlertOpen(true)}
+          onClick={handleDeleteClick}
+          shortcut="Del"
         />
       </ContextMenu.Content>
     </ContextMenu>
   );
 }
 
-function Category({ category, editable, onRename, onReset }: CategoryProps) {
+function Category({
+  category,
+  editable,
+  onRename,
+  onReset,
+  onKeyDown,
+}: CategoryProps) {
   const snap = useSnapshot(category);
   const router = useRouter();
   const eventHandlers = useContext(EventHandlersContext);
@@ -113,7 +133,7 @@ function Category({ category, editable, onRename, onReset }: CategoryProps) {
   };
 
   return (
-    <Accordion.Item value={snap.id}>
+    <Accordion.Item value={snap.id} onKeyDown={onKeyDown}>
       <Accordion.Header className="p-0.5">
         <Accordion.Trigger
           data-testid="sidebar-item"
