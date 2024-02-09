@@ -1,4 +1,5 @@
 "use client";
+import env from "@/config/env-client";
 import useWorkspace from "@/hooks/useWorkspace";
 import { IS_BROWSER } from "@/utils";
 import {
@@ -9,7 +10,6 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { Doc } from "yjs";
-import { getCollabServerURL } from "./env";
 import { User } from "./userStore";
 
 /**
@@ -53,7 +53,7 @@ export function useRootDocument() {
 export function createConnection(
   config: Omit<HocuspocusProviderConfiguration, "url">,
 ) {
-  const url = getCollabServerURL();
+  const url = env.NEXT_PUBLIC_COLLAB_SERVER_URL;
   const provider = new HocuspocusProvider({
     ...config,
     url,
