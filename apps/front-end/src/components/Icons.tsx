@@ -20,6 +20,7 @@ import {
   RiUnderline as UnderlineIcon,
   RiUserAddLine as UserAddIcon,
   RiText as TextIcon,
+  RiLogoutBoxRLine as LogoutIcon,
 } from "react-icons/ri";
 import {
   IoImageOutline as ImageOutlineIcon,
@@ -58,4 +59,5 @@ export {
   CodeBlockIcon,
   CheckListIcon,
   GithubIcon,
+  LogoutIcon,
 };
