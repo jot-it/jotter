@@ -2,23 +2,23 @@ import { Database } from "@hocuspocus/extension-database";
 import { Extension, fetchPayload, storePayload } from "@hocuspocus/server";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 
-const CREATE_TABLE_SCHEMA = `CREATE TABLE IF NOT EXISTS documents (
-    name varchar(255) NOT NULL,
+const CREATE_TABLE_SCHEMA = `CREATE TABLE IF NOT EXISTS Documents (
+    name varchar(21) NOT NULL,
     data blob NOT NULL,
-    created_on timestamp DEFAULT CURRENT_TIMESTAMP(),
-    modified_on timestamp,
+    createdOn DATETIME DEFAULT CURRENT_TIMESTAMP,
+    modifiedOn DATETIME,
     PRIMARY KEY (name)
   )`;
 
-const UPSERT_DOCUMENT_QUERY = `INSERT INTO documents (name, data, modified_on)
-    VALUES (?, ?, ?)
+const UPSERT_DOCUMENT_QUERY = `INSERT INTO Documents (name, data, modifiedOn)
+    VALUES (?, ?, CURRENT_TIMESTAMP())
     ON DUPLICATE KEY UPDATE 
     data = ?,
-    modified_on = ?
+    modifiedOn = CURRENT_TIMESTAMP()
 `;
 
 const SELECT_DOCUMENT_BY_NAME_QUERY = `SELECT name, data 
-    FROM documents
+    FROM Documents
     WHERE name = ?
 `;
 
@@ -62,14 +62,11 @@ class MySQL extends Database implements Extension {
 
   async store({ documentName, state: documentData }: storePayload) {
     const conn = await this.connect();
-    const now = new Date();
     try {
       await conn.execute(UPSERT_DOCUMENT_QUERY, [
         documentName,
         documentData,
-        now,
         documentData,
-        now,
       ]);
     } finally {
       conn.end();
