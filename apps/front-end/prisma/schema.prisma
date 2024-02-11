@@ -37,13 +37,14 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String      @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?     @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    notebooks     Notebooks[]
 }
 
 model VerificationToken {
@@ -55,8 +56,14 @@ model VerificationToken {
 }
 
 model Documents {
-    name       String   @id @db.VarChar(21) // NanoId size
+    name       String   @id @db.Char(21) // NanoId size
     data       Bytes    @db.Blob
     createdOn  DateTime @default(now())
     modifiedOn DateTime
+}
+
+model Notebooks {
+    id       String @id
+    author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    authorId String
 }
