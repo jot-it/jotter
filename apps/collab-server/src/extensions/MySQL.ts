@@ -2,14 +2,6 @@ import { Database } from "@hocuspocus/extension-database";
 import { Extension, fetchPayload, storePayload } from "@hocuspocus/server";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 
-const CREATE_TABLE_SCHEMA = `CREATE TABLE IF NOT EXISTS Documents (
-    name varchar(21) NOT NULL,
-    data blob NOT NULL,
-    createdOn DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modifiedOn DATETIME,
-    PRIMARY KEY (name)
-  )`;
-
 const UPSERT_DOCUMENT_QUERY = `INSERT INTO Documents (name, data, modifiedOn)
     VALUES (?, ?, CURRENT_TIMESTAMP())
     ON DUPLICATE KEY UPDATE 
@@ -35,15 +27,6 @@ class MySQL extends Database implements Extension {
 
   async connect(): Promise<mysql.Connection> {
     return mysql.createConnection(this.connectionConfig);
-  }
-
-  async onConfigure() {
-    const conn = await this.connect();
-    try {
-      await conn.execute(CREATE_TABLE_SCHEMA);
-    } finally {
-      conn.end();
-    }
   }
 
   async fetch({ documentName }: fetchPayload): Promise<Uint8Array | null> {
