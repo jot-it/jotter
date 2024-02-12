@@ -5,8 +5,7 @@ datasource db {
 }
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["referentialActions"] // You won't need this in Prisma 3.X or higher.
+    provider = "prisma-client-js"
 }
 
 model Account {
@@ -45,6 +44,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     notebooks     Notebooks[]
+    Documents     Documents[]
 }
 
 model VerificationToken {
@@ -56,14 +56,16 @@ model VerificationToken {
 }
 
 model Documents {
-    name       String   @id @db.Char(21) // NanoId size
+    name       String   @id @default(cuid())
     data       Bytes    @db.Blob
     createdOn  DateTime @default(now())
     modifiedOn DateTime
+    author     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId     String
 }
 
 model Notebooks {
-    id       String @id
+    id       String @id @default(cuid())
     author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId String
 }
