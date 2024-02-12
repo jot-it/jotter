@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import { proxy } from "valtio";
 import { Item } from "./Item";
 
@@ -13,11 +12,10 @@ export const sidebarState = proxy<Item[]>([]);
  */
 export function createItem(
   type: Item["type"],
-  workspace: string,
   fromCrumbs: Item["crumbs"],
 ): Item {
-  const id = nanoid();
-  const href = `/${workspace}/note/${id}`;
+  const id = "(new-item)";
+  const href = `/notes/${id}`;
   const label = "";
   const crumbs = fromCrumbs.concat([{ label, href }]);
   if (type === "category") {
@@ -39,22 +37,14 @@ export function insertItem(itemList: Item[], item: Item) {
   itemList.push(item);
 }
 
-export function newPage(
-  items: Item[],
-  workspace: string,
-  crumbs: Item["crumbs"] = [],
-) {
-  const item = createItem("link", workspace, crumbs);
+export function newPage(items: Item[], crumbs: Item["crumbs"] = []) {
+  const item = createItem("link", crumbs);
   items.push(item);
   return item;
 }
 
-export function newCategory(
-  items: Item[],
-  workspace: string,
-  crumbs: Item["crumbs"] = [],
-) {
-  const item = createItem("category", workspace, crumbs);
+export function newCategory(items: Item[], crumbs: Item["crumbs"] = []) {
+  const item = createItem("category", crumbs);
   items.push(item);
   return item;
 }
@@ -70,9 +60,13 @@ export function removeItem(items: Item[], i: Item) {
 
 export function setLabel(item: Item, label: string) {
   item.label = label;
-  item.isNew = false;
 
   // Last crumb is the item itself
   const crumb = item.crumbs[item.crumbs.length - 1];
   crumb.label = label;
+}
+
+export function setId(item: Item, newId: string) {
+  item.id = newId;
+  item.href = `/notes/${item.id}`;
 }

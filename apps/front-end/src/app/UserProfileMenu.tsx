@@ -22,7 +22,7 @@ function UserProfileMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger aria-label="My Profile">
         <Avatar
           className="cursor-pointer"
           src={self.image ?? undefined}

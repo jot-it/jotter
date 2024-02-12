@@ -2,8 +2,8 @@ import { Database } from "@hocuspocus/extension-database";
 import { Extension, fetchPayload, storePayload } from "@hocuspocus/server";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 
-const UPSERT_DOCUMENT_QUERY = `INSERT INTO Documents (name, data, modifiedOn)
-    VALUES (?, ?, CURRENT_TIMESTAMP())
+const UPSERT_DOCUMENT_QUERY = `INSERT INTO Documents (name, data, userId, modifiedOn)
+    VALUES (?, ?, ?, CURRENT_TIMESTAMP())
     ON DUPLICATE KEY UPDATE 
     data = ?,
     modifiedOn = CURRENT_TIMESTAMP()
@@ -45,10 +45,15 @@ class MySQL extends Database implements Extension {
 
   async store({ documentName, state: documentData }: storePayload) {
     const conn = await this.connect();
+    const [userId, name] = documentName.split(".");
+
+    console.log({ userId, name });
+
     try {
       await conn.execute(UPSERT_DOCUMENT_QUERY, [
-        documentName,
+        name,
         documentData,
+        userId,
         documentData,
       ]);
     } finally {

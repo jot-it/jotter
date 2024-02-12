@@ -1,38 +1,22 @@
+import { User } from "next-auth";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
-import { useAwareness, useConnection } from "./collaboration";
-
-export type User = {
-  name: string;
-  color: string;
-  image?: string;
-};
+import { useAwareness } from "./collaboration";
 
 /**
  * Get the current user
  */
 export function useSelf() {
   const { data } = useSession();
-  const user = data?.user;
-  const { awareness } = useConnection();
-  useEffect(() => {
-    if (user) {
-      // Let everyone know who you are
-      awareness?.setLocalStateField("user", user);
-      return;
-    }
-  }, [user, awareness]);
-
-  return data?.user ?? null;
+  return data?.user;
 }
 
 export function useOthers() {
+  const me = useSelf();
   const sharedState = useAwareness();
-  const connection = useConnection();
   const others: User[] = [];
 
-  sharedState?.forEach((state, clientId) => {
-    const isMyself = clientId === connection.awareness?.clientID;
+  sharedState?.forEach((state) => {
+    const isMyself = state.user.id === me?.id;
     if (!isMyself && state.user) {
       others.push(state.user);
     }

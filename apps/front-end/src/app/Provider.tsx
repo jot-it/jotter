@@ -17,7 +17,7 @@ export default function Providers({ session, children }: ProvidersProps) {
       <SessionProvider session={session}>
         <TooltipProvider>
           <NoSSR>
-            <StartCollaboration />
+            {session?.user && <StartCollaboration user={session?.user} />}
           </NoSSR>
           {children}
         </TooltipProvider>

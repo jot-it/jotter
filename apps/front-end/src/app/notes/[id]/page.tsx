@@ -65,7 +65,6 @@ const editorConfig: InitialConfigType = {
 
 function Editor({ params }: { params: { id: string } }) {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
-  const documentId = params.id;
   const user = useSelf();
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
@@ -74,13 +73,15 @@ function Editor({ params }: { params: { id: string } }) {
     }
   }, []);
 
+  const documentId = `${user?.id ?? "undefined"}.${params.id}`;
+  console.log(documentId);
   return (
-    <div
-      className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert 
+    <LexicalComposer initialConfig={editorConfig}>
+      <div
+        className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert 
       prose-code:before:content-none prose-code:after:content-none lg:pb-0"
-      ref={onRef}
-    >
-      <LexicalComposer initialConfig={editorConfig}>
+        ref={onRef}
+      >
         <RichTextPlugin
           contentEditable={<ContentEditable className="focus:outline-none" />}
           placeholder={
@@ -115,14 +116,12 @@ function Editor({ params }: { params: { id: string } }) {
         <ListMaxIndentLevelPlugin />
         <TabIndentationPlugin />
         <ImagePlugin />
-        <CollaborationPlugin
-          id={documentId}
-          username={user?.name}
-          cursorColor={user?.color}
-        />
+        {user?.name && user?.id && (
+          <CollaborationPlugin id={documentId} username={user.name} />
+        )}
         <CheckListPlugin />
-      </LexicalComposer>
-    </div>
+      </div>
+    </LexicalComposer>
   );
 }
 

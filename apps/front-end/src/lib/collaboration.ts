@@ -10,12 +10,12 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { Doc } from "yjs";
-import { User } from "./userStore";
+import { User } from "next-auth";
 
 /**
  * Collaborative state that is synced between all clients
  */
-type SharedState = {
+export type SharedState = {
   user: User;
 };
 
@@ -69,13 +69,19 @@ function createIDBPersistence(documentName: string, doc: Doc) {
   }
 }
 
+type StartCollaborationProps = {
+  user: User;
+};
+
 /**
  * Connects root document to the collaboration server using the current
  * workspace as the name of the document.
  */
-export function StartCollaboration() {
+export function StartCollaboration(props: StartCollaborationProps) {
   const workspace = useWorkspace();
   const setConnection = useSetAtom(rootConnectionAtom);
+  const { awareness } = useConnection();
+
   useEffect(() => {
     const connectionProvider = createConnection({ name: workspace });
     setConnection(connectionProvider);
@@ -83,6 +89,11 @@ export function StartCollaboration() {
       connectionProvider.disconnect();
     };
   }, [workspace, setConnection]);
+
+  // Inform all users in this notebook about your presence
+  useEffect(() => {
+    awareness?.setLocalStateField("user", props.user);
+  }, [props.user, awareness]);
 
   return null;
 }

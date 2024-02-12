@@ -1,4 +1,5 @@
 "use client";
+import { createDocument, deleteDocument } from "@/actions/document";
 import {
   ParentItem,
   Sidebar,
@@ -11,11 +12,11 @@ import {
   createItem,
   insertItem,
   removeItem,
+  setId,
   setIsNewItem,
   setLabel,
   sidebarState,
 } from "@/components/Sidebar/state";
-import useWorkspace from "@/hooks/useWorkspace";
 import { useRootDocument } from "@/lib/collaboration";
 import { atom, useAtom } from "jotai";
 import { useRouter } from "next/navigation";
@@ -29,9 +30,6 @@ export const activeItemAtom = atom<Item | null>(null);
 function SideNavigation() {
   // Synchorize Yjs shared-types with valtio proxy state
   useYjs();
-
-  const workspace = useWorkspace();
-
   const router = useRouter();
   const [activeItem, setActiveItem] = useAtom(activeItemAtom);
   const updateActiveItem = (item: Item) => {
@@ -39,10 +37,16 @@ function SideNavigation() {
   };
 
   const handleDelete = async (parent: Item[], item: Item) => {
-    // Remove document from cache (IndexDB)
-    await clearDocument(item.id);
+    try {
+      // Remove document from cache (IndexDB)
+      await clearDocument(item.id);
 
-    // TODO: Remove document from backend database, using a REST endpoint or Next's server actions
+      // Remove document from database
+      await deleteDocument(item.id);
+    } catch (error) {
+      // TODO Show a toast with an error message
+      console.log(error);
+    }
 
     if (item.id === activeItem?.id) {
       // Redirect users to home page to avoid editing a document that no longer exists
@@ -53,35 +57,39 @@ function SideNavigation() {
     removeItem(parent, item);
   };
 
-  const handleRename = (item: Item, newLabel: string) => {
+  const handleRename = async (item: Item, newLabel: string) => {
     if (item.id === activeItem?.id) {
       setActiveItem({ ...item });
     }
 
     setLabel(item, newLabel);
     if (item.isNew) {
+      // The user finished editing, so we create the respective document
+      // on the database to associate it with this user
+      const doc = await createDocument();
+      setId(item, doc.name);
       setIsNewItem(item, false);
     }
   };
 
   // TODO refactor handleNewPage and handleNewCategory, the code is very
   // repetitive
-  const handleNewPage = (parent: ParentItem) => {
+  const handleNewPage = async (parent: ParentItem) => {
     if (Array.isArray(parent)) {
-      const page = createItem("link", workspace, []);
+      const page = createItem("link", []);
       insertItem(sidebarState, page);
     } else {
-      const page = createItem("link", workspace, parent.crumbs);
+      const page = createItem("link", parent.crumbs);
       insertItem(parent.items, page);
     }
   };
 
-  const handleNewCategory = (parent: ParentItem) => {
+  const handleNewCategory = async (parent: ParentItem) => {
     if (Array.isArray(parent)) {
-      const category = createItem("category", workspace, []);
+      const category = createItem("category", []);
       insertItem(sidebarState, category);
     } else {
-      const category = createItem("category", workspace, parent.crumbs);
+      const category = createItem("category", parent.crumbs);
       insertItem(parent.items, category);
     }
   };
