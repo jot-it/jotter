@@ -40,4 +40,17 @@ async function deleteDocument(docName: string) {
   });
 }
 
-export { createDocument, deleteDocument };
+async function getDocumentByName(docName: string) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  return prisma.documents.findUnique({
+    where: {
+      name: docName,
+    },
+  });
+}
+
+export { createDocument, deleteDocument, getDocumentByName };
