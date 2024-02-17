@@ -1,16 +1,15 @@
 "use client";
 import env from "@/config/env-client";
-import useWorkspace from "@/hooks/useWorkspace";
 import { IS_BROWSER } from "@/utils";
 import {
   HocuspocusProvider,
   HocuspocusProviderConfiguration,
 } from "@hocuspocus/provider";
 import { atom, useAtomValue, useSetAtom } from "jotai";
+import { User } from "next-auth";
 import { useEffect, useState } from "react";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { Doc } from "yjs";
-import { User } from "next-auth";
 
 /**
  * Collaborative state that is synced between all clients
@@ -71,6 +70,7 @@ function createIDBPersistence(documentName: string, doc: Doc) {
 
 type StartCollaborationProps = {
   user: User;
+  notebookName: string;
 };
 
 /**
@@ -78,17 +78,16 @@ type StartCollaborationProps = {
  * workspace as the name of the document.
  */
 export function StartCollaboration(props: StartCollaborationProps) {
-  const workspace = useWorkspace();
   const setConnection = useSetAtom(rootConnectionAtom);
   const { awareness } = useConnection();
 
   useEffect(() => {
-    const connectionProvider = createConnection({ name: workspace });
+    const connectionProvider = createConnection({ name: props.notebookName });
     setConnection(connectionProvider);
     return () => {
       connectionProvider.disconnect();
     };
-  }, [workspace, setConnection]);
+  }, [props.notebookName, setConnection]);
 
   // Inform all users in this notebook about your presence
   useEffect(() => {

@@ -9,15 +9,25 @@ import { PropsWithChildren } from "react";
 
 type ProvidersProps = PropsWithChildren<{
   session: Session | null;
+  notebookName?: string;
 }>;
 
-export default function Providers({ session, children }: ProvidersProps) {
+export default function Providers({
+  children,
+  session,
+  notebookName,
+}: ProvidersProps) {
   return (
     <AtomProvider>
       <SessionProvider session={session}>
         <TooltipProvider>
           <NoSSR>
-            {session?.user && <StartCollaboration user={session?.user} />}
+            {session?.user && notebookName && (
+              <StartCollaboration
+                user={session?.user}
+                notebookName={notebookName}
+              />
+            )}
           </NoSSR>
           {children}
         </TooltipProvider>

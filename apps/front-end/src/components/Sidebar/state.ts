@@ -14,7 +14,7 @@ export function createItem(
   type: Item["type"],
   fromCrumbs: Item["crumbs"],
 ): Item {
-  const id = "(new-item)";
+  const id = "";
   const href = `/notes/${id}`;
   const label = "";
   const crumbs = fromCrumbs.concat([{ label, href }]);

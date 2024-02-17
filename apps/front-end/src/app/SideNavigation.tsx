@@ -37,16 +37,7 @@ function SideNavigation() {
   };
 
   const handleDelete = async (parent: Item[], item: Item) => {
-    try {
-      // Remove document from cache (IndexDB)
-      await clearDocument(item.id);
-
-      // Remove document from database
-      await deleteDocument(item.id);
-    } catch (error) {
-      // TODO Show a toast with an error message
-      console.log(error);
-    }
+    removeItem(parent, item);
 
     if (item.id === activeItem?.id) {
       // Redirect users to home page to avoid editing a document that no longer exists
@@ -54,7 +45,14 @@ function SideNavigation() {
       setActiveItem(null);
     }
 
-    removeItem(parent, item);
+    // Remove documents from cache (IndexDB) and the main database
+    try {
+      await Promise.all([clearDocument(item.id), deleteDocument(item.id)]);
+    } catch (error) {
+      // TODO Show a toast with an error message
+      // TODO Re-insert the document to allow the user to retry
+      console.log(error);
+    }
   };
 
   const handleRename = async (item: Item, newLabel: string) => {
@@ -66,7 +64,7 @@ function SideNavigation() {
     if (item.isNew) {
       // The user finished editing, so we create the respective document
       // on the database to associate it with this user
-      const doc = await createDocument();
+      const doc = await createDocument("note");
       setId(item, doc.name);
       setIsNewItem(item, false);
     }

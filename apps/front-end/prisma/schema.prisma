@@ -36,15 +36,14 @@ model Session {
 }
 
 model User {
-    id            String      @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String?     @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    notebooks     Notebooks[]
-    Documents     Documents[]
+    documents     Document[]
 }
 
 model VerificationToken {
@@ -55,17 +54,12 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-model Documents {
+model Document {
     name       String   @id @default(cuid())
     data       Bytes    @db.Blob
     createdOn  DateTime @default(now())
-    modifiedOn DateTime
-    author     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    modifiedOn DateTime @default(now())
+    author     User     @relation(fields: [userId], references: [id])
     userId     String
-}
-
-model Notebooks {
-    id       String @id @default(cuid())
-    author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-    authorId String
+    type       String
 }

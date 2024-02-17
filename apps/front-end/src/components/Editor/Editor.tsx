@@ -73,15 +73,13 @@ function Editor(props: EditorProps) {
         <CodeHighlightPlugin />
         <HistoryPlugin />
 
-        {editorContainer ? (
+        {editorContainer && (
           <>
             <ToolbarPlugin container={editorContainer} />
             <ComponentPickerPlugin container={editorContainer} />
           </>
-        ) : (
-          <></>
         )}
-        {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
+        {process.env.NODE_ENV === "development" && <TreeViewPlugin />}
         <CodeActionsPlugin />
         <ListPlugin />
         <ListMaxIndentLevelPlugin />

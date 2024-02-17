@@ -1,7 +1,7 @@
+import { createNotebook } from "@/actions/document";
 import prisma from "@/lib/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { nanoid } from "nanoid";
-import { AuthOptions, DefaultUser } from "next-auth";
+import { AuthOptions, DefaultUser, getServerSession } from "next-auth";
 import { Adapter } from "next-auth/adapters";
 import GithubProvider from "next-auth/providers/github";
 import env from "./env-server";
@@ -51,22 +51,15 @@ const authOptions: AuthOptions = {
   },
   events: {
     async signIn(e) {
-      const userId = e.user.id;
-      const notebookId = nanoid();
       if (e.isNewUser) {
-        await prisma.notebooks.create({
-          data: {
-            id: notebookId,
-            author: {
-              connect: {
-                id: userId,
-              },
-            },
-          },
-        });
+        await createNotebook();
       }
     },
   },
 };
+
+export async function getSession() {
+  return getServerSession(authOptions);
+}
 
 export default authOptions;
