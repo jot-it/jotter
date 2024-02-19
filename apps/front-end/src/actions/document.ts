@@ -1,37 +1,32 @@
 "use server";
 import authOptions from "@/config/auth-options";
-import prisma from "@/lib/db";
+import db from "@/lib/db";
+import { documentNotebook, documents, notebooks } from "@/schema";
+import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import { getServerSession } from "next-auth";
-import { Doc, encodeStateAsUpdate } from "yjs";
 
-const DOCUMENT_TYPE = {
-  NOTE: "note",
-  NOTEBOOK: "notebook",
-} as const;
-
-type DocumentType = ObjectValues<typeof DOCUMENT_TYPE>;
-
-async function createDocument(docType: DocumentType) {
+async function createDocument() {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw new Error("Unauthorized");
   }
-  const ydoc = new Doc();
-  const encoded = encodeStateAsUpdate(ydoc);
+  const name = nanoid();
 
-  const result = await prisma.document.create({
-    data: {
-      type: docType,
-      data: Buffer.from(encoded),
-      author: {
-        connect: {
-          id: session.user.id,
-        },
-      },
-    },
+  db.transaction(async (tx) => {
+    await tx.insert(documents).values({ name });
+    const [notebook] = await tx
+      .select()
+      .from(notebooks)
+      .where(eq(notebooks.authorId, session.user.id));
+
+    await tx.insert(documentNotebook).values({
+      documentName: name,
+      notebookId: notebook.id,
+    });
   });
 
-  return { name: result.name };
+  return { name };
 }
 
 async function deleteDocument(docName: string) {
@@ -40,11 +35,7 @@ async function deleteDocument(docName: string) {
     throw new Error("Unauthorized");
   }
 
-  await prisma.document.delete({
-    where: {
-      name: docName,
-    },
-  });
+  await db.delete(documents).where(eq(documents.name, docName));
 }
 
 async function getDocumentByName(docName: string) {
@@ -53,21 +44,37 @@ async function getDocumentByName(docName: string) {
     throw new Error("Unauthorized");
   }
 
-  return prisma.document.findUnique({
-    where: {
-      name: docName,
-    },
-  });
+  const [doc] = await db
+    .select()
+    .from(documents)
+    .where(eq(documents.name, docName));
+
+  return doc;
 }
 
 async function createNotebook() {
-  const doc = await createDocument("notebook");
-  return { name: doc.name };
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+  db.transaction(async (tx) => {
+    const name = nanoid();
+    await tx.insert(documents).values({ name });
+
+    const [res] = await tx.insert(notebooks).values({
+      documentName: name,
+      authorId: session.user.id,
+    });
+
+    await tx.insert(documentNotebook).values({
+      notebookId: res.insertId,
+      documentName: name,
+    });
+  });
 }
 
 async function createNote() {
-  const doc = await createDocument("note");
-  return { name: doc.name };
+  return createDocument();
 }
 
 async function getNotebook() {
@@ -75,26 +82,33 @@ async function getNotebook() {
   if (!session) {
     throw new Error("Unauthorized");
   }
+  return db
+    .select()
+    .from(notebooks)
+    .where(eq(notebooks.authorId, session.user.id));
+}
 
-  return prisma.document.findFirst({
-    select: {
-      name: true,
-      author: true,
-    },
-    where: {
-      type: DOCUMENT_TYPE.NOTEBOOK,
-      author: {
-        id: session.user.id,
-      },
-    },
-  });
+async function getNotebookByDocumentName(documentName: string) {
+  const result = await db
+    .select()
+    .from(notebooks)
+    .innerJoin(
+      documentNotebook,
+      eq(documentNotebook.documentName, documentName),
+    );
+
+  if (result.length > 0) {
+    return result[0].notebook;
+  }
+
+  return null;
 }
 
 export {
   createDocument,
-  deleteDocument,
-  getDocumentByName,
   createNote,
   createNotebook,
-  getNotebook,
+  deleteDocument,
+  getDocumentByName,
+  getNotebookByDocumentName,
 };

@@ -1,16 +1,16 @@
-import { getDocumentByName } from "@/actions/document";
+import { getNotebookByDocumentName } from "@/actions/document";
 import { Editor } from "@/components/Editor";
 import authOptions from "@/config/auth-options";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 
 async function NotePage({ params }: { params: { id: string } }) {
-  const [session, documentExist] = await Promise.all([
+  const [session, notebook] = await Promise.all([
     getServerSession(authOptions),
-    getDocumentByName(params.id),
+    getNotebookByDocumentName(params.id),
   ]);
 
-  if (!session || !documentExist) {
+  if (!session || !notebook) {
     notFound();
   }
 

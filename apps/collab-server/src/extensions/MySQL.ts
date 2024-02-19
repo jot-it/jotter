@@ -2,14 +2,14 @@ import { Database } from "@hocuspocus/extension-database";
 import { Extension, fetchPayload, storePayload } from "@hocuspocus/server";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 
-const UPDATE_DOCUMENT_QUERY = `UPDATE Document
+const UPDATE_DOCUMENT_QUERY = `UPDATE document
     SET data = ?,
       modifiedOn = CURRENT_TIMESTAMP()
     WHERE name = ? 
 `;
 
 const SELECT_DOCUMENT_BY_NAME_QUERY = `SELECT name, data 
-    FROM Document
+    FROM document
     WHERE name = ?
 `;
 

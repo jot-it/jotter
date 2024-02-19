@@ -1,10 +1,10 @@
 import { createNotebook } from "@/actions/document";
-import prisma from "@/lib/db";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import db from "@/lib/db";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { AuthOptions, DefaultUser, getServerSession } from "next-auth";
-import { Adapter } from "next-auth/adapters";
 import GithubProvider from "next-auth/providers/github";
 import env from "./env-server";
+import { Adapter } from "next-auth/adapters";
 
 declare module "next-auth" {
   interface Session {
@@ -21,7 +21,7 @@ declare module "next-auth/jwt" {
 }
 
 const authOptions: AuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter,
+  adapter: DrizzleAdapter(db) as Adapter,
   session: {
     strategy: "jwt",
   },

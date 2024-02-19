@@ -1,15 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import mysql from "mysql2/promise";
+import env from "@/config/env-server";
+import { drizzle } from "drizzle-orm/mysql2";
 
-const prismaClientSingleton = () => {
-  return new PrismaClient();
-};
+const connection = await mysql.createConnection(env.DATABASE_URL);
 
-declare global {
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
-}
+const db = drizzle(connection);
 
-const prisma = globalThis.prisma ?? prismaClientSingleton();
-
-if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
-
-export default prisma;
+export default db;
