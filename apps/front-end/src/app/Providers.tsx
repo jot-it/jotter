@@ -20,17 +20,7 @@ export default function Providers({
   return (
     <AtomProvider>
       <SessionProvider session={session}>
-        <TooltipProvider>
-          <NoSSR>
-            {session?.user && notebookName && (
-              <StartCollaboration
-                user={session?.user}
-                notebookName={notebookName}
-              />
-            )}
-          </NoSSR>
-          {children}
-        </TooltipProvider>
+        <TooltipProvider>{children}</TooltipProvider>
       </SessionProvider>
     </AtomProvider>
   );

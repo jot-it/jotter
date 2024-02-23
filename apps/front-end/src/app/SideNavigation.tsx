@@ -1,7 +1,6 @@
 "use client";
 import { createDocument, deleteDocument } from "@/actions/document";
 import {
-  ParentItem,
   Sidebar,
   SidebarButton,
   SidebarDivider,
@@ -9,9 +8,11 @@ import {
 } from "@/components/Sidebar";
 import { Item } from "@/components/Sidebar/Item";
 import {
+  ParentItem,
   createItem,
   insertItem,
   removeItem,
+  setHref,
   setId,
   setIsNewItem,
   setLabel,
@@ -19,7 +20,7 @@ import {
 } from "@/components/Sidebar/state";
 import { useRootDocument } from "@/lib/collaboration";
 import { atom, useAtom } from "jotai";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { RiAddLine as AddIcon } from "react-icons/ri";
 import { bind } from "valtio-yjs";
@@ -31,6 +32,7 @@ function SideNavigation() {
   // Synchorize Yjs shared-types with valtio proxy state
   useYjs();
   const router = useRouter();
+  const params = useParams<{ notebookId: string }>();
   const [activeItem, setActiveItem] = useAtom(activeItemAtom);
   const updateActiveItem = (item: Item) => {
     setActiveItem({ ...item });
@@ -64,32 +66,21 @@ function SideNavigation() {
     if (item.isNew) {
       // The user finished editing, so we create the respective document
       // on the database to associate it with this user
-      const doc = await createDocument("note");
+      const doc = await createDocument();
       setId(item, doc.name);
+      setHref(item, `/${params.notebookId}/${doc.name}`);
       setIsNewItem(item, false);
     }
   };
 
-  // TODO refactor handleNewPage and handleNewCategory, the code is very
-  // repetitive
   const handleNewPage = async (parent: ParentItem) => {
-    if (Array.isArray(parent)) {
-      const page = createItem("link", []);
-      insertItem(sidebarState, page);
-    } else {
-      const page = createItem("link", parent.crumbs);
-      insertItem(parent.items, page);
-    }
+    const page = createItem("link", []);
+    insertItem(parent, page);
   };
 
   const handleNewCategory = async (parent: ParentItem) => {
-    if (Array.isArray(parent)) {
-      const category = createItem("category", []);
-      insertItem(sidebarState, category);
-    } else {
-      const category = createItem("category", parent.crumbs);
-      insertItem(parent.items, category);
-    }
+    const category = createItem("category", []);
+    insertItem(parent, category);
   };
 
   return (

@@ -90,18 +90,3 @@ export const notebooks = mysqlTable("notebook", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 });
-
-export const documentNotebook = mysqlTable(
-  "document_notebook",
-  {
-    notebookId: int("notebookId").notNull(),
-    documentName: char("documentName", { length: 21 }).notNull(),
-  },
-  (dn) => {
-    return {
-      compoundKey: primaryKey({
-        columns: [dn.documentName, dn.notebookId],
-      }),
-    };
-  },
-);

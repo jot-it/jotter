@@ -5,7 +5,6 @@ import { Barlow } from "next/font/google";
 import { PropsWithChildren } from "react";
 import Providers from "./Providers";
 import "./globals.css";
-import { getNotebook } from "@/actions/document";
 
 const barlow = Barlow({
   subsets: ["latin"],

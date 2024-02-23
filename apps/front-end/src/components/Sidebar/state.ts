@@ -1,5 +1,7 @@
 import { proxy } from "valtio";
-import { Item } from "./Item";
+import { CategoryItem, Item } from "./Item";
+
+export type ParentItem = Item[] | CategoryItem;
 
 // Valtio proxy state for sidebar items, all state here will be immediately
 // available to all clients connected to the same Yjs document.
@@ -15,7 +17,7 @@ export function createItem(
   fromCrumbs: Item["crumbs"],
 ): Item {
   const id = "";
-  const href = `/notes/${id}`;
+  const href = `/${id}`;
   const label = "";
   const crumbs = fromCrumbs.concat([{ label, href }]);
   if (type === "category") {
@@ -33,8 +35,17 @@ export function createItem(
   return { type: "link", id, label, href, crumbs, isNew: true };
 }
 
-export function insertItem(itemList: Item[], item: Item) {
-  itemList.push(item);
+export function insertItem(parent: ParentItem, item: Item) {
+  const isRoot = Array.isArray(parent);
+  let parentCrumbs: typeof item.crumbs = [];
+  let items = sidebarState;
+  if (!isRoot) {
+    parentCrumbs = parent.crumbs;
+    items = parent.items;
+  }
+
+  item.crumbs = [...parentCrumbs, { label: item.label, href: item.href }];
+  items.push(item);
 }
 
 export function newPage(items: Item[], crumbs: Item["crumbs"] = []) {
@@ -68,5 +79,9 @@ export function setLabel(item: Item, label: string) {
 
 export function setId(item: Item, newId: string) {
   item.id = newId;
-  item.href = `/notes/${item.id}`;
+}
+
+export function setHref(item: Item, href: string) {
+  item.href = href;
+  item.crumbs[item.crumbs.length - 1].href = item.href;
 }

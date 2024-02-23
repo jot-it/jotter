@@ -1,7 +1,6 @@
 services:
   database:
     image: mysql
-    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${DATABASE_PASS}
       - MYSQL_DATABASE=${DATABASE_NAME}

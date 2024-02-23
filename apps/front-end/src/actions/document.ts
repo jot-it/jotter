@@ -1,7 +1,7 @@
 "use server";
 import authOptions from "@/config/auth-options";
 import db from "@/lib/db";
-import { documentNotebook, documents, notebooks } from "@/schema";
+import { documents, notebooks } from "@/schema";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { getServerSession } from "next-auth";
@@ -12,19 +12,7 @@ async function createDocument() {
     throw new Error("Unauthorized");
   }
   const name = nanoid();
-
-  db.transaction(async (tx) => {
-    await tx.insert(documents).values({ name });
-    const [notebook] = await tx
-      .select()
-      .from(notebooks)
-      .where(eq(notebooks.authorId, session.user.id));
-
-    await tx.insert(documentNotebook).values({
-      documentName: name,
-      notebookId: notebook.id,
-    });
-  });
+  await db.insert(documents).values({ name });
 
   return { name };
 }
@@ -44,12 +32,12 @@ async function getDocumentByName(docName: string) {
     throw new Error("Unauthorized");
   }
 
-  const [doc] = await db
+  const res = await db
     .select()
     .from(documents)
     .where(eq(documents.name, docName));
 
-  return doc;
+  return res.length ? res[0] : null;
 }
 
 async function createNotebook() {
@@ -57,7 +45,7 @@ async function createNotebook() {
   if (!session) {
     throw new Error("Unauthorized");
   }
-  db.transaction(async (tx) => {
+  return db.transaction(async (tx) => {
     const name = nanoid();
     await tx.insert(documents).values({ name });
 
@@ -66,15 +54,12 @@ async function createNotebook() {
       authorId: session.user.id,
     });
 
-    await tx.insert(documentNotebook).values({
-      notebookId: res.insertId,
+    return {
+      id: res.insertId,
       documentName: name,
-    });
+      authorId: session.user.id,
+    };
   });
-}
-
-async function createNote() {
-  return createDocument();
 }
 
 async function getNotebook() {
@@ -82,33 +67,33 @@ async function getNotebook() {
   if (!session) {
     throw new Error("Unauthorized");
   }
-  return db
-    .select()
-    .from(notebooks)
-    .where(eq(notebooks.authorId, session.user.id));
-}
-
-async function getNotebookByDocumentName(documentName: string) {
   const result = await db
     .select()
     .from(notebooks)
-    .innerJoin(
-      documentNotebook,
-      eq(documentNotebook.documentName, documentName),
-    );
+    .where(eq(notebooks.authorId, session.user.id));
 
   if (result.length > 0) {
-    return result[0].notebook;
+    return result[0];
   }
 
   return null;
 }
 
+async function getNotebookById(id: number) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const res = await db.select().from(notebooks).where(eq(notebooks.id, id));
+  return res.length ? res[0] : null;
+}
+
 export {
   createDocument,
-  createNote,
   createNotebook,
   deleteDocument,
+  getNotebook,
   getDocumentByName,
-  getNotebookByDocumentName,
+  getNotebookById,
 };
