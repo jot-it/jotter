@@ -1,5 +1,5 @@
 import NoSSR from "@/components/NoSSR";
-import { createConnection } from "@/lib/collaboration";
+import { ConnectionConfiguration, createConnection } from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { Provider } from "@lexical/yjs";
 import { $createParagraphNode, $getRoot } from "lexical";
@@ -10,15 +10,23 @@ type LexicalCollaborationPluginProps = ComponentPropsWithoutRef<
   typeof LexicalCollaborationPlugin
 >;
 
+type IConnectionConfiguration = Omit<
+  ConnectionConfiguration,
+  "name" | "document"
+>;
+
 type CollaborationPluginProps = Pick<
   LexicalCollaborationPluginProps,
   "id" | "username" | "cursorColor"
->;
+> & {
+  connectionConfig: IConnectionConfiguration;
+};
 
 function CollaborationPlugin({
   id,
   username,
   cursorColor,
+  connectionConfig,
 }: CollaborationPluginProps) {
   return (
     <NoSSR>
@@ -28,7 +36,9 @@ function CollaborationPlugin({
         username={username}
         cursorColor={cursorColor}
         initialEditorState={initialEditorState}
-        providerFactory={providerFactory}
+        providerFactory={(id, yjsDocMap) =>
+          providerFactory(id, yjsDocMap, connectionConfig)
+        }
         shouldBootstrap={true}
       />
     </NoSSR>
@@ -42,12 +52,17 @@ function initialEditorState() {
   root.append(paragraph);
 }
 
-function providerFactory(id: string, yjsDocMap: Map<string, Doc>): Provider {
+function providerFactory(
+  id: string,
+  yjsDocMap: Map<string, Doc>,
+  config?: IConnectionConfiguration,
+): Provider {
   const doc = new Doc();
   yjsDocMap.set(id, doc);
 
   //@ts-ignore Awareness type mismatch, we can ignore this
   return createConnection({
+    ...config,
     document: doc,
     name: id,
   });

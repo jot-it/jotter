@@ -1,20 +1,19 @@
 import { getDocumentByName } from "@/actions/document";
+import { getToken } from "@/actions/token";
 import { Editor } from "@/components/Editor";
-import authOptions from "@/config/auth-options";
-import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 
 async function NotePage({ params }: { params: { noteId: string } }) {
-  const [session, doc] = await Promise.all([
-    getServerSession(authOptions),
+  const [doc, token] = await Promise.all([
     getDocumentByName(params.noteId),
+    getToken([]),
   ]);
 
-  if (!session || !doc) {
+  if (!doc || !token) {
     notFound();
   }
 
-  return <Editor documentId={params.noteId} />;
+  return <Editor documentId={params.noteId} accessToken={token} />;
 }
 
 export default NotePage;

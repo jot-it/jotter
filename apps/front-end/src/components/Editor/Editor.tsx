@@ -34,6 +34,7 @@ const TreeViewPlugin = lazy(() => import("@/plugins/TreeViewPlugin"));
 
 type EditorProps = {
   documentId: string;
+  accessToken: string;
 };
 
 function Editor(props: EditorProps) {
@@ -86,7 +87,11 @@ function Editor(props: EditorProps) {
         <TabIndentationPlugin />
         <ImagePlugin />
         {user?.name && user?.id && (
-          <CollaborationPlugin id={props.documentId} username={user.name} />
+          <CollaborationPlugin
+            id={props.documentId}
+            username={user.name}
+            connectionConfig={{ token: props.accessToken }}
+          />
         )}
         <CheckListPlugin />
       </div>

@@ -27,7 +27,7 @@ type Awareness = Map<number, SharedState>;
  * The root connection represents the actual websocket connection to the collaborative servers.
  */
 const rootConnectionAtom = atom(
-  createConnection({ name: "default", connect: false }),
+  createConnection({ name: "default", connect: false, token: "" }),
 );
 
 /**
@@ -46,12 +46,15 @@ export function useRootDocument() {
   return useAtomValue(rootDocumentAtom);
 }
 
+export type ConnectionConfiguration = Omit<
+  HocuspocusProviderConfiguration,
+  "url"
+> &
+  Required<Pick<HocuspocusProviderConfiguration, "token">>;
 /**
  * Create a connection provider that connects to the collaboration server.
  */
-export function createConnection(
-  config: Omit<HocuspocusProviderConfiguration, "url">,
-) {
+export function createConnection(config: ConnectionConfiguration) {
   const url = env.NEXT_PUBLIC_COLLAB_SERVER_URL;
   const provider = new HocuspocusProvider({
     ...config,
@@ -71,28 +74,35 @@ function createIDBPersistence(documentName: string, doc: Doc) {
 type StartCollaborationProps = {
   user: User;
   notebookName: string;
-};
+} & Omit<ConnectionConfiguration, "name">;
 
 /**
  * Connects root document to the collaboration server using the current
  * workspace as the name of the document.
  */
-export function StartCollaboration(props: StartCollaborationProps) {
+export function StartCollaboration({
+  user,
+  notebookName,
+  ...config
+}: StartCollaborationProps) {
   const setConnection = useSetAtom(rootConnectionAtom);
   const { awareness } = useConnection();
 
   useEffect(() => {
-    const connectionProvider = createConnection({ name: props.notebookName });
+    const connectionProvider = createConnection({
+      name: notebookName,
+      ...config,
+    });
     setConnection(connectionProvider);
     return () => {
       connectionProvider.disconnect();
     };
-  }, [props.notebookName, setConnection]);
+  }, [notebookName, setConnection]);
 
   // Inform all users in this notebook about your presence
   useEffect(() => {
-    awareness?.setLocalStateField("user", props.user);
-  }, [props.user, awareness]);
+    awareness?.setLocalStateField("user", user);
+  }, [user, awareness]);
 
   return null;
 }
