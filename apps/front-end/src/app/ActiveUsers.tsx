@@ -1,7 +1,7 @@
 "use client";
 import Avatar from "@/components/Avatar";
 import Tooltip from "@/components/Tooltip";
-import { useOthers } from "@/lib/userStore";
+import { useOthers } from "@/lib/collaboration";
 
 const MAX_ACTIVE_USERS = 5;
 

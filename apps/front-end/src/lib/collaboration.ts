@@ -7,6 +7,7 @@ import {
 } from "@hocuspocus/provider";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { User } from "next-auth";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { Doc } from "yjs";
@@ -122,4 +123,24 @@ export function useAwareness() {
     };
   }, [provider]);
   return awareness;
+}
+
+export function useSelf() {
+  const { data } = useSession();
+  return data?.user;
+}
+
+export function useOthers() {
+  const me = useSelf();
+  const sharedState = useAwareness();
+  const others: User[] = [];
+
+  sharedState?.forEach((state) => {
+    const isMyself = state.user.id === me?.id;
+    if (!isMyself && state.user) {
+      others.push(state.user);
+    }
+  });
+
+  return others;
 }

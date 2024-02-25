@@ -10,7 +10,7 @@ import {
 } from "@/components/DropdownMenu";
 import { LogoutIcon } from "@/components/Icons";
 import Typography from "@/components/Typography";
-import { useSelf } from "@/lib/userStore";
+import { useSelf } from "@/lib/collaboration";
 import { signOut } from "next-auth/react";
 
 function UserProfileMenu() {
