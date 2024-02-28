@@ -1,7 +1,5 @@
 "use client";
-import NoSSR from "@/components/NoSSR";
 import { TooltipProvider } from "@/components/Tooltip";
-import { StartCollaboration } from "@/lib/collaboration";
 import { Provider as AtomProvider } from "jotai";
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
@@ -12,11 +10,7 @@ type ProvidersProps = PropsWithChildren<{
   notebookName?: string;
 }>;
 
-export default function Providers({
-  children,
-  session,
-  notebookName,
-}: ProvidersProps) {
+export default function Providers({ children, session }: ProvidersProps) {
   return (
     <AtomProvider>
       <SessionProvider session={session}>

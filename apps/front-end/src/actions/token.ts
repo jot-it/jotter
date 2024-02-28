@@ -2,13 +2,24 @@ import { getSession } from "@/config/auth-options";
 import env from "@/config/env-server";
 import { SignJWT } from "jose";
 
-async function getToken(scopes: string[]) {
+const HOUR_TO_MILLISECONDS = 3_600_000;
+const TOKEN_LIFETIME = 1 * HOUR_TO_MILLISECONDS;
+
+export type Token = {
+  value: string;
+  expiresAt: number;
+};
+
+async function getToken(scopes: string[]): Promise<Token> {
   const session = await getSession();
   if (!session) {
     throw new Error("Unauthorized");
   }
 
   const secret = new TextEncoder().encode(env.NEXTAUTH_SECRET);
+
+  const now = new Date().getTime();
+  const expirationTime = now + TOKEN_LIFETIME;
   const jwt = await new SignJWT({
     scp: scopes.join(" "),
   })
@@ -16,10 +27,13 @@ async function getToken(scopes: string[]) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setIssuer(env.NEXTAUTH_URL)
-    .setExpirationTime("2h")
+    .setExpirationTime(expirationTime)
     .sign(secret);
 
-  return jwt;
+  return {
+    value: jwt,
+    expiresAt: expirationTime,
+  };
 }
 
 export { getToken };

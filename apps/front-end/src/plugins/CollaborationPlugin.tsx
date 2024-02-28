@@ -1,43 +1,41 @@
 import NoSSR from "@/components/NoSSR";
-import { ConnectionConfiguration, createConnection } from "@/lib/collaboration";
+import {
+  ConnectionConfiguration,
+  createConnection,
+  useSelf,
+  useToken,
+} from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { Provider } from "@lexical/yjs";
 import { $createParagraphNode, $getRoot } from "lexical";
-import { ComponentPropsWithoutRef } from "react";
 import { Doc } from "yjs";
-
-type LexicalCollaborationPluginProps = ComponentPropsWithoutRef<
-  typeof LexicalCollaborationPlugin
->;
 
 type IConnectionConfiguration = Omit<
   ConnectionConfiguration,
   "name" | "document"
 >;
 
-type CollaborationPluginProps = Pick<
-  LexicalCollaborationPluginProps,
-  "id" | "username" | "cursorColor"
-> & {
-  connectionConfig: IConnectionConfiguration;
+type CollaborationPluginProps = {
+  id: string;
 };
 
-function CollaborationPlugin({
-  id,
-  username,
-  cursorColor,
-  connectionConfig,
-}: CollaborationPluginProps) {
+function CollaborationPlugin({ id }: CollaborationPluginProps) {
+  const user = useSelf();
+  const token = useToken();
+
+  if (!user || !token) {
+    return null;
+  }
+
   return (
     <NoSSR>
       <LexicalCollaborationPlugin
         id={id}
         key={id}
-        username={username}
-        cursorColor={cursorColor}
+        username={user.name!}
         initialEditorState={initialEditorState}
         providerFactory={(id, yjsDocMap) =>
-          providerFactory(id, yjsDocMap, connectionConfig)
+          providerFactory(id, yjsDocMap, { token: token.value })
         }
         shouldBootstrap={true}
       />

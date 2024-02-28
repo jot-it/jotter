@@ -13,7 +13,7 @@ async function NotePage({ params }: { params: { noteId: string } }) {
     notFound();
   }
 
-  return <Editor documentId={params.noteId} accessToken={token} />;
+  return <Editor documentId={params.noteId} />;
 }
 
 export default NotePage;

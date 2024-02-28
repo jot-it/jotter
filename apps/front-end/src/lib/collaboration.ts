@@ -1,4 +1,5 @@
 "use client";
+import { Token } from "@/actions/token";
 import env from "@/config/env-client";
 import { IS_BROWSER } from "@/utils";
 import {
@@ -6,6 +7,7 @@ import {
   HocuspocusProviderConfiguration,
 } from "@hocuspocus/provider";
 import { atom, useAtomValue, useSetAtom } from "jotai";
+import { useHydrateAtoms } from "jotai/utils";
 import { User } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -39,12 +41,18 @@ const rootDocumentAtom = atom((get) => {
   return get(rootConnectionAtom).document;
 });
 
+export const accessTokenAtom = atom<Token | null>(null);
+
 export function useConnection() {
   return useAtomValue(rootConnectionAtom);
 }
 
 export function useRootDocument() {
   return useAtomValue(rootDocumentAtom);
+}
+
+export function useToken() {
+  return useAtomValue(accessTokenAtom);
 }
 
 export type ConnectionConfiguration = Omit<
@@ -75,7 +83,9 @@ function createIDBPersistence(documentName: string, doc: Doc) {
 type StartCollaborationProps = {
   user: User;
   notebookName: string;
-} & Omit<ConnectionConfiguration, "name">;
+  initialToken: Token;
+  onTokenRefresh(): Promise<Token>;
+};
 
 /**
  * Connects root document to the collaboration server using the current
@@ -83,29 +93,62 @@ type StartCollaborationProps = {
  */
 export function StartCollaboration({
   user,
-  notebookName,
-  ...config
+  notebookName: name,
+  initialToken,
+  onTokenRefresh,
 }: StartCollaborationProps) {
+  useAutoRefreshingToken(initialToken, onTokenRefresh);
+
   const setConnection = useSetAtom(rootConnectionAtom);
+  const token = useToken();
+
   const { awareness } = useConnection();
 
   useEffect(() => {
-    const connectionProvider = createConnection({
-      name: notebookName,
-      ...config,
-    });
+    if (!token) {
+      return;
+    }
+    const connectionProvider = createConnection({ name, token: token.value });
     setConnection(connectionProvider);
     return () => {
       connectionProvider.disconnect();
     };
-  }, [notebookName, setConnection]);
+  }, [name, token, setConnection]);
 
   // Inform all users in this notebook about your presence
   useEffect(() => {
     awareness?.setLocalStateField("user", user);
-  }, [user, awareness]);
+  }, [user, token, awareness]);
 
   return null;
+}
+
+function useAutoRefreshingToken(
+  initialToken: Token,
+  onRefresh: () => Promise<Token>,
+) {
+  useHydrateAtoms([[accessTokenAtom, initialToken]]);
+
+  const [nextRefreshTime, setNextRefreshTime] = useState(
+    initialToken.expiresAt,
+  );
+  const setToken = useSetAtom(accessTokenAtom);
+
+  useEffect(() => {
+    const now = new Date().getTime();
+    const remainingTime = nextRefreshTime - now;
+    const timeout = setTimeout(async () => {
+      const newToken = await onRefresh();
+      setToken(newToken);
+      setNextRefreshTime(newToken.expiresAt);
+    }, remainingTime);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+
+    // Keep looping to renew the token every time it expires
+  }, [nextRefreshTime, setToken]);
 }
 
 export function useAwareness() {

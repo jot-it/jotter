@@ -6,6 +6,7 @@ import { PropsWithChildren } from "react";
 import Header from "../Header";
 import SideNavigation from "../SideNavigation";
 import { notFound } from "next/navigation";
+import { getToken } from "@/actions/token";
 
 type LayoutProps = PropsWithChildren<{
   params: {
@@ -21,6 +22,7 @@ async function Layout({ children, params }: LayoutProps) {
     return notFound();
   }
 
+  const token = await getToken([]);
   return (
     <div className="grid lg:grid-cols-[20rem_auto]">
       <aside className="hidden lg:block">
@@ -33,6 +35,11 @@ async function Layout({ children, params }: LayoutProps) {
             <StartCollaboration
               user={session.user}
               notebookName={notebook.documentName}
+              initialToken={token}
+              onTokenRefresh={async () => {
+                "use server";
+                return getToken([]);
+              }}
             />
           )}
         </NoSSR>
