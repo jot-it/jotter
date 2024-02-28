@@ -1,10 +1,12 @@
-import { createNotebook } from "@/actions/document";
 import db from "@/lib/db";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { AuthOptions, DefaultUser, getServerSession } from "next-auth";
+import DiscordProvider from "next-auth/providers/discord";
 import GithubProvider from "next-auth/providers/github";
-import env from "./env-server";
+import GoogleProvider from "next-auth/providers/google";
+
 import { Adapter } from "next-auth/adapters";
+import env from "./env-server";
 
 declare module "next-auth" {
   interface Session {
@@ -27,11 +29,20 @@ const authOptions: AuthOptions = {
   },
   pages: {
     signIn: "/signin",
+    newUser: "/",
   },
   providers: [
     GithubProvider({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_SECRET,
+    }),
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_SECRET,
+    }),
+    DiscordProvider({
+      clientId: env.DISCORD_CLIENT_ID,
+      clientSecret: env.DISCORD_SECRET,
     }),
   ],
   callbacks: {
@@ -47,13 +58,6 @@ const authOptions: AuthOptions = {
       // Expose user id on client side
       session.user.id = token.userId;
       return session;
-    },
-  },
-  events: {
-    async signIn(e) {
-      if (e.isNewUser) {
-        await createNotebook();
-      }
     },
   },
 };

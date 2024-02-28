@@ -45,6 +45,7 @@ async function createNotebook() {
   if (!session) {
     throw new Error("Unauthorized");
   }
+
   return db.transaction(async (tx) => {
     const name = nanoid();
     await tx.insert(documents).values({ name });
@@ -93,7 +94,7 @@ export {
   createDocument,
   createNotebook,
   deleteDocument,
-  getNotebook,
   getDocumentByName,
+  getNotebook,
   getNotebookById,
 };

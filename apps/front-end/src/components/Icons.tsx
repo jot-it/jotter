@@ -31,7 +31,11 @@ import { BsTextParagraph as ParagraphIcon } from "react-icons/bs";
 import { MdOutlineClose as CloseIcon } from "react-icons/md";
 import { TbCodeDots as InlineCodeIcon } from "react-icons/tb";
 import { PiCodeBlock as CodeBlockIcon } from "react-icons/pi";
-import { IoLogoGithub as GithubIcon } from "react-icons/io";
+import {
+  IoLogoGithub as GithubIcon,
+  IoLogoGoogle as GoogleIcon,
+} from "react-icons/io";
+import { FaDiscord as DiscordIcon } from "react-icons/fa";
 
 export {
   BoldIcon,
@@ -60,4 +64,6 @@ export {
   CheckListIcon,
   GithubIcon,
   LogoutIcon,
+  GoogleIcon,
+  DiscordIcon,
 };

@@ -1,8 +1,6 @@
 "use client";
 import Button from "@/components/Button";
-import { GithubIcon } from "@/components/Icons";
-import { Input } from "@/components/Input";
-import { Label } from "@/components/Label";
+import { DiscordIcon, GithubIcon, GoogleIcon } from "@/components/Icons";
 import Typography from "@/components/Typography";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -13,16 +11,16 @@ function LoginScreen() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center space-y-4 p-8">
       <div className="w-full max-w-sm space-y-2">
-        <div className="space-y-2 text-center">
+        <div className="mb-8 space-y-2 text-center">
           <Typography as="h1" variant="h4">
             Welcome back
           </Typography>
           <p className="text-gray-500 dark:text-gray-400">
-            Enter your email below to login to your account
+            Use any of the providers below to sign in
           </p>
         </div>
         <div className="space-y-4">
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -30,14 +28,29 @@ function LoginScreen() {
               required
               type="email"
             />
-          </div>
+          </div> 
           <Button className="w-full">Login</Button>
+          */}
+          <Button
+            className="w-full"
+            variant="secondary"
+            onClick={async () => signIn("google", { callbackUrl })}
+          >
+            <GoogleIcon className="mr-1" /> Sign in with Google
+          </Button>
           <Button
             className="w-full"
             variant="secondary"
             onClick={async () => signIn("github", { callbackUrl })}
           >
-            <GithubIcon className="mr-1" /> Login with Github
+            <GithubIcon className="mr-1" /> Sign in with Github
+          </Button>
+          <Button
+            className="w-full"
+            variant="secondary"
+            onClick={async () => signIn("discord", { callbackUrl })}
+          >
+            <DiscordIcon className="mr-1" /> Sign in with Discord
           </Button>
         </div>
       </div>
