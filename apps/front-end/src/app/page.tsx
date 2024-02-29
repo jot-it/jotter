@@ -1,13 +1,13 @@
-"use client";
-import useWorkspace from "@/hooks/useWorkspace";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { createNotebook, getNotebook } from "@/actions/document";
+import { redirect } from "next/navigation";
 
-export default function page() {
-  const workspace = useWorkspace();
-  const router = useRouter();
+async function Home() {
+  let notebook = await getNotebook();
+  if (!notebook) {
+    notebook = await createNotebook();
+  }
 
-  useEffect(() => {
-    router.push(`/${workspace}`);
-  }, [workspace, router]);
+  redirect(`/${notebook.id}`);
 }
+
+export default Home;

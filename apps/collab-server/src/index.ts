@@ -2,6 +2,7 @@ import { Logger } from "@hocuspocus/extension-logger";
 import { Hocuspocus } from "@hocuspocus/server";
 import MySQL from "./extensions/MySQL.js";
 import { env } from "./env.js";
+import { jwtVerify } from "jose";
 
 const PORT = env.PORT ? Number(env.PORT) : 1234;
 const IS_PRODUCTION = env.NODE_ENV === "production";
@@ -9,6 +10,12 @@ const IS_PRODUCTION = env.NODE_ENV === "production";
 // Configure the server …
 const server = new Hocuspocus({
   port: PORT,
+
+  async onAuthenticate(data) {
+    const key = new TextEncoder().encode(env.AUTH_SECRET);
+    await jwtVerify(data.token, key);
+  },
+
   extensions: [
     new Logger(),
 

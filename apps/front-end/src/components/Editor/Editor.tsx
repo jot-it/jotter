@@ -1,32 +1,23 @@
 "use client";
-import { useSelf } from "@/lib/userStore";
+import editorConfig from "@/config/editor-config";
 import LexicalAutoLinkPlugin from "@/plugins/AutolinkPlugin";
 import CodeActionsPlugin from "@/plugins/CodeActionPlugin/CodeActionPlugin";
 import CodeHighlightPlugin from "@/plugins/CodeHighlightPlugin";
-import { ImageNode, ImagePlugin } from "@/plugins/ImagePlugin";
+import { ImagePlugin } from "@/plugins/ImagePlugin";
 import ListMaxIndentLevelPlugin from "@/plugins/ListMaxIndentLevelPlugin";
 import MarkdownShortcutsPlugin from "@/plugins/MarkdownShortcutPlugin";
 import ToolbarPlugin from "@/plugins/ToolbarPlugin";
-import { CodeHighlightNode, CodeNode } from "@lexical/code";
-import { AutoLinkNode, LinkNode } from "@lexical/link";
-import { ListItemNode, ListNode } from "@lexical/list";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import {
-  InitialConfigType,
-  LexicalComposer,
-} from "@lexical/react/LexicalComposer";
+import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import ErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
-import { HeadingNode, QuoteNode } from "@lexical/rich-text";
-import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
-import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import dynamic from "next/dynamic";
 import { lazy, useCallback, useState } from "react";
-import theme from "./theme";
 
 const ComponentPickerPlugin = dynamic(
   () => import("@/plugins/CommandPickerPlugin"),
@@ -40,33 +31,12 @@ const CollaborationPlugin = dynamic(
 
 const TreeViewPlugin = lazy(() => import("@/plugins/TreeViewPlugin"));
 
-const editorConfig: InitialConfigType = {
-  editorState: null,
-  namespace: "jotter",
-  theme,
-  onError(error, editor) {
-    console.log(error);
-  },
-  nodes: [
-    HeadingNode,
-    ListNode,
-    ListItemNode,
-    QuoteNode,
-    CodeHighlightNode,
-    TableNode,
-    TableCellNode,
-    TableRowNode,
-    AutoLinkNode,
-    LinkNode,
-    CodeNode,
-    ImageNode,
-  ],
+type EditorProps = {
+  documentId: string;
 };
 
-function Editor({ params }: { params: { id: string } }) {
+function Editor(props: EditorProps) {
   const [editorContainer, setEditorContainer] = useState<HTMLDivElement>();
-  const documentId = params.id;
-  const user = useSelf();
 
   const onRef = useCallback((node: HTMLDivElement | null) => {
     if (node !== null) {
@@ -75,12 +45,12 @@ function Editor({ params }: { params: { id: string } }) {
   }, []);
 
   return (
-    <div
-      className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert 
+    <LexicalComposer initialConfig={editorConfig}>
+      <div
+        className="prose relative mx-auto my-12 max-w-3xl px-4 pb-7 dark:prose-invert 
       prose-code:before:content-none prose-code:after:content-none lg:pb-0"
-      ref={onRef}
-    >
-      <LexicalComposer initialConfig={editorConfig}>
+        ref={onRef}
+      >
         <RichTextPlugin
           contentEditable={<ContentEditable className="focus:outline-none" />}
           placeholder={
@@ -101,28 +71,23 @@ function Editor({ params }: { params: { id: string } }) {
         <CodeHighlightPlugin />
         <HistoryPlugin />
 
-        {editorContainer ? (
+        {editorContainer && (
           <>
             <ToolbarPlugin container={editorContainer} />
             <ComponentPickerPlugin container={editorContainer} />
           </>
-        ) : (
-          <></>
         )}
-        {process.env.NODE_ENV === "development" ? <TreeViewPlugin /> : <></>}
+        {process.env.NODE_ENV === "development" && <TreeViewPlugin />}
         <CodeActionsPlugin />
         <ListPlugin />
         <ListMaxIndentLevelPlugin />
         <TabIndentationPlugin />
         <ImagePlugin />
-        <CollaborationPlugin
-          id={documentId}
-          username={user?.name}
-          cursorColor={user?.color}
-        />
+        <CollaborationPlugin id={props.documentId} />
+
         <CheckListPlugin />
-      </LexicalComposer>
-    </div>
+      </div>
+    </LexicalComposer>
   );
 }
 

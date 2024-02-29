@@ -1,10 +1,9 @@
-import { TooltipProvider } from "@/components/Tooltip";
+import authOptions from "@/config/auth-options";
+import { Analytics } from "@vercel/analytics/react";
+import { getServerSession } from "next-auth";
 import { Barlow } from "next/font/google";
 import { PropsWithChildren } from "react";
-import Header from "./Header";
-import Provider from "./Provider";
-import SideNavigation from "./SideNavigation";
-import { Analytics } from "@vercel/analytics/react";
+import Providers from "./Providers";
 import "./globals.css";
 
 const barlow = Barlow({
@@ -14,26 +13,18 @@ const barlow = Barlow({
 });
 
 export default async function RootLayout({ children }: PropsWithChildren) {
+  const session = await getServerSession(authOptions);
+
   return (
-    <TooltipProvider>
-      <Provider>
-        <html lang="en" className="dark">
-          <body
-            className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
-          >
-            <div className="grid lg:grid-cols-[20rem_auto]">
-              <aside className="hidden lg:block">
-                <SideNavigation />
-              </aside>
-              <div>
-                <Header />
-                {children}
-              </div>
-            </div>
-            <Analytics />
-          </body>
-        </html>
-      </Provider>
-    </TooltipProvider>
+    <Providers session={session}>
+      <html lang="en" className="dark">
+        <body
+          className={`${barlow.variable} font-sans dark:bg-slate-850 dark:text-gray-200`}
+        >
+          {children}
+          <Analytics />
+        </body>
+      </html>
+    </Providers>
   );
 }

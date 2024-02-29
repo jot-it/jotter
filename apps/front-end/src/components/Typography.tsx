@@ -5,7 +5,7 @@ export const textVariants = {
   h1: "text-8xl font-light",
   h2: "text-6xl font-light",
   h3: "text-5xl",
-  h4: "text-[2.125rem]",
+  h4: "text-3xl font-bold",
   h5: "text-2xl font-medium tracking-wide",
   h6: "text-xl font-medium tracking-wide",
   body1: "text-base",
@@ -33,9 +33,9 @@ type TypographyProps<As extends React.ElementType = "span"> = {
   as?: As;
   variant?: keyof typeof textVariants;
   gutterBottom?: boolean;
-} & ComponentPropsWithoutRef<As>
+} & ComponentPropsWithoutRef<As>;
 
-function Typography <As extends React.ElementType = "span">(
+function Typography<As extends React.ElementType = "span">(
   props: TypographyProps<As>,
 ) {
   const {
@@ -59,6 +59,6 @@ function Typography <As extends React.ElementType = "span">(
       {children}
     </Component>
   );
-};
+}
 
 export default Typography;

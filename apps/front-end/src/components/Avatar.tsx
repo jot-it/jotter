@@ -1,10 +1,14 @@
 "use client";
 import clsx from "clsx";
-import Image, { ImageProps } from "next/image";
-import { PropsWithChildren, forwardRef, useState } from "react";
+import {
+  ComponentPropsWithoutRef,
+  PropsWithChildren,
+  forwardRef,
+  useState,
+} from "react";
 import { textVariants } from "./Typography";
 
-export type AvatarProps = Partial<ImageProps> & {
+export type AvatarProps = ComponentPropsWithoutRef<"img"> & {
   size?: "sm" | "md" | "lg" | "xl";
 };
 
@@ -23,7 +27,7 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
         ref={ref}
         className={clsx(
           className,
-          "flex cursor-default items-center justify-center rounded-full font-medium",
+          "relative flex cursor-default items-center justify-center overflow-hidden rounded-full font-medium",
           textVariants["body1"],
           {
             "h-6 w-6": size === "sm",
@@ -35,12 +39,8 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
         {...rest}
       >
         {!error && src && (
-          <Image
-            fill
-            src={src}
-            alt={alt ?? ""}
-            onError={() => setError(true)}
-          />
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={src} alt={alt ?? ""} onError={() => setError(true)} />
         )}
         <Fallback show={error || !src} initials={alt?.[0]}>
           {children}

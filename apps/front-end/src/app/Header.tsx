@@ -1,8 +1,8 @@
-import { lazy } from "react";
 import ActiveUsers from "./ActiveUsers";
 import BreadcrumbsShell from "./BreadcrumbsShell";
+import DialogCollab from "./DialogCollab";
 import MobileNavigation from "./MobileNavigation";
-const DialogCollab = lazy(() => import("@/app/DialogCollab"));
+import UserProfileMenu from "./UserProfileMenu";
 
 function Header() {
   return (
@@ -12,9 +12,11 @@ function Header() {
     >
       <MobileNavigation />
       <BreadcrumbsShell />
-      <ActiveUsers />
-
-      <DialogCollab />
+      <div className="ml-auto flex items-center space-x-4">
+        <ActiveUsers />
+        <DialogCollab />
+        <UserProfileMenu />
+      </div>
     </header>
   );
 }

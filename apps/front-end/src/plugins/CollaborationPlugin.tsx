@@ -1,34 +1,42 @@
 import NoSSR from "@/components/NoSSR";
-import { createConnection } from "@/lib/collaboration";
+import {
+  ConnectionConfiguration,
+  createConnection,
+  useSelf,
+  useToken,
+} from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { Provider } from "@lexical/yjs";
 import { $createParagraphNode, $getRoot } from "lexical";
-import { ComponentPropsWithoutRef } from "react";
 import { Doc } from "yjs";
 
-type LexicalCollaborationPluginProps = ComponentPropsWithoutRef<
-  typeof LexicalCollaborationPlugin
+type IConnectionConfiguration = Omit<
+  ConnectionConfiguration,
+  "name" | "document"
 >;
 
-type CollaborationPluginProps = Pick<
-  LexicalCollaborationPluginProps,
-  "id" | "username" | "cursorColor"
->;
+type CollaborationPluginProps = {
+  id: string;
+};
 
-function CollaborationPlugin({
-  id,
-  username,
-  cursorColor,
-}: CollaborationPluginProps) {
+function CollaborationPlugin({ id }: CollaborationPluginProps) {
+  const user = useSelf();
+  const token = useToken();
+
+  if (!user || !token) {
+    return null;
+  }
+
   return (
     <NoSSR>
       <LexicalCollaborationPlugin
         id={id}
         key={id}
-        username={username}
-        cursorColor={cursorColor}
+        username={user.name!}
         initialEditorState={initialEditorState}
-        providerFactory={providerFactory}
+        providerFactory={(id, yjsDocMap) =>
+          providerFactory(id, yjsDocMap, { token: token.value })
+        }
         shouldBootstrap={true}
       />
     </NoSSR>
@@ -42,12 +50,17 @@ function initialEditorState() {
   root.append(paragraph);
 }
 
-function providerFactory(id: string, yjsDocMap: Map<string, Doc>): Provider {
+function providerFactory(
+  id: string,
+  yjsDocMap: Map<string, Doc>,
+  config?: IConnectionConfiguration,
+): Provider {
   const doc = new Doc();
   yjsDocMap.set(id, doc);
 
   //@ts-ignore Awareness type mismatch, we can ignore this
   return createConnection({
+    ...config,
     document: doc,
     name: id,
   });

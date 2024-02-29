@@ -35,7 +35,7 @@ function ToolbarPlugin(props: ToolbarPluginProps) {
       const selection = $getSelection();
       setShow(isSelectionInside(editor) && isTextualSelection(selection));
     });
-  }, []);
+  }, [editor]);
 
   useLexicalCommand(
     SELECTION_CHANGE_COMMAND,

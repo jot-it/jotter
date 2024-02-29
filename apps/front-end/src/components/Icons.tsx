@@ -20,6 +20,7 @@ import {
   RiUnderline as UnderlineIcon,
   RiUserAddLine as UserAddIcon,
   RiText as TextIcon,
+  RiLogoutBoxRLine as LogoutIcon,
 } from "react-icons/ri";
 import {
   IoImageOutline as ImageOutlineIcon,
@@ -30,6 +31,11 @@ import { BsTextParagraph as ParagraphIcon } from "react-icons/bs";
 import { MdOutlineClose as CloseIcon } from "react-icons/md";
 import { TbCodeDots as InlineCodeIcon } from "react-icons/tb";
 import { PiCodeBlock as CodeBlockIcon } from "react-icons/pi";
+import {
+  IoLogoGithub as GithubIcon,
+  IoLogoGoogle as GoogleIcon,
+} from "react-icons/io";
+import { FaDiscord as DiscordIcon } from "react-icons/fa";
 
 export {
   BoldIcon,
@@ -56,4 +62,8 @@ export {
   InlineCodeIcon,
   CodeBlockIcon,
   CheckListIcon,
+  GithubIcon,
+  LogoutIcon,
+  GoogleIcon,
+  DiscordIcon,
 };

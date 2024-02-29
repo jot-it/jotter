@@ -1,7 +1,6 @@
 services:
   database:
     image: mysql
-    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${DATABASE_PASS}
       - MYSQL_DATABASE=${DATABASE_NAME}
@@ -13,6 +12,9 @@ services:
       timeout: 20s
       retries: 10
       start_period: 10s
+
+    volumes:
+      - db-data:/var/lib/mysql
 
   server:
     build:
@@ -33,3 +35,7 @@ services:
         condition: service_healthy
     volumes:
       - ".:/app/"
+
+volumes:
+  # Persist development database data
+  db-data:

@@ -3,14 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "docker compose --env-file ../../.env up -d",
     "dev": "next dev",
     "dev:collab": "turbo run dev --filter=front-end --filter=collab-server",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "db:generate": "drizzle-kit generate:mysql",
+    "db:push": "drizzle-kit push:mysql"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^0.7.0",
     "@hocuspocus/provider": "^2.8.1",
     "@lexical/code": "^0.13.0",
     "@lexical/link": "^0.13.0",
@@ -36,12 +40,17 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
+    "drizzle-orm": "^0.29.3",
     "eslint": "^8.51.0",
     "eslint-config-next": "^13.5.6",
+    "jose": "^5.2.2",
     "jotai": "^2.4.3",
     "lexical": "^0.13.0",
+    "mysql2": "^3.9.1",
     "nanoid": "^5.0.2",
     "next": "^13.5.6",
+    "next-auth": "^4.24.5",
+    "npm": "^10.4.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
@@ -49,7 +58,8 @@
     "valtio-yjs": "^0.5.0",
     "y-indexeddb": "^9.0.11",
     "y-websocket": "^1.5.0",
-    "yjs": "^13.6.10"
+    "yjs": "^13.6.10",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@jotter/eslint-config": "*",
@@ -58,6 +68,8 @@
     "@tailwindcss/typography": "^0.5.9",
     "@types/lodash.debounce": "^4.0.7",
     "autoprefixer": "^10.4.13",
+    "dotenv-cli": "^7.3.0",
+    "drizzle-kit": "^0.20.14",
     "postcss": "^8.4.20",
     "prettier": "^3.1.0",
     "prettier-plugin-tailwindcss": "^0.5.7",

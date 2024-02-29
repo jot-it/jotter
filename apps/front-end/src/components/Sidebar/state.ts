@@ -1,6 +1,7 @@
-import { nanoid } from "nanoid";
 import { proxy } from "valtio";
-import { Item } from "./Item";
+import { CategoryItem, Item } from "./Item";
+
+export type ParentItem = Item[] | CategoryItem;
 
 // Valtio proxy state for sidebar items, all state here will be immediately
 // available to all clients connected to the same Yjs document.
@@ -13,11 +14,10 @@ export const sidebarState = proxy<Item[]>([]);
  */
 export function createItem(
   type: Item["type"],
-  workspace: string,
   fromCrumbs: Item["crumbs"],
 ): Item {
-  const id = nanoid();
-  const href = `/${workspace}/note/${id}`;
+  const id = "";
+  const href = `/${id}`;
   const label = "";
   const crumbs = fromCrumbs.concat([{ label, href }]);
   if (type === "category") {
@@ -35,26 +35,27 @@ export function createItem(
   return { type: "link", id, label, href, crumbs, isNew: true };
 }
 
-export function insertItem(itemList: Item[], item: Item) {
-  itemList.push(item);
+export function insertItem(parent: ParentItem, item: Item) {
+  const isRoot = Array.isArray(parent);
+  let parentCrumbs: typeof item.crumbs = [];
+  let items = sidebarState;
+  if (!isRoot) {
+    parentCrumbs = parent.crumbs;
+    items = parent.items;
+  }
+
+  item.crumbs = [...parentCrumbs, { label: item.label, href: item.href }];
+  items.push(item);
 }
 
-export function newPage(
-  items: Item[],
-  workspace: string,
-  crumbs: Item["crumbs"] = [],
-) {
-  const item = createItem("link", workspace, crumbs);
+export function newPage(items: Item[], crumbs: Item["crumbs"] = []) {
+  const item = createItem("link", crumbs);
   items.push(item);
   return item;
 }
 
-export function newCategory(
-  items: Item[],
-  workspace: string,
-  crumbs: Item["crumbs"] = [],
-) {
-  const item = createItem("category", workspace, crumbs);
+export function newCategory(items: Item[], crumbs: Item["crumbs"] = []) {
+  const item = createItem("category", crumbs);
   items.push(item);
   return item;
 }
@@ -70,9 +71,17 @@ export function removeItem(items: Item[], i: Item) {
 
 export function setLabel(item: Item, label: string) {
   item.label = label;
-  item.isNew = false;
 
   // Last crumb is the item itself
   const crumb = item.crumbs[item.crumbs.length - 1];
   crumb.label = label;
+}
+
+export function setId(item: Item, newId: string) {
+  item.id = newId;
+}
+
+export function setHref(item: Item, href: string) {
+  item.href = href;
+  item.crumbs[item.crumbs.length - 1].href = item.href;
 }
