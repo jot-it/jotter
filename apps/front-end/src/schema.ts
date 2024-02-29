@@ -82,7 +82,7 @@ export const documents = mysqlTable("document", {
 });
 
 export const notebooks = mysqlTable("notebook", {
-  id: int("id").autoincrement().notNull().primaryKey(),
+  id: char("id", { length: 21 }).notNull().primaryKey(),
   documentName: char("documentName", { length: 21 })
     .notNull()
     .references(() => documents.name),

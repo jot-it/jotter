@@ -47,17 +47,20 @@ async function createNotebook() {
   }
 
   return db.transaction(async (tx) => {
-    const name = nanoid();
-    await tx.insert(documents).values({ name });
-
-    const [res] = await tx.insert(notebooks).values({
-      documentName: name,
-      authorId: session.user.id,
-    });
+    const documentName = nanoid();
+    const notebookId = nanoid();
+    await Promise.all([
+      tx.insert(documents).values({ name: documentName }),
+      tx.insert(notebooks).values({
+        id: notebookId,
+        documentName: documentName,
+        authorId: session.user.id,
+      }),
+    ]);
 
     return {
-      id: res.insertId,
-      documentName: name,
+      id: notebookId,
+      documentName: documentName,
       authorId: session.user.id,
     };
   });
@@ -80,7 +83,7 @@ async function getNotebook() {
   return null;
 }
 
-async function getNotebookById(id: number) {
+async function getNotebookById(id: string) {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw new Error("Unauthorized");

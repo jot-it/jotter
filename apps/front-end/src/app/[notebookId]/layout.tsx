@@ -16,7 +16,7 @@ type LayoutProps = PropsWithChildren<{
 
 async function Layout({ children, params }: LayoutProps) {
   const session = await getSession();
-  const notebook = await getNotebookById(Number(params.notebookId));
+  const notebook = await getNotebookById(params.notebookId);
 
   if (!notebook) {
     return notFound();
