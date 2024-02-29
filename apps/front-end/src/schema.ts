@@ -29,9 +29,7 @@ export const users = mysqlTable("user", {
 export const accounts = mysqlTable(
   "account",
   {
-    userId: varchar("userId", { length: 255 })
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+    userId: varchar("userId", { length: 255 }).notNull(),
     type: varchar("type", { length: 255 })
       .$type<AdapterAccount["type"]>()
       .notNull(),
@@ -54,9 +52,7 @@ export const accounts = mysqlTable(
 
 export const sessions = mysqlTable("session", {
   sessionToken: varchar("sessionToken", { length: 255 }).notNull().primaryKey(),
-  userId: varchar("userId", { length: 255 })
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("userId", { length: 255 }).notNull(),
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
@@ -83,10 +79,6 @@ export const documents = mysqlTable("document", {
 
 export const notebooks = mysqlTable("notebook", {
   id: char("id", { length: 21 }).notNull().primaryKey(),
-  documentName: char("documentName", { length: 21 })
-    .notNull()
-    .references(() => documents.name),
-  authorId: varchar("authorId", { length: 255 })
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+  documentName: char("documentName", { length: 21 }).notNull(),
+  authorId: varchar("authorId", { length: 255 }).notNull(),
 });
