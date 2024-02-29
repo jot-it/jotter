@@ -148,7 +148,7 @@ function useAutoRefreshingToken(
     };
 
     // Keep looping to renew the token every time it expires
-  }, [nextRefreshTime, setToken]);
+  }, [nextRefreshTime, setToken, onRefresh]);
 }
 
 export function useAwareness() {

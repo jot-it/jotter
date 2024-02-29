@@ -1,6 +1,5 @@
 "use client";
 import editorConfig from "@/config/editor-config";
-import { useSelf } from "@/lib/collaboration";
 import LexicalAutoLinkPlugin from "@/plugins/AutolinkPlugin";
 import CodeActionsPlugin from "@/plugins/CodeActionPlugin/CodeActionPlugin";
 import CodeHighlightPlugin from "@/plugins/CodeHighlightPlugin";
