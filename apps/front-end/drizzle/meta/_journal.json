@@ -15,6 +15,13 @@
       "when": 1709186479560,
       "tag": "0001_rare_doorman",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1709239932487,
+      "tag": "0002_ambitious_ser_duncan",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,5 @@
 import type { AdapterAccount } from "@auth/core/adapters";
+import { relations } from "drizzle-orm";
 import {
   char,
   customType,
@@ -75,10 +76,50 @@ export const documents = mysqlTable("document", {
   createdOn: timestamp("createdOn", { mode: "date" }).defaultNow(),
   modifiedOn: timestamp("modifiedOn", { mode: "date" }).defaultNow(),
   data: blob("data"),
+  notebookId: char("id", { length: 21 }).notNull(),
 });
 
 export const notebooks = mysqlTable("notebook", {
   id: char("id", { length: 21 }).notNull().primaryKey(),
-  documentName: char("documentName", { length: 21 }).notNull(),
   authorId: varchar("authorId", { length: 255 }).notNull(),
+});
+
+export const notebookDocuments = mysqlTable("notebook_document", {
+  notebookId: char("notebookId", { length: 21 }).notNull().primaryKey(),
+  documentName: char("documentName", { length: 21 }).notNull(),
+});
+
+/******************************************************************************
+ *                              TABLE RELATIONS
+ * ***************************************************************************/
+
+export const usersRelations = relations(users, ({ one }) => {
+  return {
+    notebook: one(notebooks),
+    // accounts: one(accounts),
+    // sessions: many(sessions),
+  };
+});
+
+export const notebooksRelations = relations(notebooks, ({ one, many }) => {
+  return {
+    author: one(users, {
+      fields: [notebooks.authorId],
+      references: [users.id],
+    }),
+    document: one(notebookDocuments, {
+      fields: [notebooks.id],
+      references: [notebookDocuments.notebookId],
+    }),
+    notes: many(documents),
+  };
+});
+
+export const documentRelations = relations(documents, ({ one }) => {
+  return {
+    notebook: one(notebooks, {
+      fields: [documents.notebookId],
+      references: [notebooks.id],
+    }),
+  };
 });

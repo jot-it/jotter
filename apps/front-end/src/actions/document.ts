@@ -1,19 +1,18 @@
 "use server";
 import authOptions from "@/config/auth-options";
 import db from "@/lib/db";
-import { documents, notebooks } from "@/schema";
+import { documents, notebookDocuments, notebooks } from "@/schema";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { getServerSession } from "next-auth";
 
-async function createDocument() {
+async function createDocument(notebookId: string) {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw new Error("Unauthorized");
   }
   const name = nanoid();
-  await db.insert(documents).values({ name });
-
+  await db.insert(documents).values({ name, notebookId });
   return { name };
 }
 
@@ -32,12 +31,9 @@ async function getDocumentByName(docName: string) {
     throw new Error("Unauthorized");
   }
 
-  const res = await db
-    .select()
-    .from(documents)
-    .where(eq(documents.name, docName));
-
-  return res.length ? res[0] : null;
+  return db.query.documents.findFirst({
+    where: eq(documents.name, docName),
+  });
 }
 
 async function createNotebook() {
@@ -50,12 +46,12 @@ async function createNotebook() {
     const documentName = nanoid();
     const notebookId = nanoid();
     await Promise.all([
-      tx.insert(documents).values({ name: documentName }),
+      tx.insert(documents).values({ name: documentName, notebookId }),
       tx.insert(notebooks).values({
         id: notebookId,
-        documentName: documentName,
         authorId: session.user.id,
       }),
+      tx.insert(notebookDocuments).values({ notebookId, documentName }),
     ]);
 
     return {
@@ -71,16 +67,10 @@ async function getNotebook() {
   if (!session) {
     throw new Error("Unauthorized");
   }
-  const result = await db
-    .select()
-    .from(notebooks)
-    .where(eq(notebooks.authorId, session.user.id));
 
-  if (result.length > 0) {
-    return result[0];
-  }
-
-  return null;
+  return db.query.notebooks.findFirst({
+    where: eq(notebooks.authorId, session.user.id),
+  });
 }
 
 async function getNotebookById(id: string) {
@@ -89,8 +79,10 @@ async function getNotebookById(id: string) {
     throw new Error("Unauthorized");
   }
 
-  const res = await db.select().from(notebooks).where(eq(notebooks.id, id));
-  return res.length ? res[0] : null;
+  return db.query.notebooks.findFirst({
+    with: { document: true },
+    where: eq(notebooks.id, id),
+  });
 }
 
 export {

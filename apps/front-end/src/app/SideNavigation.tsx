@@ -66,7 +66,7 @@ function SideNavigation() {
     if (item.isNew) {
       // The user finished editing, so we create the respective document
       // on the database to associate it with this user
-      const doc = await createDocument();
+      const doc = await createDocument(params.notebookId);
       setId(item, doc.name);
       setHref(item, `/${params.notebookId}/${doc.name}`);
       setIsNewItem(item, false);

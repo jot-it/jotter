@@ -34,7 +34,7 @@ async function Layout({ children, params }: LayoutProps) {
           {session?.user && (
             <StartCollaboration
               user={session.user}
-              notebookName={notebook.documentName}
+              notebookName={notebook.document.documentName}
               initialToken={token}
               onTokenRefresh={async () => {
                 "use server";
