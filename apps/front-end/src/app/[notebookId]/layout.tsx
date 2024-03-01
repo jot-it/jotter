@@ -24,7 +24,7 @@ async function Layout({ children, params }: LayoutProps) {
 
   const token = await getToken([]);
   return (
-    <div className="grid lg:grid-cols-[20rem_auto]">
+    <div className="grid ease-in animate-in fade-in-30 lg:grid-cols-[20rem_auto]">
       <aside className="hidden lg:block">
         <SideNavigation />
       </aside>

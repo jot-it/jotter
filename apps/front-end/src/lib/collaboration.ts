@@ -109,7 +109,6 @@ export function StartCollaboration({
       return;
     }
     const connectionProvider = createConnection({ name, token: token.value });
-    console.log(name, token);
     setConnection(connectionProvider);
     return () => {
       connectionProvider.disconnect();
