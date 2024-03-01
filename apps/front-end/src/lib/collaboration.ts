@@ -174,7 +174,5 @@ export function useOthers() {
   const me = useSelf();
   const sharedState = useAwareness();
 
-  console.log(sharedState);
-
   return sharedState.filter((state) => state.user.id != me?.id);
 }
