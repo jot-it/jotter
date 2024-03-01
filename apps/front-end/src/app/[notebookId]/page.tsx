@@ -19,7 +19,7 @@ export default function Home() {
           <Typography
             variant="h4"
             as="h2"
-            className="text-gray-600 dark:text-gray-400"
+            className="!font-light text-gray-600 dark:text-gray-400"
           >
             Text editing reimagined
           </Typography>

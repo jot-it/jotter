@@ -1,5 +1,4 @@
 "use client";
-import { createNotebook } from "@/actions/document";
 import Button from "@/components/Button";
 import { BookIcon, FileIcon } from "@/components/Icons";
 import { newCategory, newPage, sidebarState } from "@/components/Sidebar/state";
@@ -17,12 +16,6 @@ function HomeScreenActions() {
         <Button variant="link" onClick={() => newCategory(sidebarState)}>
           <BookIcon className="mr-2" />
           New Category
-        </Button>
-      </li>
-      <li>
-        <Button variant="link" onClick={() => createNotebook()}>
-          <BookIcon className="mr-2" />
-          Create notebook test
         </Button>
       </li>
     </ul>
