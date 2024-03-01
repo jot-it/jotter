@@ -7,11 +7,7 @@ import SidebarItemList from "./ItemList";
 import { MenuAction } from "./MenuAction";
 import { ParentItem, sidebarState as initialItems } from "./state";
 
-//#region  Typings
-type EventHandlers = {
-  /**
-   * Callback when an item is selected (clicked)
-   */
+export type EventHandlers = {
   onSelected?: (item: Item) => void;
   onNewPage?: (parent: ParentItem) => void;
   onNewCategory?: (parent: ParentItem) => void;
@@ -22,6 +18,10 @@ type EventHandlers = {
 export const EventHandlersContext = createContext<EventHandlers>({});
 
 export type SidebarProps = PropsWithChildren<EventHandlers>;
+
+export function useSidebarEvents() {
+  return useContext(EventHandlersContext);
+}
 
 function Sidebar({ children, ...eventHandlers }: SidebarProps) {
   const handlers = useMemo(() => eventHandlers, [eventHandlers]);
@@ -38,7 +38,7 @@ function Sidebar({ children, ...eventHandlers }: SidebarProps) {
 }
 
 export function SidebarRoot() {
-  const { onNewPage, onNewCategory } = useContext(EventHandlersContext);
+  const { onNewPage, onNewCategory } = useSidebarEvents();
   return (
     <ContextMenu>
       <ContextMenu.Trigger>

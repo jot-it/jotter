@@ -1,12 +1,11 @@
 import { getNotebookById } from "@/actions/document";
-import NoSSR from "@/components/NoSSR";
+import { getToken } from "@/actions/token";
 import { getSession } from "@/config/auth-options";
 import { StartCollaboration } from "@/lib/collaboration";
+import { notFound } from "next/navigation";
 import { PropsWithChildren } from "react";
 import Header from "../Header";
 import SideNavigation from "../SideNavigation";
-import { notFound } from "next/navigation";
-import { getToken } from "@/actions/token";
 
 type LayoutProps = PropsWithChildren<{
   params: {
@@ -24,25 +23,23 @@ async function Layout({ children, params }: LayoutProps) {
 
   const token = await getToken([]);
   return (
-    <div className="grid ease-in animate-in fade-in-30 lg:grid-cols-[20rem_auto]">
+    <div className="grid lg:grid-cols-[20rem_auto]">
       <aside className="hidden lg:block">
         <SideNavigation />
       </aside>
       <div>
         <Header />
-        <NoSSR>
-          {session?.user && (
-            <StartCollaboration
-              user={session.user}
-              notebookName={notebook.document.documentName}
-              initialToken={token}
-              onTokenRefresh={async () => {
-                "use server";
-                return getToken([]);
-              }}
-            />
-          )}
-        </NoSSR>
+        {session?.user && (
+          <StartCollaboration
+            user={session.user}
+            notebookName={notebook.document.documentName}
+            initialToken={token}
+            onTokenRefresh={async () => {
+              "use server";
+              return getToken([]);
+            }}
+          />
+        )}
         {children}
       </div>
     </div>

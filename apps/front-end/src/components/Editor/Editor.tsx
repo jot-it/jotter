@@ -52,7 +52,9 @@ function Editor(props: EditorProps) {
         ref={onRef}
       >
         <RichTextPlugin
-          contentEditable={<ContentEditable className="focus:outline-none" />}
+          contentEditable={
+            <ContentEditable className="duration-200 ease-in animate-in fade-in-30 focus:outline-none" />
+          }
           placeholder={
             <p className="absolute left-4 top-0 m-0 dark:text-gray-400">
               Press{" "}

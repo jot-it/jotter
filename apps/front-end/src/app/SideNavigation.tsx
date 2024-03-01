@@ -32,7 +32,7 @@ function SideNavigation() {
   // Synchorize Yjs shared-types with valtio proxy state
   useYjs();
   const router = useRouter();
-  const params = useParams<{ notebookId: string }>();
+  const params = useParams<{ notebookId: string; noteId: string }>();
   const [activeItem, setActiveItem] = useAtom(activeItemAtom);
   const updateActiveItem = (item: Item) => {
     setActiveItem({ ...item });
@@ -40,10 +40,9 @@ function SideNavigation() {
 
   const handleDelete = async (parent: Item[], item: Item) => {
     removeItem(parent, item);
-
     if (item.id === activeItem?.id) {
       // Redirect users to home page to avoid editing a document that no longer exists
-      router.push("/");
+      router.push(`/${params.notebookId}`);
       setActiveItem(null);
     }
 

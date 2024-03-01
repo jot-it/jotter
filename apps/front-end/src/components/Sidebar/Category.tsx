@@ -1,8 +1,9 @@
 import useToggle from "@/hooks/useToggle";
+import { registerShortcuts } from "@/lib/hotkeys";
 import * as Accordion from "@radix-ui/react-accordion";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
-import { KeyboardEventHandler, useContext, useState } from "react";
+import { KeyboardEventHandler, useState } from "react";
 import { useSnapshot } from "valtio";
 import ContextMenu from "../ContextMenu";
 import {
@@ -17,10 +18,9 @@ import EditableLabel, { EditableLabelProps } from "./EditableLabel";
 import { CategoryItem, ItemWithParent, itemVariant } from "./Item";
 import SidebarItemList from "./ItemList";
 import { MenuAction } from "./MenuAction";
-import { EventHandlersContext } from "./Sidebar";
-import { removeItem } from "./state";
+import { useSidebarEvents } from "./Sidebar";
 import { withDeleteItemShortcut, withRenameItemShortcut } from "./shorcuts";
-import { registerShortcuts } from "@/lib/hotkeys";
+import { removeItem } from "./state";
 
 export type CategoryProps = {
   category: CategoryItem;
@@ -37,8 +37,7 @@ export type CategoryMenuProps = ItemWithParent<
 function CategoryWithMenu({ setOpen, category, parent }: CategoryMenuProps) {
   const snap = useSnapshot(category);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
-  const { onNewPage, onDelete, onNewCategory, onRename } =
-    useContext(EventHandlersContext);
+  const { onNewPage, onDelete, onNewCategory, onRename } = useSidebarEvents();
 
   const [editable, toggleEditable] = useToggle(snap.isNew);
 
@@ -124,7 +123,7 @@ function Category({
 }: CategoryProps) {
   const snap = useSnapshot(category);
   const router = useRouter();
-  const eventHandlers = useContext(EventHandlersContext);
+  const eventHandlers = useSidebarEvents();
   const isActive = usePathname() === snap.href;
 
   const handleClick = () => {
