@@ -5,9 +5,22 @@
 .env.test.local
 .env.production.local
 
+# Node
 **/node_modules
 
-# Required by fly
+# Turbo
+.turbo
+
+# Vercel
+.vercel
+
+# Build Outputs
+**/.next/
+**/out/
+**/build
+**/dist
+
+# Added by fly
 fly.toml
 Dockerfile
 .dockerignore
