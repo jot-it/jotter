@@ -154,7 +154,6 @@ export function useAwareness() {
   const [awareness, setAwareness] = useState<AwarenessState[]>([]);
   useEffect(() => {
     const onAwarenessChange = ({ states }: { states: AwarenessState[] }) => {
-      console.log(states);
       setAwareness(states);
     };
     provider.on("awarenessUpdate", onAwarenessChange);
