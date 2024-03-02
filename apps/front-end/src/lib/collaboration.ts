@@ -21,10 +21,7 @@ export type SharedState = {
   user: User;
 };
 
-/**
- * @see https://docs.yjs.dev/api/about-awareness
- */
-type Awareness = Map<number, SharedState>;
+type AwarenessState = { clientId: number } & SharedState;
 
 /**
  * The root connection represents the actual websocket connection to the collaborative servers.
@@ -102,14 +99,13 @@ export function StartCollaboration({
   const setConnection = useSetAtom(rootConnectionAtom);
   const token = useToken();
 
-  const { awareness } = useConnection();
+  const provider = useConnection();
 
   useEffect(() => {
     if (!token) {
       return;
     }
     const connectionProvider = createConnection({ name, token: token.value });
-    console.log(name, token);
     setConnection(connectionProvider);
     return () => {
       connectionProvider.disconnect();
@@ -118,8 +114,8 @@ export function StartCollaboration({
 
   // Inform all users in this notebook about your presence
   useEffect(() => {
-    awareness?.setLocalStateField("user", user);
-  }, [user, token, awareness]);
+    provider.setAwarenessField("user", user);
+  }, [user, token, provider]);
 
   return null;
 }
@@ -153,17 +149,17 @@ function useAutoRefreshingToken(
 }
 
 export function useAwareness() {
-  const provider = useAtomValue(rootConnectionAtom);
+  const provider = useConnection();
   //TODO this can be optimized so that there is only 1 global awareness state
-  const [awareness, setAwareness] = useState<Awareness>();
+  const [awareness, setAwareness] = useState<AwarenessState[]>([]);
   useEffect(() => {
-    const onAwarenessChange = () => {
-      const newValue = new Map(provider.awareness?.getStates());
-      setAwareness(newValue as Awareness);
+    const onAwarenessChange = ({ states }: { states: AwarenessState[] }) => {
+      console.log(states);
+      setAwareness(states);
     };
-    provider.awareness?.on("change", onAwarenessChange);
+    provider.on("awarenessUpdate", onAwarenessChange);
     return () => {
-      provider.awareness?.off("change", onAwarenessChange);
+      provider.off("awarenessUpdate", onAwarenessChange);
     };
   }, [provider]);
   return awareness;
@@ -177,14 +173,6 @@ export function useSelf() {
 export function useOthers() {
   const me = useSelf();
   const sharedState = useAwareness();
-  const others: User[] = [];
 
-  sharedState?.forEach((state) => {
-    const isMyself = state.user.id === me?.id;
-    if (!isMyself && state.user) {
-      others.push(state.user);
-    }
-  });
-
-  return others;
+  return sharedState.filter((state) => state.user.id != me?.id);
 }
