@@ -18,7 +18,8 @@ import {
   setLabel,
   sidebarState,
 } from "@/components/Sidebar/state";
-import { useRootDocument } from "@/lib/collaboration";
+import Skeleton from "@/components/Skeleton";
+import { useIsSynced, useRootDocument } from "@/lib/collaboration";
 import { atom, useAtom } from "jotai";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -30,7 +31,7 @@ export const activeItemAtom = atom<Item | null>(null);
 
 function SideNavigation() {
   // Synchorize Yjs shared-types with valtio proxy state
-  useYjs();
+  const loaded = useYjs();
   const router = useRouter();
   const params = useParams<{ notebookId: string; noteId: string }>();
   const [activeItem, setActiveItem] = useAtom(activeItemAtom);
@@ -91,7 +92,7 @@ function SideNavigation() {
       onNewPage={handleNewPage}
     >
       <div className="flex-1 overflow-auto">
-        <SidebarItems />
+        {loaded ? <SidebarItems /> : <SidebarItemsSkeleton />}
       </div>
       <div className="space-y-1">
         <SidebarDivider />
@@ -106,9 +107,22 @@ function SideNavigation() {
 
 function useYjs() {
   const rootDocument = useRootDocument();
+  const isSynced = useIsSynced();
   useEffect(() => {
     return bind(sidebarState, rootDocument.getArray("sidebar"));
   }, [rootDocument]);
+
+  return isSynced;
+}
+
+function SidebarItemsSkeleton() {
+  return (
+    <div className="space-y-1">
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+    </div>
+  );
 }
 
 export default SideNavigation;

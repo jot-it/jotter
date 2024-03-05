@@ -24,4 +24,5 @@ function ActiveUsers() {
     </div>
   );
 }
+
 export default ActiveUsers;
