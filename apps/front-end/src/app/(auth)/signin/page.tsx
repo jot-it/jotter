@@ -1,10 +1,9 @@
 "use client";
-import Button, { buttonVariants } from "@/components/Button";
+import Button from "@/components/Button";
 import { DiscordIcon, GithubIcon, GoogleIcon } from "@/components/Icons";
 import Typography from "@/components/Typography";
 import { OAuthProviderType } from "next-auth/providers/oauth-types";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { IconType } from "react-icons";
 
@@ -53,9 +52,6 @@ function LoginScreen() {
             <span className="capitalize">{name}</span>
           </Button>
         ))}
-        <Link className={buttonVariants({ variant: "secondary" })} href="/demo">
-          Try it out
-        </Link>
       </div>
     </div>
   );
