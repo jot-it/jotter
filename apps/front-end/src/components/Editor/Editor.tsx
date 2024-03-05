@@ -32,7 +32,7 @@ const CollaborationPlugin = dynamic(
 const TreeViewPlugin = lazy(() => import("@/plugins/TreeViewPlugin"));
 
 type EditorProps = {
-  documentId: string;
+  collaboration?: { documentId: string };
 };
 
 function Editor(props: EditorProps) {
@@ -56,7 +56,7 @@ function Editor(props: EditorProps) {
             <ContentEditable className="duration-200 ease-in animate-in fade-in-30 focus:outline-none" />
           }
           placeholder={
-            <p className="absolute left-4 top-0 m-0 dark:text-gray-400">
+            <p className="pointer-events-none absolute left-4 top-0 m-0 dark:text-gray-400">
               Press{" "}
               <span className="rounded bg-gray-200 px-2 py-1 dark:bg-slate-800">
                 /
@@ -66,6 +66,7 @@ function Editor(props: EditorProps) {
           }
           ErrorBoundary={ErrorBoundary}
         />
+
         <AutoFocusPlugin />
 
         <LexicalAutoLinkPlugin />
@@ -85,7 +86,9 @@ function Editor(props: EditorProps) {
         <ListMaxIndentLevelPlugin />
         <TabIndentationPlugin />
         <ImagePlugin />
-        <CollaborationPlugin id={props.documentId} />
+        {props.collaboration && (
+          <CollaborationPlugin id={props.collaboration.documentId} />
+        )}
 
         <CheckListPlugin />
       </div>

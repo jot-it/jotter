@@ -13,7 +13,7 @@ async function NotePage({ params }: { params: { noteId: string } }) {
     notFound();
   }
 
-  return <Editor documentId={params.noteId} />;
+  return <Editor collaboration={{ documentId: params.noteId }} />;
 }
 
 export default NotePage;
