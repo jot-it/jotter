@@ -8,7 +8,17 @@ const envSchema = z.object({
   DISCORD_SECRET: z.string().min(1),
   DISCORD_CLIENT_ID: z.string().min(1),
   NEXTAUTH_SECRET: z.string().min(1),
-  DATABASE_URL: z.string().min(1),
+  TURSO_DATABASE_URL: z.string().min(1),
+  TURSO_AUTH_TOKEN: z
+    .string()
+    .min(1)
+    .optional()
+    .refine((token) => {
+      if (process.env.NODE_ENV === "production") {
+        return Boolean(token);
+      }
+      return true;
+    }, "A token is required to access production database."),
   NEXTAUTH_URL: z.string().min(1),
 });
 

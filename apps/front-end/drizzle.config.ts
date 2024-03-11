@@ -2,9 +2,9 @@ import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
   schema: "./src/schema.ts",
-  driver: "mysql2",
+  driver: "libsql",
   out: "./drizzle",
   dbCredentials: {
-    uri: process.env.DATABASE_URL!,
+    url: process.env.TURSO_DATABASE_URL!,
   },
 });
