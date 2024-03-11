@@ -1,48 +1,35 @@
 import type { AdapterAccount } from "@auth/core/adapters";
 import { relations } from "drizzle-orm";
 import {
-  char,
-  customType,
-  int,
-  mysqlTable,
+  blob,
+  integer,
   primaryKey,
-  timestamp,
-  varchar,
-} from "drizzle-orm/mysql-core";
+  sqliteTable,
+  text,
+} from "drizzle-orm/sqlite-core";
 
-const blob = customType<{ data: Buffer }>({
-  dataType() {
-    return "blob";
-  },
+export const users = sqliteTable("user", {
+  id: text("id").notNull().primaryKey(),
+  name: text("name"),
+  email: text("email"),
+  emailVerified: integer("emailVerified", { mode: "timestamp_ms" }),
+  image: text("image"),
 });
 
-export const users = mysqlTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }),
-  emailVerified: timestamp("emailVerified", {
-    mode: "date",
-    fsp: 3,
-  }).defaultNow(),
-  image: varchar("image", { length: 255 }),
-});
-
-export const accounts = mysqlTable(
+export const accounts = sqliteTable(
   "account",
   {
-    userId: varchar("userId", { length: 255 }).notNull(),
-    type: varchar("type", { length: 255 })
-      .$type<AdapterAccount["type"]>()
-      .notNull(),
-    provider: varchar("provider", { length: 255 }).notNull(),
-    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
-    refresh_token: varchar("refresh_token", { length: 255 }),
-    access_token: varchar("access_token", { length: 255 }),
-    expires_at: int("expires_at"),
-    token_type: varchar("token_type", { length: 255 }),
-    scope: varchar("scope", { length: 255 }),
-    id_token: varchar("id_token", { length: 2048 }),
-    session_state: varchar("session_state", { length: 255 }),
+    userId: text("userId").notNull(),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
   },
   (account) => ({
     compoundKey: primaryKey({
@@ -51,18 +38,18 @@ export const accounts = mysqlTable(
   }),
 );
 
-export const sessions = mysqlTable("session", {
-  sessionToken: varchar("sessionToken", { length: 255 }).notNull().primaryKey(),
-  userId: varchar("userId", { length: 255 }).notNull(),
-  expires: timestamp("expires", { mode: "date" }).notNull(),
+export const sessions = sqliteTable("session", {
+  sessionToken: text("sessionToken").notNull().primaryKey(),
+  userId: text("userId").notNull(),
+  expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
 });
 
-export const verificationTokens = mysqlTable(
+export const verificationTokens = sqliteTable(
   "verificationToken",
   {
-    identifier: varchar("identifier", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
   },
   (vt) => ({
     compoundKey: primaryKey({
@@ -71,22 +58,22 @@ export const verificationTokens = mysqlTable(
   }),
 );
 
-export const documents = mysqlTable("document", {
-  name: char("name", { length: 21 }).primaryKey(),
-  createdOn: timestamp("createdOn", { mode: "date" }).defaultNow(),
-  modifiedOn: timestamp("modifiedOn", { mode: "date" }).defaultNow(),
+export const documents = sqliteTable("document", {
+  name: text("name").primaryKey(),
+  createdOn: integer("createdOn", { mode: "timestamp_ms" }),
+  modifiedOn: integer("modifiedOn", { mode: "timestamp_ms" }),
   data: blob("data"),
-  notebookId: char("id", { length: 21 }).notNull(),
+  notebookId: text("id").notNull(),
 });
 
-export const notebooks = mysqlTable("notebook", {
-  id: char("id", { length: 21 }).notNull().primaryKey(),
-  authorId: varchar("authorId", { length: 255 }).notNull(),
+export const notebooks = sqliteTable("notebook", {
+  id: text("id").notNull().primaryKey(),
+  authorId: text("authorId").notNull(),
 });
 
-export const notebookDocuments = mysqlTable("notebook_document", {
-  notebookId: char("notebookId", { length: 21 }).notNull().primaryKey(),
-  documentName: char("documentName", { length: 21 }).notNull(),
+export const notebookDocuments = sqliteTable("notebook_document", {
+  notebookId: text("notebookId").notNull().primaryKey(),
+  documentName: text("documentName").notNull(),
 });
 
 /******************************************************************************
