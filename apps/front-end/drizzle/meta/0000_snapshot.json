@@ -1,7 +1,7 @@
 {
   "version": "5",
-  "dialect": "mysql",
-  "id": "4c16605f-e332-4813-bc29-99ed21b9a636",
+  "dialect": "sqlite",
+  "id": "1ac0bbd8-a63d-4ffd-b721-33343040dfb7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -9,105 +9,91 @@
       "columns": {
         "userId": {
           "name": "userId",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "type": {
           "name": "type",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "provider": {
           "name": "provider",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "providerAccountId": {
           "name": "providerAccountId",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "refresh_token": {
           "name": "refresh_token",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "access_token": {
           "name": "access_token",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "expires_at": {
           "name": "expires_at",
-          "type": "int",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "token_type": {
           "name": "token_type",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "scope": {
           "name": "scope",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "id_token": {
           "name": "id_token",
-          "type": "varchar(2048)",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "session_state": {
           "name": "session_state",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "account_userId_user_id_fk": {
-          "name": "account_userId_user_id_fk",
-          "tableFrom": "account",
-          "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
         "account_provider_providerAccountId_pk": {
-          "name": "account_provider_providerAccountId_pk",
           "columns": [
             "provider",
             "providerAccountId"
-          ]
+          ],
+          "name": "account_provider_providerAccountId_pk"
         }
       },
       "uniqueConstraints": {}
@@ -117,26 +103,24 @@
       "columns": {
         "name": {
           "name": "name",
-          "type": "char(21)",
-          "primaryKey": false,
+          "type": "text",
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
         "createdOn": {
           "name": "createdOn",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         },
         "modifiedOn": {
           "name": "modifiedOn",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         },
         "data": {
           "name": "data",
@@ -144,18 +128,41 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "document_name": {
-          "name": "document_name",
-          "columns": [
-            "name"
-          ]
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "notebook_document": {
+      "name": "notebook_document",
+      "columns": {
+        "notebookId": {
+          "name": "notebookId",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "documentName": {
+          "name": "documentName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
     "notebook": {
@@ -163,63 +170,22 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "char(21)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "documentName": {
-          "name": "documentName",
-          "type": "char(21)",
-          "primaryKey": false,
+          "type": "text",
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
         "authorId": {
           "name": "authorId",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "notebook_documentName_document_name_fk": {
-          "name": "notebook_documentName_document_name_fk",
-          "tableFrom": "notebook",
-          "tableTo": "document",
-          "columnsFrom": [
-            "documentName"
-          ],
-          "columnsTo": [
-            "name"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "notebook_authorId_user_id_fk": {
-          "name": "notebook_authorId_user_id_fk",
-          "tableFrom": "notebook",
-          "tableTo": "user",
-          "columnsFrom": [
-            "authorId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "notebook_id": {
-          "name": "notebook_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
     "session": {
@@ -227,50 +193,29 @@
       "columns": {
         "sessionToken": {
           "name": "sessionToken",
-          "type": "varchar(255)",
-          "primaryKey": false,
+          "type": "text",
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
         "userId": {
           "name": "userId",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "expires": {
           "name": "expires",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "session_userId_user_id_fk": {
-          "name": "session_userId_user_id_fk",
-          "tableFrom": "session",
-          "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "session_sessionToken": {
-          "name": "session_sessionToken",
-          "columns": [
-            "sessionToken"
-          ]
-        }
-      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
     "user": {
@@ -278,36 +223,35 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
-          "primaryKey": false,
+          "type": "text",
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "email": {
           "name": "email",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "emailVerified": {
           "name": "emailVerified",
-          "type": "timestamp(3)",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         },
         "image": {
           "name": "image",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -315,14 +259,7 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "user_id": {
-          "name": "user_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
     "verificationToken": {
@@ -330,21 +267,21 @@
       "columns": {
         "identifier": {
           "name": "identifier",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "token": {
           "name": "token",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "expires": {
           "name": "expires",
-          "type": "timestamp",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -354,17 +291,17 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "verificationToken_identifier_token_pk": {
-          "name": "verificationToken_identifier_token_pk",
           "columns": [
             "identifier",
             "token"
-          ]
+          ],
+          "name": "verificationToken_identifier_token_pk"
         }
       },
       "uniqueConstraints": {}
     }
   },
-  "schemas": {},
+  "enums": {},
   "_meta": {
     "schemas": {},
     "tables": {},
