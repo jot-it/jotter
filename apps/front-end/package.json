@@ -10,7 +10,9 @@
     "lint": "next lint",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate:sqlite",
-    "db:push": "drizzle-kit push:sqlite"
+    "db:push": "drizzle-kit push:sqlite",
+    "db:migrate": "tsx ./src/migrate.ts",
+    "db:migrate-prod": "dotenv -e .env.local -- npm run db:migrate"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.7.0",
