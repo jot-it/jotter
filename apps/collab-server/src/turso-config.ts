@@ -27,14 +27,18 @@ const tursoConfiguration: DatabaseConfiguration = {
 
   async store({ documentName, state: documentData }) {
     const now = new Date().getTime();
-    await client.execute({
+    const res = await client.execute({
       sql: `UPDATE document
-            SET data = ?,
-                modifiedOn = ?
-            WHERE name = ? 
-        `,
-      args: [documentName, now, documentData],
+              SET data = ?,
+                  modifiedOn = ?
+              WHERE name = ? 
+          `,
+      args: [documentData, now, documentName],
     });
+
+    if (!res.rowsAffected) {
+      throw new Error(`Unable to update document with name ${documentName}`);
+    }
   },
 };
 
