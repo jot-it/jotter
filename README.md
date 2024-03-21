@@ -20,4 +20,4 @@ See the [contributing guide](/CONTRIBUTING.md)
 
 ## License
 
-Licensed under the [MIT License](/LICENSE)
+Licensed under the [GPL-3.0 License](/LICENSE)
