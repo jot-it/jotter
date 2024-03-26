@@ -25,9 +25,7 @@ function DeleteConfirmationDialog({
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            Are you sure you want to delete this document?
-          </AlertDialogTitle>
+          <AlertDialogTitle>Delete this document?</AlertDialogTitle>
           <AlertDialogDescription>
             The contents and its related notes will be permanently deleted. This
             action cannot be undone.
