@@ -5,7 +5,7 @@ import { useHydrateAtoms } from "jotai/utils";
 import { User } from "next-auth";
 import { useEffect, useState } from "react";
 import { accessTokenAtom, useConnection, useToken } from "../collaboration";
-import { createConnection, rootConnectionAtom } from "./store";
+import { createConnection, rootConnectionAtom, rootDocument } from "./store";
 
 type StartCollaborationProps = {
   user: User;
@@ -34,7 +34,11 @@ export function StartCollaboration({
     if (!token) {
       return;
     }
-    const connectionProvider = createConnection({ name, token: token.value });
+    const connectionProvider = createConnection({
+      name,
+      token: token.value,
+      document: rootDocument,
+    });
 
     setConnection(connectionProvider);
     return () => {
