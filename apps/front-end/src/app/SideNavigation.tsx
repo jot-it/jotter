@@ -19,7 +19,7 @@ import {
   sidebarState,
 } from "@/components/Sidebar/state";
 import Skeleton from "@/components/Skeleton";
-import { useIsSynced, useRootDocument } from "@/lib/collaboration";
+import { rootDocument, useIsSynced } from "@/lib/collaboration";
 import { atom, useAtom } from "jotai";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -106,11 +106,10 @@ function SideNavigation() {
 }
 
 function useYjs() {
-  const rootDocument = useRootDocument();
   const isSynced = useIsSynced();
   useEffect(() => {
     return bind(sidebarState, rootDocument.getArray("sidebar"));
-  }, [rootDocument]);
+  }, []);
 
   return isSynced;
 }

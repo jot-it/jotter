@@ -20,28 +20,28 @@ export type SharedState = {
 export type AwarenessState = { clientId: number } & SharedState;
 
 /**
- * The root connection represents the actual websocket connection to the collaborative servers.
+ * The main Yjs document for the entire application. Shared state should be
+ * part of this document whenever possible.
  */
-export const rootConnectionAtom = atom(
-  createConnection({ name: "default", connect: false, token: "" }),
-);
+export const rootDocument = new Doc();
 
 /**
- * The main Yjs document for the entire application. Shared state should be part of this
- * document whenever possible.
+ * The root connection represents the actual websocket connection to the
+ * collaboration servers.
  */
-const rootDocumentAtom = atom((get) => {
-  return get(rootConnectionAtom).document;
-});
+export const rootConnectionAtom = atom(
+  createConnection({
+    name: "default",
+    connect: false,
+    token: "",
+    document: rootDocument,
+  }),
+);
 
 export const accessTokenAtom = atom<Token | null>(null);
 
 export function useConnection() {
   return useAtomValue(rootConnectionAtom);
-}
-
-export function useRootDocument() {
-  return useAtomValue(rootDocumentAtom);
 }
 
 export function useToken() {
