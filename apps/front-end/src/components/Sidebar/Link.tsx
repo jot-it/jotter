@@ -98,7 +98,6 @@ function Link({
   const isActive = usePathname() === snap.href;
 
   return (
-    /* @ts-expect-error Next.js links also have a "as" prop */
     <Typography
       as={NextLink}
       variant="body1"
