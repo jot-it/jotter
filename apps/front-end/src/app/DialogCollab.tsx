@@ -17,11 +17,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useIsCollaborationEnabled } from "@/lib/collaboration";
 
-type DialogCollabProps = {
-  notebookId: string;
-};
-
-export default function DialogCollab({ notebookId }: DialogCollabProps) {
+export default function DialogCollab() {
   const pathname = usePathname();
   const fullUrl = `${getOrigin()}${pathname}`;
   const [isCollaborationEnabled, setIsCollaborationEnabled] = useIsCollaborationEnabled();

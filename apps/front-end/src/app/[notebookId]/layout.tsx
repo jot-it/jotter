@@ -22,7 +22,7 @@ function Layout({ children, params }: LayoutProps) {
       // Enable collaboration by default when accessing a notebook that is not your own
       setIsCollaborationEnabled(true);
     }
-  }, []);
+  }, [identity.id, params.notebookId, setIsCollaborationEnabled]);
 
   return (
     <div className="grid lg:grid-cols-[20rem_auto]">

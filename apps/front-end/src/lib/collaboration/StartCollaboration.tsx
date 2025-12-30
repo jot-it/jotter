@@ -38,9 +38,6 @@ export function StartCollaboration({ notebookId }: StartCollaborationProps) {
       id: identity.id,
       name: identity.name,
     });
-    return () => {
-      provider.setAwarenessField("user", null);
-    };
   }, [identity, provider]);
 
   return null;
