@@ -1,13 +1,18 @@
-import { createNotebook, getNotebook } from "@/actions/document";
-import { redirect } from "next/navigation";
+"use client";
+import { useLocalIdentity } from "@/lib/identity-provider";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-async function Home() {
-  let notebook = await getNotebook();
-  if (!notebook) {
-    notebook = await createNotebook();
-  }
+function Home() {
+  const router = useRouter();
+  const identity = useLocalIdentity();
 
-  redirect(`/${notebook.id}`);
+  useEffect(() => {
+    // Redirect to the user's unique notebook
+    router.push(`/${identity.id}`);
+  }, [router, identity]);
+
+  return null;
 }
 
 export default Home;

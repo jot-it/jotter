@@ -12,11 +12,8 @@
   },
   "keywords": [],
   "dependencies": {
-    "@hocuspocus/extension-database": "^2.8.1",
     "@hocuspocus/extension-logger": "^2.8.1",
     "@hocuspocus/server": "^2.8.1",
-    "@libsql/client": "^0.4.3",
-    "jose": "^5.2.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {

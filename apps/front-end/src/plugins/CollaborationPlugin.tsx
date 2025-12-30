@@ -3,7 +3,6 @@ import {
   ConnectionConfiguration,
   createConnection,
   useSelf,
-  useToken,
 } from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { Provider } from "@lexical/yjs";
@@ -21,9 +20,8 @@ type CollaborationPluginProps = {
 
 function CollaborationPlugin({ id }: CollaborationPluginProps) {
   const user = useSelf();
-  const token = useToken();
 
-  if (!user || !token) {
+  if (!user) {
     return null;
   }
 
@@ -32,10 +30,10 @@ function CollaborationPlugin({ id }: CollaborationPluginProps) {
       <LexicalCollaborationPlugin
         id={id}
         key={id}
-        username={user.name!}
+        username={user.name}
         initialEditorState={initialEditorState}
         providerFactory={(id, yjsDocMap) =>
-          providerFactory(id, yjsDocMap, { token: token.value })
+          providerFactory(id, yjsDocMap, { token: "" })
         }
         shouldBootstrap={true}
       />

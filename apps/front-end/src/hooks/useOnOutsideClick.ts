@@ -5,7 +5,7 @@ type ClickHandler = (e: MouseEvent) => void;
 
 export const useOnOutsideClick = (
   ref: RefObject<HTMLElement>,
-  onClick: ClickHandler
+  onClick: ClickHandler,
 ) => {
   const onClickCallback = useCallbackRef(onClick);
 

@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { useLocalIdentity } from "@/lib/identity-provider";
 import { useState, useEffect } from "react";
 import { AwarenessState, useConnection } from "./store";
 
@@ -19,14 +19,17 @@ export function useAwareness() {
 }
 
 export function useSelf() {
-  const { data } = useSession();
-  return data?.user;
+  const identity = useLocalIdentity();
+  return {
+    id: identity.id,
+    name: identity.name,
+  };
 }
 
 export function useOthers() {
   const me = useSelf();
   const sharedState = useAwareness();
-  return sharedState.filter((state) => state.user.id != me?.id);
+  return sharedState.filter((state) => state.user.id !== me.id);
 }
 
 export function useIsSynced() {

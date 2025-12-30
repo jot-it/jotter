@@ -22,7 +22,7 @@ const Select = forwardRef<HTMLButtonElement, RadixSelect.SelectProps>(
       required,
       ...rest
     },
-    forwardedRef
+    forwardedRef,
   ) {
     return (
       <RadixSelect.Root
@@ -69,7 +69,7 @@ const Select = forwardRef<HTMLButtonElement, RadixSelect.SelectProps>(
         </RadixSelect.Content>
       </RadixSelect.Root>
     );
-  }
+  },
 );
 
 const SelectItem = forwardRef<HTMLDivElement, RadixSelect.SelectItemProps>(
@@ -86,7 +86,7 @@ const SelectItem = forwardRef<HTMLDivElement, RadixSelect.SelectItemProps>(
         </RadixSelect.ItemText>
       </RadixSelect.Item>
     );
-  }
+  },
 );
 
 export default Object.assign(Select, { Item: SelectItem });
