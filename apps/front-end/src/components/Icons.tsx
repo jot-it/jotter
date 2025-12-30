@@ -7,6 +7,8 @@ import { CiSearch as SearchIcon } from "react-icons/ci";
 import {
   IoClipboardOutline as CopyIcon,
   IoStop as StopIcon,
+  IoLockClosed as LockIcon,
+  IoLockOpen as UnlockIcon,
 } from "react-icons/io5";
 import {
   RiBold as BoldIcon,
@@ -48,6 +50,8 @@ export {
   FileIcon,
   HeadingIcon,
   ItalicIcon,
+  LockIcon,
+  UnlockIcon,
   ParagraphIcon,
   QuoteIcon,
   RenameIcon,

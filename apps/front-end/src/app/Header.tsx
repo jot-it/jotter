@@ -1,3 +1,6 @@
+"use client";
+
+import { useParams } from "next/navigation";
 import ActiveUsers from "./ActiveUsers";
 import BreadcrumbsShell from "./BreadcrumbsShell";
 import DialogCollab from "./DialogCollab";
@@ -5,6 +8,9 @@ import MobileNavigation from "./MobileNavigation";
 import UserProfileMenu from "./UserProfileMenu";
 
 function Header() {
+  const params = useParams();
+  const notebookId = params.notebookId as string;
+
   return (
     <header
       className="sticky top-0 z-10 flex items-center border-b border-gray-200 bg-white/90 p-4 
@@ -14,7 +20,7 @@ function Header() {
       <BreadcrumbsShell />
       <div className="ml-auto flex items-center space-x-4">
         <ActiveUsers />
-        <DialogCollab />
+        <DialogCollab notebookId={notebookId} />
         <UserProfileMenu />
       </div>
     </header>

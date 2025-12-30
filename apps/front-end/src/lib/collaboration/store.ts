@@ -4,7 +4,7 @@ import {
   HocuspocusProvider,
   HocuspocusProviderConfiguration,
 } from "@hocuspocus/provider";
-import { atom, useAtomValue } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { Doc } from "yjs";
 
@@ -52,8 +52,14 @@ function createDefaultConnection() {
 
 export const rootConnectionAtom = atom(createDefaultConnection());
 
+export const isCollaborationEnabledAtom = atom(false);
+
 export function useConnection() {
   return useAtomValue(rootConnectionAtom);
+}
+
+export function useIsCollaborationEnabled() {
+  return useAtom(isCollaborationEnabledAtom);
 }
 
 export type ConnectionConfiguration = Omit<
