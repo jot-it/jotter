@@ -1,83 +1,44 @@
 "use client";
-import { Token } from "@/actions/token";
+import { useLocalIdentity } from "@/lib/identity-provider";
 import { useSetAtom } from "jotai";
-import { useHydrateAtoms } from "jotai/utils";
-import { User } from "next-auth";
-import { useEffect, useState } from "react";
-import { accessTokenAtom, useConnection, useToken } from "../collaboration";
-import { createConnection, rootConnectionAtom, rootDocument } from "./store";
+import { useEffect } from "react";
+import { useConnection, rootConnectionAtom } from "./store";
+import { createConnection, rootDocument } from "./store";
 
 type StartCollaborationProps = {
-  user: User;
-  notebookName: string;
-  initialToken: Token;
-  onTokenRefresh(): Promise<Token>;
+  notebookId: string;
 };
 
 /**
- * Connects root document to the collaboration server using the current
- * workspace as the name of the document.
+ * Connects root document to the collaboration server using the notebook ID as
+ * the document name. Uses local identity for presence awareness.
  */
-export function StartCollaboration({
-  user,
-  notebookName: name,
-  initialToken,
-  onTokenRefresh,
-}: StartCollaborationProps) {
-  useAutoRefreshingToken(initialToken, onTokenRefresh);
+export function StartCollaboration({ notebookId }: StartCollaborationProps) {
+  const identity = useLocalIdentity();
   const setConnection = useSetAtom(rootConnectionAtom);
-  const token = useToken();
-
   const provider = useConnection();
 
   useEffect(() => {
-    if (!token) {
-      return;
-    }
     const connectionProvider = createConnection({
-      name,
-      token: token.value,
+      name: notebookId,
+      connect: true,
       document: rootDocument,
+      token: "", // No token required for local-first collaboration
     });
 
     setConnection(connectionProvider);
     return () => {
       connectionProvider.destroy();
     };
-  }, [name, token, setConnection]);
+  }, [notebookId, setConnection]);
 
   // Inform all users in this notebook about your presence
   useEffect(() => {
-    provider.setAwarenessField("user", user);
-  }, [user, token, provider]);
+    provider.setAwarenessField("user", {
+      id: identity.id,
+      name: identity.name,
+    });
+  }, [identity, provider]);
 
   return null;
-}
-
-function useAutoRefreshingToken(
-  initialToken: Token,
-  onRefresh: () => Promise<Token>,
-) {
-  useHydrateAtoms([[accessTokenAtom, initialToken]]);
-
-  const [nextRefreshTime, setNextRefreshTime] = useState(
-    initialToken.expiresAt,
-  );
-  const setToken = useSetAtom(accessTokenAtom);
-
-  useEffect(() => {
-    const now = new Date().getTime();
-    const remainingTime = nextRefreshTime - now;
-    const timeout = setTimeout(async () => {
-      const newToken = await onRefresh();
-      setToken(newToken);
-      setNextRefreshTime(newToken.expiresAt);
-    }, remainingTime);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-
-    // Keep looping to renew the token every time it expires
-  }, [nextRefreshTime, setToken, onRefresh]);
 }

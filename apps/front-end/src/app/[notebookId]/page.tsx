@@ -2,6 +2,8 @@ import Typography from "@/components/Typography";
 import { Metadata } from "next";
 import HomeScreenActions from "./HomeScreenActions";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Jotter",
   description: "Collaborative editor",

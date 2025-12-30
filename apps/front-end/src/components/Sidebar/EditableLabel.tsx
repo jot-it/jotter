@@ -28,8 +28,12 @@ function EditableLabel({
     else onRename?.(label);
   };
 
-  const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === "Escape") {
+      // Prevent parent link/trigger activation while committing edits
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
     if (e.key === "Enter") {
       handleRename();
@@ -60,7 +64,7 @@ function EditableLabel({
       ref={inputRef}
       onBlur={handleRename}
       onChange={(e) => setLabel(e.target.value)}
-      onKeyUp={handleKeyUp}
+      onKeyDown={handleKeyDown}
       placeholder="new note name..."
     />
   );

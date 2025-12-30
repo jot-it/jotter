@@ -1,5 +1,4 @@
 "use client";
-import { createDocument, deleteDocument } from "@/actions/document";
 import {
   Sidebar,
   SidebarButton,
@@ -26,6 +25,7 @@ import { useEffect } from "react";
 import { RiAddLine as AddIcon } from "react-icons/ri";
 import { bind } from "valtio-yjs";
 import { clearDocument } from "y-indexeddb";
+import { nanoid } from "nanoid";
 
 export const activeItemAtom = atom<Item | null>(null);
 
@@ -47,9 +47,9 @@ function SideNavigation() {
       setActiveItem(null);
     }
 
-    // Remove documents from cache (IndexDB) and the main database
+    // Remove documents from cache (IndexDB)
     try {
-      await Promise.all([clearDocument(item.id), deleteDocument(item.id)]);
+      await clearDocument(item.id);
     } catch (error) {
       // TODO Show a toast with an error message
       // TODO Re-insert the document to allow the user to retry
@@ -64,11 +64,10 @@ function SideNavigation() {
 
     setLabel(item, newLabel);
     if (item.isNew) {
-      // The user finished editing, so we create the respective document
-      // on the database to associate it with this user
-      const doc = await createDocument(params.notebookId);
-      setId(item, doc.name);
-      setHref(item, `/${params.notebookId}/${doc.name}`);
+      // Generate a unique ID for the document
+      const docId = nanoid();
+      setId(item, docId);
+      setHref(item, `/${params.notebookId}/${docId}`);
       setIsNewItem(item, false);
     }
   };

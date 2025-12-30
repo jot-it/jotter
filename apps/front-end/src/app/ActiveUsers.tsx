@@ -17,8 +17,10 @@ function ActiveUsers() {
       )}
 
       {others.slice(0, MAX_ACTIVE_USERS).map(({ user }) => (
-        <Tooltip key={user.id} title={user.name!}>
-          <Avatar src={user.image ?? undefined} alt={user.name ?? ""} />
+        <Tooltip key={user.id} title={user.name}>
+          <Avatar className="bg-gray-300 text-gray-700" alt={user.name}>
+            {user.name?.[0]?.toUpperCase()}
+          </Avatar>
         </Tooltip>
       ))}
     </div>

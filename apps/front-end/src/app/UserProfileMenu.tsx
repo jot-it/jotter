@@ -10,53 +10,51 @@ import {
 } from "@/components/DropdownMenu";
 import { LogoutIcon } from "@/components/Icons";
 import Typography from "@/components/Typography";
+import { clearLocalIdentity } from "@/lib/local-identity";
 import { useSelf } from "@/lib/collaboration";
-import { signOut } from "next-auth/react";
 
 function UserProfileMenu() {
   const self = useSelf();
 
-  if (!self) {
-    return <AvatarSkeleton />;
-  }
+  const handleClearIdentity = () => {
+    clearLocalIdentity();
+    window.location.reload();
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger aria-label="My Profile">
         <Avatar
-          className="cursor-pointer"
-          src={self.image ?? undefined}
-          alt={self.name ?? ""}
-        />
+          className="cursor-pointer bg-gray-300 text-gray-700"
+          alt={self.name}
+        >
+          {self.name?.[0]?.toUpperCase()}
+        </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-4" sideOffset={16}>
         <div className="flex gap-3 px-2 py-1.5">
           <Avatar
-            src={self.image ?? undefined}
-            alt={self.name ?? ""}
+            className="bg-gray-300 text-gray-700"
+            alt={self.name}
             size="lg"
-          />
+          >
+            {self.name?.[0]?.toUpperCase()}
+          </Avatar>
           <div>
             <DropdownMenuLabel className="!p-0">{self.name}</DropdownMenuLabel>
-            {self.email && (
-              <Typography as="p" className="text-gray-300">
-                {self.email}
-              </Typography>
-            )}
+            <Typography as="p" className="text-sm text-gray-500">
+              Local identity
+            </Typography>
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuItem onClick={handleClearIdentity}>
           <LogoutIcon className="mr-2" />
-          Sign Out
+          Clear Identity
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
-
-function AvatarSkeleton() {
-  return <Avatar className="animate-pulse bg-neutral-300" />;
 }
 
 export default UserProfileMenu;

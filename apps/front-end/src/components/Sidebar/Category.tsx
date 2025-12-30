@@ -3,7 +3,7 @@ import { registerShortcuts } from "@/lib/hotkeys";
 import * as Accordion from "@radix-ui/react-accordion";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
-import { KeyboardEventHandler, useState } from "react";
+import { KeyboardEventHandler, MouseEvent, useState } from "react";
 import { useSnapshot } from "valtio";
 import ContextMenu from "../ContextMenu";
 import {
@@ -125,14 +125,21 @@ function Category({
   const router = useRouter();
   const eventHandlers = useSidebarEvents();
   const isActive = usePathname() === snap.href;
+  const isEditable = Boolean(editable);
 
-  const handleClick = () => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    if (isEditable) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
     eventHandlers.onSelected?.(category);
     router.push(snap.href);
   };
 
   return (
-    <Accordion.Item value={snap.id} onKeyDown={onKeyDown}>
+    <Accordion.Item value={snap.id} onKeyDown={isEditable ? undefined : onKeyDown}>
       <Accordion.Header className="p-0.5">
         <Accordion.Trigger
           data-testid="sidebar-item"

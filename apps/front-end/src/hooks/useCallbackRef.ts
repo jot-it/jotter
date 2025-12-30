@@ -5,7 +5,7 @@ import { useRef, useEffect, useMemo } from "react";
  * prop or avoid re-executing effects when passed as a dependency
  */
 function useCallbackRef<T extends (...args: any[]) => any>(
-  callback: T | undefined
+  callback: T | undefined,
 ): T {
   const callbackRef = useRef(callback);
 

@@ -10,7 +10,7 @@ import {
 } from "lexical";
 import { useEffect } from "react";
 
-type ListMaxIndentLevelPluginProps =  {
+type ListMaxIndentLevelPluginProps = {
   maxDepth?: number;
 };
 
@@ -57,7 +57,6 @@ function isIndentPermitted(maxDepth: number) {
   return totalDepth <= maxDepth;
 }
 
-
 function getElementNodesInSelection(selection: RangeSelection) {
   const nodesInSelection = selection.getNodes();
 
@@ -72,5 +71,3 @@ function getElementNodesInSelection(selection: RangeSelection) {
     nodesInSelection.map((n) => ($isElementNode(n) ? n : n.getParentOrThrow())),
   );
 }
-
-

@@ -54,7 +54,7 @@ function TextFormatSelect({ editor }: TextFormatSelectProps) {
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
       handleSelectionChanged,
-      COMMAND_PRIORITY_LOW
+      COMMAND_PRIORITY_LOW,
     );
   }, [editor, handleSelectionChanged]);
 

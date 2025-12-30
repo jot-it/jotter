@@ -17,7 +17,7 @@ function MobileNavigation() {
       <Dialog.Portal>
         <Dialog.Overlay
           className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm 
-        data-[state=closed]:fade-out data-[state=closed]:animate-out  data-[state=open]:fade-in data-[state=open]:animate-in"
+        data-[state=open]:animate-in data-[state=closed]:animate-out  data-[state=closed]:fade-out data-[state=open]:fade-in"
         />
         <Dialog.Content
           className="fixed left-0 top-0 z-50 w-80 data-[state=open]:animate-in data-[state=closed]:animate-out
@@ -25,7 +25,7 @@ function MobileNavigation() {
         >
           <Dialog.Title className="sr-only">Browse your notes</Dialog.Title>
           <Dialog.Close
-            className="absolute right-0 top-0 z-10 dark:bg-slate-700 px-7 py-4 bg-gray-300 rounded-bl-lg"
+            className="absolute right-0 top-0 z-10 rounded-bl-lg bg-gray-300 px-7 py-4 dark:bg-slate-700"
             aria-label="close"
           >
             <CloseIcon />

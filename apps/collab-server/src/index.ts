@@ -1,23 +1,15 @@
-import { Database } from "@hocuspocus/extension-database";
 import { Logger } from "@hocuspocus/extension-logger";
 import { Hocuspocus } from "@hocuspocus/server";
-import { jwtVerify } from "jose";
 import { env } from "./env.js";
-import tursoConfiguration from "./turso-config.js";
 
 const PORT = env.PORT ? Number(env.PORT) : 1234;
 
-// Configure the server …
+// Configure the server with local-first collaboration
+// No authentication or database persistence required
 const server = new Hocuspocus({
   port: PORT,
-
-  async onAuthenticate(data) {
-    const key = new TextEncoder().encode(env.AUTH_SECRET);
-    await jwtVerify(data.token, key);
-  },
-
-  extensions: [new Logger(), new Database(tursoConfiguration)],
+  extensions: [new Logger()],
 });
 
-// // … and run it!
+// Run the server
 server.listen();

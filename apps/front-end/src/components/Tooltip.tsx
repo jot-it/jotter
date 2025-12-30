@@ -40,7 +40,7 @@ const Tooltip = forwardRef<
     >
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
       <TooltipPrimitive.Content
-        className="bg-gray-700 text-white rounded-md px-2 py-1 shadow-md z-50"
+        className="z-50 rounded-md bg-gray-700 px-2 py-1 text-white shadow-md"
         aria-label={title}
         {...contentProps}
         ref={ref}
