@@ -1,6 +1,6 @@
 import { useLocalIdentity } from "@/lib/identity-provider";
 import { useState, useEffect } from "react";
-import { AwarenessState, useConnection } from "./store";
+import { AwarenessState, useConnection, useIsCollaborationEnabled } from "./store";
 
 export function useAwareness() {
   const provider = useConnection();
@@ -29,12 +29,13 @@ export function useSelf() {
 export function useOthers() {
   const me = useSelf();
   const sharedState = useAwareness();
-  return sharedState.filter((state) => state.user.id !== me.id);
+  return sharedState.filter((state) => state.user && state.user.id !== me.id);
 }
 
 export function useIsSynced() {
   const provider = useConnection();
-  const [isSynced, setIsSynced] = useState(provider.isSynced);
+  const [isCollaborationEnabled] = useIsCollaborationEnabled();
+  const [isSynced, setIsSynced] = useState(provider.isSynced || !isCollaborationEnabled);
 
   useEffect(() => {
     const onSynced = () => setIsSynced(true);
