@@ -1,4 +1,7 @@
-FROM node:18-alpine AS base
+
+ARG NODE_VERSION=24-alpine
+
+FROM node:${NODE_VERSION} AS base
 EXPOSE 1234
 
 FROM base AS builder
@@ -6,7 +9,7 @@ RUN apk add --no-cache libc6-compat
 RUN apk update
 # Set working directory
 WORKDIR /app
-RUN npm install --global turbo 
+RUN npm install --global turbo
 COPY --chown=node:node . .
 # https://turbo.build/repo/docs/reference/command-line-reference/prune
 RUN turbo prune @jotter/collab-server --docker

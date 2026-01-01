@@ -17,7 +17,7 @@ export function StartCollaboration({ notebookId }: StartCollaborationProps) {
   const identity = useLocalIdentity();
   const setConnection = useSetAtom(rootConnectionAtom);
   const provider = useConnection();
-
+  
   useEffect(() => {
     const connectionProvider = createConnection({
       name: notebookId,

@@ -2,6 +2,7 @@ import NoSSR from "@/components/NoSSR";
 import {
   ConnectionConfiguration,
   createConnection,
+  useIsCollaborationEnabled,
   useSelf,
 } from "@/lib/collaboration";
 import { CollaborationPlugin as LexicalCollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
@@ -20,8 +21,9 @@ type CollaborationPluginProps = {
 
 function CollaborationPlugin({ id }: CollaborationPluginProps) {
   const user = useSelf();
+  const [isCollaborationEnabled] = useIsCollaborationEnabled();
 
-  if (!user) {
+  if (!isCollaborationEnabled) {
     return null;
   }
 

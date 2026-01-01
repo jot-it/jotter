@@ -1,3 +1,5 @@
+"use client";
+
 import ActiveUsers from "./ActiveUsers";
 import BreadcrumbsShell from "./BreadcrumbsShell";
 import DialogCollab from "./DialogCollab";
