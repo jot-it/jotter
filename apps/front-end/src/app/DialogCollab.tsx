@@ -20,7 +20,8 @@ import { useIsCollaborationEnabled } from "@/lib/collaboration";
 export default function DialogCollab() {
   const pathname = usePathname();
   const fullUrl = `${getOrigin()}${pathname}`;
-  const [isCollaborationEnabled, setIsCollaborationEnabled] = useIsCollaborationEnabled();
+  const [isCollaborationEnabled, setIsCollaborationEnabled] =
+    useIsCollaborationEnabled();
   const [open, setOpen] = useState(false);
 
   const copyToClipBoard = () => {
@@ -69,13 +70,12 @@ export default function DialogCollab() {
                 </>
               )}
             </div>
-            <Button
-              variant={isCollaborationEnabled ? "destructive" : undefined}
-              size="small"
-              onClick={toggleSharing}
-            >
-              {isCollaborationEnabled ? "Disable" : "Enable"}
-            </Button>
+            <input
+              checked={isCollaborationEnabled}
+              onChange={toggleSharing}
+              type="checkbox"
+              className="grid aspect-video h-8 appearance-none grid-cols-[0fr_1fr] items-center rounded-3xl bg-slate-500 px-1 opacity-50 transition-all before:col-start-2 before:aspect-square before:h-6  before:rounded-full before:bg-slate-400 checked:grid-cols-[1fr_1fr] checked:bg-cyan-800 checked:opacity-100 checked:before:bg-cyan-600"
+            />
           </div>
         </div>
       </DialogContent>
